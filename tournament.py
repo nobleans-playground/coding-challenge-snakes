@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from time import sleep
 
 import numpy as np
+from blessings import Terminal
 
 from bots import Random
 from game import Game
@@ -23,10 +25,13 @@ class Printer:
 def main():
     agents = [Random(), Random()]
     game = Game(grid_size=(16, 16), agents=agents)
+    term = Terminal()
     printer = Printer()
     for i in range(5):
+        print(term.clear(), end='')
         game.update()
         printer.print(game)
+        sleep(0.3)
 
 
 if __name__ == '__main__':

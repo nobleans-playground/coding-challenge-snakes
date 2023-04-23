@@ -47,6 +47,12 @@ class Snake(Sequence):
     def __repr__(self):
         return f'id={self.id} positions={self.positions.tolist()}'
 
+    def collides(self, pos):
+        for p in self.positions:
+            if np.array_equal(p, pos):
+                return True
+        return False
+
 
 class Game:
     def __init__(self, grid_size, agents: List[Bot]):
@@ -69,8 +75,13 @@ class Game:
                 raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
             moves[snake.id] = MOVE_VALUE_TO_DIRECTION[move_value]
 
-        self.apply_moves(moves)
-
-    def apply_moves(self, moves):
         for id, move in moves.items():
             self.snakes[id].move(move)
+
+        for snake in self.snakes:
+            for other_snake in self.snakes:
+                if other_snake.collides(snake[0]):
+                    print('bla')
+
+    def on_snake(self, pos):
+        raise NotImplementedError()
