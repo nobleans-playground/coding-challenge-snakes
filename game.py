@@ -58,9 +58,14 @@ class Game:
     def __init__(self, grid_size, agents: List[Bot]):
         self.grid_size = grid_size
         self.agents = agents
-
-        starting_indices = choices(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
         self.snakes = []
+        self.candies = []
+        self.scores = {}  # map from snake.id to score
+
+        self.spawn_snakes(agents)
+
+    def spawn_snakes(self, agents):
+        starting_indices = choices(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
         for i, index in enumerate(starting_indices):
             x, y = divmod(index, self.grid_size[0])
             assert 0 <= x < self.grid_size[0]
@@ -75,13 +80,31 @@ class Game:
                 raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
             moves[snake.id] = MOVE_VALUE_TO_DIRECTION[move_value]
 
-        for id, move in moves.items():
-            self.snakes[id].move(move)
-
         for snake in self.snakes:
+            snake.move(moves[snake.id])
+
+        dead = []
+        for snake in self.snakes:
+            if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
+                dead.append(snake)
+                continue
+
             for other_snake in self.snakes:
+                if snake == other_snake:
+                    continue
                 if other_snake.collides(snake[0]):
-                    print('bla')
+                    dead.append(snake)
+                    break
+
+        for snake in dead:
+            self.snakes.remove(snake)
+        rank = len(self.snakes) + 1
+        for snake in dead:
+            print(f'snake {snake.id} died and got the {rank} place, snake={snake}')
+            self.scores[snake.id] = rank
+
+    def finished(self):
+        return len(self.snakes) <= 1
 
     def on_snake(self, pos):
         raise NotImplementedError()

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
-from time import sleep
 
 import numpy as np
 from blessings import Terminal
@@ -27,11 +26,14 @@ def main():
     game = Game(grid_size=(16, 16), agents=agents)
     term = Terminal()
     printer = Printer()
-    for i in range(5):
-        print(term.clear(), end='')
+    while True:
+        # print(term.clear(), end='')
         game.update()
         printer.print(game)
-        sleep(0.3)
+        # sleep(0.3)
+
+        if game.finished():
+            break
 
 
 if __name__ == '__main__':
