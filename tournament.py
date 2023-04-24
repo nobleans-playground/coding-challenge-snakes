@@ -35,6 +35,10 @@ def main():
         if game.finished():
             break
 
+    print('Name\tFinal position')
+    for id, score in game.scores.items():
+        print(f'{game.agents[id].name}\t{score}')
+
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Nobleo Snakes')

@@ -103,6 +103,10 @@ class Game:
             print(f'snake {snake.id} died and got the {rank} place, snake={snake}')
             self.scores[snake.id] = rank
 
+        if len(self.snakes) <= 1:
+            for snake in self.snakes:
+                self.scores[snake.id] = 1
+
     def finished(self):
         return len(self.snakes) <= 1
 
