@@ -68,7 +68,7 @@ class Game:
     def spawn_snakes(self, agents):
         starting_indices = choices(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
         for i, index in enumerate(starting_indices):
-            x, y = divmod(index, self.grid_size[0])
+            x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
             assert 0 <= y < self.grid_size[1]
             self.snakes.append(Snake(i, np.array([(x, y)])))
@@ -78,7 +78,7 @@ class Game:
         percentage = 0.1
         candy_indices = choices(range(indices), k=round(percentage * indices))
         for index in candy_indices:
-            x, y = divmod(index, self.grid_size[0])
+            x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
             assert 0 <= y < self.grid_size[1]
             self.candies.append(np.array([x, y]))
