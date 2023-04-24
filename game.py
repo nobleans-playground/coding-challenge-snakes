@@ -88,6 +88,7 @@ class Game:
                 if np.array_equal(candy, snake[0]):
                     remove_candies.append(i)
                     snake.move(moves[snake.id], grow=True)
+                    break
             else:
                 snake.move(moves[snake.id])
         self.candies = [i for j, i in enumerate(self.candies) if j not in remove_candies]
