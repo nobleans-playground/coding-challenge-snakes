@@ -20,14 +20,16 @@ class Printer:
                 grid[pos[0], pos[1]] = str(snake.id)
         for candy in game.candies:
             grid[candy[0], candy[1]] = '*'
-        print(grid)
+        print(np.flipud(grid.T))
 
 
 def main():
-    agents = [Random(), Random()]
-    game = Game(grid_size=(16, 16), agents=agents)
+    grid_size = (16, 8)
+    agents = [Random(id=0, grid_size=grid_size), Random(id=1, grid_size=grid_size)]
+    game = Game(grid_size=grid_size, agents=agents)
     term = Terminal()
     printer = Printer()
+    printer.print(game)
     while True:
         # print(term.clear(), end='')
         game.update()

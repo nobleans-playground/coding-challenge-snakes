@@ -1,23 +1,12 @@
 from collections.abc import Sequence
+from copy import deepcopy
 from random import choices
 from typing import List
 
 import numpy as np
 
 from bots import Bot, Move
-
-UP = np.array([0, 1])
-DOWN = np.array([0, -1])
-LEFT = np.array([-1, 0])
-RIGHT = np.array([1, 0])
-MOVES = (Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT)
-
-MOVE_VALUE_TO_DIRECTION = {
-    Move.UP: UP,
-    Move.DOWN: DOWN,
-    Move.LEFT: LEFT,
-    Move.RIGHT: RIGHT,
-}
+from constants import MOVE_VALUE_TO_DIRECTION
 
 
 class Snake(Sequence):
@@ -86,10 +75,12 @@ class Game:
     def update(self):
         moves = {}
         for snake in self.snakes:
-            move_value = self.agents[snake.id].determine_next_move()
+            move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                                   candies=deepcopy(self.candies))
             if not isinstance(move_value, Move):
                 raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
             moves[snake.id] = MOVE_VALUE_TO_DIRECTION[move_value]
+        print(f'moves={moves}')
 
         remove_candies = []
         for snake in self.snakes:
@@ -104,6 +95,7 @@ class Game:
         dead = []
         for snake in self.snakes:
             if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
+                print(f'snake {snake.id} went out-of-bounds')
                 dead.append(snake)
                 continue
 
@@ -111,6 +103,7 @@ class Game:
                 if snake == other_snake:
                     continue
                 if other_snake.collides(snake[0]):
+                    print(f'snake {snake.id} collided with snake {other_snake.id}')
                     dead.append(snake)
                     break
 
