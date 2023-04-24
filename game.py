@@ -102,8 +102,17 @@ class Game:
 
             for other_snake in self.snakes:
                 if snake == other_snake:
-                    continue
-                if other_snake.collides(snake[0]):
+                    self_collision = False
+                    # self collision, don't check head
+                    for p in snake[1:]:
+                        if np.array_equal(p, snake[0]):
+                            self_collision = True
+                            break
+                    if self_collision:
+                        print(f'snake {snake.id} collided with itself')
+                        dead.append(snake)
+                        break
+                elif other_snake.collides(snake[0]):
                     print(f'snake {snake.id} collided with snake {other_snake.id}')
                     dead.append(snake)
                     break
