@@ -18,6 +18,8 @@ class Printer:
             print(f'snake={snake}')
             for pos in snake:
                 grid[pos[0], pos[1]] = str(snake.id)
+        for candy in game.candies:
+            grid[candy[0], candy[1]] = '*'
         print(grid)
 
 

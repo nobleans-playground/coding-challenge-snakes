@@ -63,6 +63,7 @@ class Game:
         self.scores = {}  # map from snake.id to score
 
         self.spawn_snakes(agents)
+        self.spawn_candies()
 
     def spawn_snakes(self, agents):
         starting_indices = choices(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
@@ -72,6 +73,16 @@ class Game:
             assert 0 <= y < self.grid_size[1]
             self.snakes.append(Snake(i, np.array([(x, y)])))
 
+    def spawn_candies(self):
+        indices = self.grid_size[0] * self.grid_size[1]
+        percentage = 0.1
+        candy_indices = choices(range(indices), k=round(percentage * indices))
+        for index in candy_indices:
+            x, y = divmod(index, self.grid_size[0])
+            assert 0 <= x < self.grid_size[0]
+            assert 0 <= y < self.grid_size[1]
+            self.candies.append(np.array([x, y]))
+
     def update(self):
         moves = {}
         for snake in self.snakes:
@@ -80,8 +91,15 @@ class Game:
                 raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
             moves[snake.id] = MOVE_VALUE_TO_DIRECTION[move_value]
 
+        remove_candies = []
         for snake in self.snakes:
-            snake.move(moves[snake.id])
+            for i, candy in enumerate(self.candies):
+                if np.array_equal(candy, snake[0]):
+                    remove_candies.append(i)
+                    snake.move(moves[snake.id], grow=True)
+            else:
+                snake.move(moves[snake.id])
+        self.candies = [i for j, i in enumerate(self.candies) if j not in remove_candies]
 
         dead = []
         for snake in self.snakes:
