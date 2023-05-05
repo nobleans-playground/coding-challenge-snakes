@@ -10,7 +10,7 @@ from game import Game
 
 class Printer:
     def print(self, game):
-        grid = np.empty(game.grid_size, dtype=np.unicode)
+        grid = np.empty(game.grid_size, dtype=str)
         for x in range(game.grid_size[0]):
             for y in range(game.grid_size[1]):
                 grid[x, y] = ' '
