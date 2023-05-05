@@ -6,7 +6,7 @@ from time import sleep
 import numpy as np
 from blessings import Terminal
 
-from bots import Random
+from bots import Random, SimpleEater
 from game import Game
 
 
@@ -17,7 +17,7 @@ class Printer:
             for y in range(game.grid_size[1]):
                 grid[x, y] = ' '
         for snake in game.snakes:
-            print(f'snake={snake}')
+            print(f'name={game.agents[snake.id].name!r} {snake}')
             for pos in snake:
                 grid[pos[0], pos[1]] = str(snake.id)
         for candy in game.candies:
@@ -27,7 +27,7 @@ class Printer:
 
 def main(rate):
     grid_size = (16, 8)
-    agents = [Random(id=0, grid_size=grid_size), Random(id=1, grid_size=grid_size)]
+    agents = [Random(id=0, grid_size=grid_size), SimpleEater(id=1, grid_size=grid_size)]
     game = Game(grid_size=grid_size, agents=agents)
     term = Terminal()
     printer = Printer()
