@@ -1,6 +1,6 @@
 import numpy as np
-
-from game import Snake, UP, RIGHT
+from constants import UP, RIGHT
+from game import Snake
 
 
 def test_snake_sequence():
