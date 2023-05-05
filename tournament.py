@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
+from math import isinf
+from time import sleep
 
 import numpy as np
 from blessings import Terminal
@@ -23,7 +25,7 @@ class Printer:
         print(np.flipud(grid.T))
 
 
-def main():
+def main(rate):
     grid_size = (16, 8)
     agents = [Random(id=0, grid_size=grid_size), Random(id=1, grid_size=grid_size)]
     game = Game(grid_size=grid_size, agents=agents)
@@ -31,10 +33,12 @@ def main():
     printer = Printer()
     printer.print(game)
     while True:
-        # print(term.clear(), end='')
+        if not isinf(rate):
+            print(term.clear(), end='')
         game.update()
         printer.print(game)
-        # sleep(0.3)
+        if not isinf(rate):
+            sleep(1 / rate)
 
         if game.finished():
             break
@@ -46,6 +50,7 @@ def main():
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Nobleo Snakes')
+    parser.add_argument('-r', '--rate', default=float('inf'), type=float, help="Playback rate (Hz)")
     args = parser.parse_args()
 
     try:
