@@ -4,8 +4,6 @@ from math import isinf
 from time import sleep
 
 import numpy as np
-from blessings import Terminal
-
 from bots import Random, SimpleEater
 from game import Game
 
@@ -29,12 +27,9 @@ def main(rate):
     grid_size = (16, 8)
     agents = [Random(id=0, grid_size=grid_size), SimpleEater(id=1, grid_size=grid_size)]
     game = Game(grid_size=grid_size, agents=agents)
-    term = Terminal()
     printer = Printer()
     printer.print(game)
     while True:
-        if not isinf(rate):
-            print(term.clear(), end='')
         game.update()
         printer.print(game)
         if not isinf(rate):
