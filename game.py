@@ -80,7 +80,6 @@ class Game:
             if not isinstance(move_value, Move):
                 raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
             moves[snake.id] = MOVE_VALUE_TO_DIRECTION[move_value]
-        print(f'moves={moves}')
 
         remove_candies = []
         for snake in self.snakes:
@@ -121,7 +120,7 @@ class Game:
             self.snakes.remove(snake)
         rank = len(self.snakes) + 1
         for snake in dead:
-            print(f'snake {snake.id} died and got the {rank} place, snake={snake}')
+            print(f'snake {snake.id} died and got the {rank} place')
             self.scores[snake.id] = rank
 
         if len(self.snakes) <= 1:

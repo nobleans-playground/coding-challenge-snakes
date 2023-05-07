@@ -93,4 +93,4 @@ class SimpleEater(Bot):
         return min(distances)
 
 
-bots = (Random, SimpleEater)
+bots = (Random, Random, SimpleEater, SimpleEater)

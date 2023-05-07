@@ -1,4 +1,5 @@
 import numpy as np
+
 from constants import UP, RIGHT
 from game import Snake
 

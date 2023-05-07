@@ -4,6 +4,7 @@ from math import isinf
 from time import sleep
 
 import numpy as np
+
 from bots import Random, SimpleEater
 from game import Game
 
