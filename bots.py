@@ -91,3 +91,6 @@ class SimpleEater(Bot):
     def distance_to_closest_candy(self, position, candies):
         distances = [np.linalg.norm(position - candy, 1) for candy in candies]
         return min(distances)
+
+
+bots = (Random, SimpleEater)
