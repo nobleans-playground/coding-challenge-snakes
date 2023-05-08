@@ -3,11 +3,14 @@ from argparse import ArgumentParser, FileType
 
 import numpy as np
 import pandas
+from more_itertools import pairwise
 from scipy.optimize import least_squares
 
 
 def main(infile):
     df = pandas.read_csv(infile)
+    print(df)
+    print()
 
     print(f'{"Name":20} First places')
     firsts = df == 1
@@ -25,31 +28,30 @@ def estimate_elo(df):
     def fun(x):
         residuals = []
         for _, row in df.iterrows():
-            for a, b in pairwise(range(len(row))):
+            for a, b in pairwise(np.argsort(row)):
                 rating_a = x[a]
                 rating_b = x[b]
-                expected = 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
+                expected = expected_score(rating_a, rating_b)
                 # 1 win, 0 loss, 0.5 draw
                 actual = (np.sign(row[b] - row[a]) + 1) / 2
+                print(f'player {a} vs {b} | {rating_a:.0f} {rating_b:.0f} | {expected:.4} {actual}')
                 residuals.append(actual - expected)
 
         # force elo rating average to be 1500
         residuals.append(np.average(x) - 1500)
+        # print(residuals)
         return np.array(residuals)
 
     res = least_squares(fun, x0)
     for name, elo in zip(df.columns, res.x):
         print(f'{name:20} {elo}')
 
+    expected_scores = expected_score(res.x[:, np.newaxis], res.x[np.newaxis, :])
+    print('\nexpected score:\n', np.array_str(expected_scores, precision=2, suppress_small=True))
 
-def pairwise(it):
-    it = iter(it)
-    while True:
-        try:
-            yield next(it), next(it)
-        except StopIteration:
-            # no more elements in the iterator
-            return
+
+def expected_score(rating_a, rating_b):
+    return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
 
 
 if __name__ == '__main__':

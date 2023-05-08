@@ -27,6 +27,7 @@ def main(games):
         f.seek(0)
         df = pandas.read_csv(f)
         print(df)
+        print(f'\ngame were written to {f.name}')
 
 
 def single_game(grid_size):
