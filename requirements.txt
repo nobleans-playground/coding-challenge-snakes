@@ -1,4 +1,5 @@
 more_itertools
 numpy
 pandas
+pygame
 scipy
