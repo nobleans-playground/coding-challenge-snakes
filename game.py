@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from copy import deepcopy
-from random import choices
+from random import sample
 from typing import List
 
 import numpy as np
@@ -44,18 +44,29 @@ class Snake(Sequence):
 
 
 class Game:
-    def __init__(self, grid_size, agents: List[Bot]):
+    def __init__(self, grid_size, agents: List[Bot], snakes: List[Snake] = None, candies: List[np.array] = None):
         self.grid_size = grid_size
         self.agents = agents
-        self.snakes = []
-        self.candies = []
+        self.snakes = snakes  # snake.id refers to the index to the agents array
+        self.candies = candies
         self.scores = {}  # map from snake.id to score
 
-        self.spawn_snakes(agents)
-        self.spawn_candies()
+        if snakes is None:
+            self.snakes = []
+            self.spawn_snakes(agents)
+        if candies is None:
+            self.candies = []
+            self.spawn_candies()
+
+        # check snake.id refers to an agent
+        for snake in self.snakes:
+            assert 0 <= snake.id < len(self.agents)
+        # check that snake ids are unique
+        snake_ids = [snake.id for snake in self.snakes]
+        assert len(snake_ids) == len(set(snake_ids))
 
     def spawn_snakes(self, agents):
-        starting_indices = choices(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
+        starting_indices = sample(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
         for i, index in enumerate(starting_indices):
             x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
@@ -65,7 +76,7 @@ class Game:
     def spawn_candies(self):
         indices = self.grid_size[0] * self.grid_size[1]
         percentage = 0.1
-        candy_indices = choices(range(indices), k=round(percentage * indices))
+        candy_indices = sample(range(indices), k=round(percentage * indices))
         for index in candy_indices:
             x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
@@ -83,13 +94,14 @@ class Game:
 
         remove_candies = []
         for snake in self.snakes:
+            move = moves[snake.id]
             for i, candy in enumerate(self.candies):
-                if np.array_equal(candy, snake[0]):
+                if np.array_equal(snake[0] + move, candy):
                     remove_candies.append(i)
-                    snake.move(moves[snake.id], grow=True)
+                    snake.move(move, grow=True)
                     break
             else:
-                snake.move(moves[snake.id])
+                snake.move(move)
         self.candies = [i for j, i in enumerate(self.candies) if j not in remove_candies]
 
         dead = []

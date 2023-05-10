@@ -1,7 +1,8 @@
 import numpy as np
 
+from bots import Random, SimpleEater
 from constants import UP, RIGHT
-from game import Snake
+from game import Snake, Game
 
 
 def test_snake_sequence():
@@ -38,3 +39,58 @@ def test_snake_collide():
     assert snake.collides(np.array([5, 7]))
     assert snake.collides(np.array([6, 7]))
     assert not snake.collides(np.array([6, 6]))
+
+
+def test_game_snake_dies():
+    """
+    A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
+    """
+    grid_size = (3, 3)
+    agents = [Random(id=0, grid_size=grid_size), Random(id=1, grid_size=grid_size)]
+    """
+    |  0 1|
+    |0 0 1|
+    |0 0  |
+    """
+    snakes = [Snake(id=0, positions=np.array([
+        [1, 2],
+        [1, 1],
+        [0, 1],
+        [0, 0],
+        [1, 0],
+    ])), Snake(id=1, positions=np.array([
+        [2, 1],
+        [2, 2],
+    ]))]
+    game = Game(grid_size=grid_size, agents=agents, snakes=snakes)
+    assert not game.finished()
+    game.update()
+    assert not game.finished()
+    game.update()
+    assert game.finished()
+    assert game.scores[0] == 2  # snake 0 dies, so second place
+    assert game.scores[1] == 1
+
+
+def test_game_snake_eats():
+    grid_size = (3, 3)
+    agents = [SimpleEater(id=0, grid_size=grid_size), SimpleEater(id=1, grid_size=grid_size)]
+    """
+    |0    |
+    |0 *  |
+    |  1 1|
+    """
+    snakes = [Snake(id=0, positions=np.array([
+        [0, 1],
+        [0, 2],
+    ])), Snake(id=1, positions=np.array([
+        [2, 0],
+        [1, 0],
+    ]))]
+    candies = [np.array([1, 1])]
+    game = Game(grid_size=grid_size, agents=agents, snakes=snakes, candies=candies)
+    assert not game.finished()
+    game.update()
+    assert not game.finished()
+    assert (len(game.snakes[0]) == 3)
+    assert (len(game.snakes[1]) == 2)

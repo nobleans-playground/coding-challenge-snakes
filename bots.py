@@ -35,6 +35,10 @@ def collides(head, snakes):
 
 
 class Random(Bot):
+    """
+    Pick a random move, given that it is collision free
+    """
+
     @property
     def name(self):
         return 'Random'
@@ -51,6 +55,10 @@ class Random(Bot):
 
 
 class SimpleEater(Bot):
+    """
+    Move towards food, but stay away from the heads of other snakes
+    """
+
     @property
     def name(self):
         return 'Simple Eater'
