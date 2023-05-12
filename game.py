@@ -117,17 +117,29 @@ class Game:
                 self._do_moves([(snake, MOVE_VALUE_TO_DIRECTION[move_value])])
 
     def _do_moves(self, moves):
-        remove_candies = []
+        # first, move the snakes and record which candies have been eaten
+        remove_candies = set()
         for snake, move in moves:
             for i, candy in enumerate(self.candies):
                 if np.array_equal(snake[0] + move, candy):
-                    remove_candies.append(i)
+                    remove_candies.add(i)
                     snake.move(move, grow=True)
                     break
             else:
                 snake.move(move)
         self.candies = [i for j, i in enumerate(self.candies) if j not in remove_candies]
 
+        # respawn new candies
+        occupied_indices = {x * self.grid_size[1] + y for x, y in self.candies}
+        free_indices = set(range(self.grid_size[0] * self.grid_size[1])) - occupied_indices
+        candy_indices = sample(free_indices, k=len(remove_candies))
+        for index in candy_indices:
+            x, y = divmod(index, self.grid_size[1])
+            assert 0 <= x < self.grid_size[0]
+            assert 0 <= y < self.grid_size[1]
+            self.candies.append(np.array([x, y]))
+
+        # figure out which snakes died
         dead = []
         for snake in self.snakes:
             if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
