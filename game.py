@@ -45,9 +45,10 @@ class Snake(Sequence):
 
 class Game:
     def __init__(self, grid_size, agents: List[Bot], snakes: List[Snake] = None, candies: List[np.array] = None):
+        assert isinstance(agents, dict)
         self.grid_size = grid_size
         self.agents = agents
-        self.snakes = snakes  # snake.id refers to the index to the agents array
+        self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from snake.id to score
 
@@ -57,21 +58,23 @@ class Game:
         if candies is None:
             self.candies = []
             self.spawn_candies()
+        assert isinstance(self.snakes, list)
+        assert isinstance(self.candies, list)
 
         # check snake.id refers to an agent
         for snake in self.snakes:
-            assert 0 <= snake.id < len(self.agents)
+            assert snake.id in self.agents
         # check that snake ids are unique
         snake_ids = [snake.id for snake in self.snakes]
         assert len(snake_ids) == len(set(snake_ids))
 
     def spawn_snakes(self, agents):
         starting_indices = sample(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
-        for i, index in enumerate(starting_indices):
+        for i, index in zip(agents.keys(), starting_indices):
             x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
             assert 0 <= y < self.grid_size[1]
-            self.snakes.append(Snake(i, np.array([(x, y)])))
+            self.snakes.append(Snake(agents[i].id, np.array([(x, y)])))
 
     def spawn_candies(self):
         indices = self.grid_size[0] * self.grid_size[1]

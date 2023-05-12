@@ -46,7 +46,7 @@ def test_game_snake_dies():
     A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
     """
     grid_size = (3, 3)
-    agents = [Random(id=0, grid_size=grid_size), Random(id=1, grid_size=grid_size)]
+    agents = {0: Random(id=0, grid_size=grid_size), 1: Random(id=1, grid_size=grid_size)}
     """
     |  0 1|
     |0 0 1|
@@ -74,7 +74,7 @@ def test_game_snake_dies():
 
 def test_game_snake_eats():
     grid_size = (3, 3)
-    agents = [SimpleEater(id=0, grid_size=grid_size), SimpleEater(id=1, grid_size=grid_size)]
+    agents = {0: SimpleEater(id=0, grid_size=grid_size), 1: SimpleEater(id=1, grid_size=grid_size)}
     """
     |0    |
     |0 *  |
