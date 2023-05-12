@@ -1,7 +1,8 @@
 from collections.abc import Sequence
 from copy import deepcopy
+from enum import Enum, auto
 from random import sample
-from typing import List
+from typing import List, Tuple, Dict
 
 import numpy as np
 
@@ -43,11 +44,18 @@ class Snake(Sequence):
         return False
 
 
+class RoundType(Enum):
+    SIMULTANEOUS = auto()
+    TUNS = auto()
+
+
 class Game:
-    def __init__(self, grid_size, agents: List[Bot], snakes: List[Snake] = None, candies: List[np.array] = None):
+    def __init__(self, grid_size, agents: Dict[int, Bot], round_type: RoundType, snakes: List[Snake] = None,
+                 candies: List[np.array] = None):
         assert isinstance(agents, dict)
         self.grid_size = grid_size
         self.agents = agents
+        self.round_type = round_type
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from snake.id to score
@@ -87,17 +95,30 @@ class Game:
             self.candies.append(np.array([x, y]))
 
     def update(self):
-        moves = {}
-        for snake in self.snakes:
-            move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
-                                                                   candies=deepcopy(self.candies))
-            if not isinstance(move_value, Move):
-                raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
-            moves[snake.id] = MOVE_VALUE_TO_DIRECTION[move_value]
+        if self.round_type == RoundType.SIMULTANEOUS:
 
+            moves: List[Tuple[Snake, Move]] = []
+            for snake in self.snakes:
+                move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                                       candies=deepcopy(self.candies))
+                if not isinstance(move_value, Move):
+                    raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
+                moves.append((snake, MOVE_VALUE_TO_DIRECTION[move_value]))
+
+            self._do_moves(moves)
+
+        elif self.round_type == RoundType.TUNS:
+
+            for snake in self.snakes:
+                move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                                       candies=deepcopy(self.candies))
+                if not isinstance(move_value, Move):
+                    raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
+                self._do_moves([(snake, MOVE_VALUE_TO_DIRECTION[move_value])])
+
+    def _do_moves(self, moves):
         remove_candies = []
-        for snake in self.snakes:
-            move = moves[snake.id]
+        for snake, move in moves:
             for i, candy in enumerate(self.candies):
                 if np.array_equal(snake[0] + move, candy):
                     remove_candies.append(i)
@@ -144,6 +165,3 @@ class Game:
 
     def finished(self):
         return len(self.snakes) <= 1
-
-    def on_snake(self, pos):
-        raise NotImplementedError()

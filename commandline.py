@@ -5,8 +5,8 @@ from time import sleep
 
 import numpy as np
 
-from bots import Random, SimpleEater
-from game import Game
+from bots import bots
+from game import Game, RoundType
 
 
 class Printer:
@@ -26,8 +26,8 @@ class Printer:
 
 def main(rate):
     grid_size = (16, 8)
-    agents = [Random(id=0, grid_size=grid_size), SimpleEater(id=1, grid_size=grid_size)]
-    game = Game(grid_size=grid_size, agents=agents)
+    agents = {i: Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots)}
+    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TUNS)
     printer = Printer()
     printer.print(game)
     while True:

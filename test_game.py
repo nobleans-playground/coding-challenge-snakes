@@ -1,8 +1,10 @@
+import random
+
 import numpy as np
 
 from bots import Random, SimpleEater
 from constants import UP, RIGHT
-from game import Snake, Game
+from game import Snake, Game, RoundType
 
 
 def test_snake_sequence():
@@ -42,6 +44,7 @@ def test_snake_collide():
 
 
 def test_game_snake_dies():
+    random.seed(1)
     """
     A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
     """
@@ -62,7 +65,7 @@ def test_game_snake_dies():
         [2, 1],
         [2, 2],
     ]))]
-    game = Game(grid_size=grid_size, agents=agents, snakes=snakes)
+    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.SIMULTANEOUS, snakes=snakes, candies=[])
     assert not game.finished()
     game.update()
     assert not game.finished()
@@ -88,7 +91,7 @@ def test_game_snake_eats():
         [1, 0],
     ]))]
     candies = [np.array([1, 1])]
-    game = Game(grid_size=grid_size, agents=agents, snakes=snakes, candies=candies)
+    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.SIMULTANEOUS, snakes=snakes, candies=candies)
     assert not game.finished()
     game.update()
     assert not game.finished()
