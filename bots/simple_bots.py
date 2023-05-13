@@ -1,25 +1,10 @@
-from abc import ABC, abstractmethod
 from random import choice
 from typing import List
 
 import numpy as np
-
 from constants import Move, MOVE_VALUE_TO_DIRECTION
 
-
-class Bot(ABC):
-    def __init__(self, id, grid_size):
-        self.id = id
-        self.grid_size = grid_size
-
-    @property
-    @abstractmethod
-    def name(self):
-        pass
-
-    @abstractmethod
-    def determine_next_move(self, snakes, candies) -> Move:
-        pass
+from .bot import Bot
 
 
 def is_on_grid(pos, grid_size):
@@ -152,6 +137,3 @@ class SimpleAvoidEater(Bot):
             if np.array_equal(pos, candy):
                 return False
         return True
-
-
-bots = (Random, SimpleEater, SimpleAvoidEater)

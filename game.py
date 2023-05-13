@@ -6,8 +6,8 @@ from typing import List, Tuple, Dict
 
 import numpy as np
 
-from bots import Bot, Move
-from constants import MOVE_VALUE_TO_DIRECTION
+from bots import Bot
+from constants import MOVE_VALUE_TO_DIRECTION, Move
 
 
 class Snake(Sequence):
