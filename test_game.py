@@ -4,7 +4,8 @@ import numpy as np
 
 from bots import Random, SimpleEater
 from constants import UP, RIGHT
-from game import Snake, Game, RoundType
+from game import Game, RoundType
+from game import Snake
 
 
 def test_snake_sequence():

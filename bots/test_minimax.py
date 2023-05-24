@@ -1,6 +1,6 @@
 import numpy as np
 from constants import Move
-from game import Snake
+from snake import Snake
 
 from .minimax import moves_with_scores
 

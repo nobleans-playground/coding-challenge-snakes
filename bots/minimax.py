@@ -4,7 +4,7 @@ from typing import List
 
 import numpy as np
 from constants import MOVE_VALUE_TO_DIRECTION, Move
-from game import Snake
+from snake import Snake
 
 from .bot import Bot
 
