@@ -65,7 +65,7 @@ def deathmatch(games, grid_size):
 
 def single_game(grid_size, agents):
     print()
-    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TUNS)
+    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS)
     while True:
         game.update()
         if game.finished():

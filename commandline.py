@@ -27,7 +27,7 @@ class Printer:
 def main(rate):
     grid_size = (16, 8)
     agents = {i: Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots)}
-    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TUNS)
+    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS)
     printer = Printer()
     printer.print(game)
     while True:

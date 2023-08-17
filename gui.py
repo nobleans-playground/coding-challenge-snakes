@@ -5,16 +5,19 @@ import pygame
 
 from game import Game
 from window import Window
-
+from bots import bots
 
 def main(auto_start, auto_restart, width, height):
     pygame.init()
+    pygame_display = pygame.display.set_mode((width, height))
+    pygame.display.set_caption('Nobleo Snake Battle!')
 
-    window = Window(width, height)
-    game = Game(grid_size=(16, 16), agents=[None, None])
+    grid_size = (16, 16)
+    agents = {i: Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots) if i < 2}
+    game = Game(grid_size=grid_size, agents=agents)
+    window = Window(pygame_display, game, width, height)
 
     while True:
-        # drawGrid()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

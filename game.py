@@ -12,11 +12,11 @@ from snake import Snake
 
 class RoundType(Enum):
     SIMULTANEOUS = auto()
-    TUNS = auto()
+    TURNS = auto()
 
 
 class Game:
-    def __init__(self, grid_size, agents: Dict[int, Bot], round_type: RoundType, snakes: List[Snake] = None,
+    def __init__(self, grid_size, agents: Dict[int, Bot], round_type: RoundType = RoundType.TURNS, snakes: List[Snake] = None,
                  candies: List[np.array] = None):
         assert isinstance(agents, dict)
         self.grid_size = grid_size
@@ -73,7 +73,7 @@ class Game:
 
             self._do_moves(moves)
 
-        elif self.round_type == RoundType.TUNS:
+        elif self.round_type == RoundType.TURNS:
 
             for snake in self.snakes:
                 move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
