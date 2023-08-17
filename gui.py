@@ -6,6 +6,7 @@ import pygame
 from game import Game
 from window import Window
 from bots import bots
+import time
 
 def main(auto_start, auto_restart, width, height):
     pygame.init()
@@ -27,6 +28,7 @@ def main(auto_start, auto_restart, width, height):
         window.update()
 
         pygame.display.update()
+        time.sleep(0.1)
 
 
 if __name__ == '__main__':
