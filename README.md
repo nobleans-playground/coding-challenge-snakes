@@ -20,3 +20,26 @@ Other rules brainstormed:
 - you can discard parts of your body to gain speed
 - you have to eat an apple every x game steps, or your snake will die from hunger
 - faster movement for longer snakes
+
+## Bot development
+
+To write a bot, you'll have to implement the Bot interface.
+After that, make sure it's included in the bots array.
+
+### Executables
+
+#### commandline.py
+
+Battle 2 snakes against each other in the commandline.
+
+#### tournament.py
+
+Battle all bots against eachother in a tournament. It'll write the results to a csv file.
+
+#### gui.py
+
+Battle bots against eachother in a graphical user interface.
+
+#### elo.py
+
+From the tournament results csv you can calculate your bots elo rating.
