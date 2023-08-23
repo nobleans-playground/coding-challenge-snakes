@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
+import time
 from argparse import ArgumentParser
 
 import pygame
 
-from game import Game
-from window import Window
-from bots import bots
-import time
+from snakes.bots import bots
+from snakes.game import Game
+from snakes.window import Window
+
 
 def main(auto_start, auto_restart, width, height):
     pygame.init()

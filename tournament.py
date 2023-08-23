@@ -6,8 +6,8 @@ from tempfile import NamedTemporaryFile
 
 import pandas
 
-from bots import bots
-from game import Game, RoundType
+from snakes.bots import bots
+from snakes.game import Game, RoundType
 
 
 def main(match_type, games):

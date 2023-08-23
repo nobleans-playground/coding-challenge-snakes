@@ -3,10 +3,10 @@ from random import choice
 from typing import List
 
 import numpy as np
-from constants import MOVE_VALUE_TO_DIRECTION, Move
-from snake import Snake
 
 from .bot import Bot
+from ..constants import MOVE_VALUE_TO_DIRECTION, Move
+from ..snake import Snake
 
 
 def moves_with_scores(grid_size, player, opponent, candies, depth):

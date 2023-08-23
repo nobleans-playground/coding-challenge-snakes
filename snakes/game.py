@@ -5,9 +5,9 @@ from typing import List, Tuple, Dict
 
 import numpy as np
 
-from bots import Bot
-from constants import MOVE_VALUE_TO_DIRECTION, Move
-from snake import Snake
+from .bots import Bot
+from .constants import MOVE_VALUE_TO_DIRECTION, Move
+from .snake import Snake
 
 
 class RoundType(Enum):
@@ -26,7 +26,7 @@ class Game:
         self.round_type = round_type
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
-        self.scores = {}  # map from snake.id to score
+        self.scores = {}  # map from ..snake.id to score
 
         if snakes is None:
             self.snakes = []

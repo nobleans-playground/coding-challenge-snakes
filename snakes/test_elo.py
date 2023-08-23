@@ -3,7 +3,7 @@ from statistics import mean
 
 from pytest import approx
 
-from elo import estimate_elo, read_csv
+from .elo import estimate_elo, read_csv
 
 
 def test_1v1():

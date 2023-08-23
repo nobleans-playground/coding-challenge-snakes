@@ -1,5 +1,6 @@
-import pygame
 import math
+
+import pygame
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -27,15 +28,15 @@ COLOURS = [
     (128, 128, 128),
 ]
 
+
 class Window:
     def __init__(self, window, game, width, height):
         self.game = game
         self.window = window
-        
+
         # The scoreboard is where all the scores will be printed
         self.scoreboard = pygame.Surface(self.window.get_size())
         self.font = pygame.font.SysFont(None, 24)
-
 
         # Create some constants (assuming area is square)
         self.tile_size = math.floor(min(self.window.get_size()) / self.game.grid_size[1])
@@ -51,15 +52,14 @@ class Window:
         for index, snake in enumerate(self.game.snakes):
             for position in snake:
                 pygame.draw.rect(self.window, COLOURS[index], (
-                    (position[0] * self.tile_size) + self.body_tile_offset, 
-                    (position[1] * self.tile_size) + self.body_tile_offset, 
+                    (position[0] * self.tile_size) + self.body_tile_offset,
+                    (position[1] * self.tile_size) + self.body_tile_offset,
                     self.body_size, self.body_size
                 ))
 
         # Draw candies
         for candy in self.game.candies:
-                pygame.draw.circle(self.window, COLOURS[-1], (
-                    (candy[0] + 0.5) * self.tile_size, 
-                    (candy[1] + 0.5) * self.tile_size, 
-                ), self.candy_radius)
-
+            pygame.draw.circle(self.window, COLOURS[-1], (
+                (candy[0] + 0.5) * self.tile_size,
+                (candy[1] + 0.5) * self.tile_size,
+            ), self.candy_radius)

@@ -5,8 +5,8 @@ from time import sleep
 
 import numpy as np
 
-from bots import bots
-from game import Game, RoundType
+from snakes.bots import bots
+from snakes.game import Game, RoundType
 
 
 class Printer:

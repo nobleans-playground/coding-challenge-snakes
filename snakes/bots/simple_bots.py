@@ -2,9 +2,9 @@ from random import choice
 from typing import List
 
 import numpy as np
-from constants import Move, MOVE_VALUE_TO_DIRECTION
 
 from .bot import Bot
+from ..constants import Move, MOVE_VALUE_TO_DIRECTION
 
 
 def is_on_grid(pos, grid_size):
