@@ -42,7 +42,7 @@ class Window:
         self.tile_size = math.floor(min(self.window.get_size()) / self.game.grid_size[1])
         self.body_size = math.floor(self.tile_size * 0.9)
         self.body_tile_offset = (self.tile_size - self.body_size) / 2
-        self.candy_radius = self.tile_size * 0.6 / 2
+        self.candy_radius = int(self.tile_size * 0.6 / 2)
 
     def update(self):
         BLACK = (0, 0, 0)
@@ -60,6 +60,6 @@ class Window:
         # Draw candies
         for candy in self.game.candies:
             pygame.draw.circle(self.window, COLOURS[-1], (
-                (candy[0] + 0.5) * self.tile_size,
-                (candy[1] + 0.5) * self.tile_size,
+                int((candy[0] + 0.5) * self.tile_size),
+                int((candy[1] + 0.5) * self.tile_size),
             ), self.candy_radius)
