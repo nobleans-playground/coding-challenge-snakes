@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from .bot import Bot
+from ..bot import Bot
 from ..constants import Move, MOVE_VALUE_TO_DIRECTION
 
 

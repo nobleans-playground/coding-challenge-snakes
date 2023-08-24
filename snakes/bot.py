@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from ..constants import Move
+from .constants import Move
 
 
 class Bot(ABC):
