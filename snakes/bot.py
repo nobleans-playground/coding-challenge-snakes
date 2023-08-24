@@ -12,7 +12,7 @@ class Bot(ABC):
     To implement a Bot, you'll have to inherit from this class and implement all abstract methods
     """
 
-    def __init__(self, id, grid_size):
+    def __init__(self, id: int, grid_size: tuple[int, int]):
         """
         On initialization, this method is called. Please remember your id to find your snake on the field
 
