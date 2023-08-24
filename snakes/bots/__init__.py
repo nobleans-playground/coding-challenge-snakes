@@ -1,5 +1,4 @@
 from .example.bot import SimpleEater
-from .minimax import MiniMax
-from .simple_bots import Random, SimpleAvoidEater
+from .random import Random
 
-bots = (Random, SimpleEater, SimpleAvoidEater, MiniMax)
+bots = (Random, SimpleEater)
