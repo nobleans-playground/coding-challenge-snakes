@@ -26,15 +26,16 @@ class Printer:
 
 def main(snake1, snake2, rate):
     grid_size = (16, 8)
-    agents = {i: Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots)}
+    agents = [Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots)]
 
-    name_matches = {i: levenshtein_ratio(agent.name, snake1) for i, agent in agents.items()}
-    agent1 = max(name_matches.items(), key=lambda name_match: name_match[1])[0]
+    name_matches = [levenshtein_ratio(agent.name, snake1) for agent in agents]
+    agent1 = np.argmax(name_matches)
 
-    name_matches = {i: levenshtein_ratio(agent.name, snake2) for i, agent in agents.items()}
-    agent2 = max(name_matches.items(), key=lambda name_match: name_match[1])[0]
+    name_matches = [levenshtein_ratio(agent.name, snake2) for agent in agents]
+    agent2 = np.argmax(name_matches)
 
-    agents = {i: agent for i, agent in agents.items() if i == agent1 or i == agent2}
+    # One agent could be up against itself, so we'll need to give new ids
+    agents = {1: bots[agent1](1, grid_size=grid_size), 2: bots[agent2](2, grid_size=grid_size)}
 
     game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS)
     printer = Printer()
