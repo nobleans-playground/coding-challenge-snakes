@@ -49,9 +49,9 @@ class Window:
         self.window.fill(BLACK)
 
         # Draw snake
-        for index, snake in enumerate(self.game.snakes):
+        for snake in self.game.snakes:
             for position in snake:
-                pygame.draw.rect(self.window, COLOURS[index], (
+                pygame.draw.rect(self.window, COLOURS[snake.id], (
                     (position[0] * self.tile_size) + self.body_tile_offset,
                     (position[1] * self.tile_size) + self.body_tile_offset,
                     self.body_size, self.body_size
