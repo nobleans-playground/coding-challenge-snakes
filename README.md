@@ -1,4 +1,4 @@
-# Coding Challange: Multiplayer Snake
+# Coding Challange: Multiplayer Snake [![Python application](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml)
 
 ## Game rule ideas:
 
