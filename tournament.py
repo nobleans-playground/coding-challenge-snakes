@@ -11,23 +11,19 @@ from snakes.game import Game, RoundType
 
 
 def main(games):
-    grid_size = (16, 8)
-    round_robin(games, grid_size=grid_size)
-
-
-def round_robin(games, grid_size):
     # write to a temporary file so that we have partial scores in case of a crash
     with NamedTemporaryFile('w+', suffix='.csv', delete=False) as f:
         print(f'writing game results to {f.name}')
         writer = csv.writer(f)
         # write bot names
-        writer.writerow(Bot(id=i, grid_size=grid_size).name for i, Bot in enumerate(bots))
+        names = (Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots))
+        writer.writerow(names)
         writer = csv.DictWriter(f, fieldnames=range(len(bots)))
 
         for _ in range(games):
             for a, b in combinations(range(len(bots)), r=2):
-                agents = {a: bots[a](id=a, grid_size=grid_size), b: bots[b](id=b, grid_size=grid_size)}
-                results = single_game(grid_size, agents)
+                agents = {a: bots[a], b: bots[b]}
+                results = single_game(agents)
                 writer.writerow(results)
 
         f.seek(0)
@@ -36,9 +32,9 @@ def round_robin(games, grid_size):
         print(f'\ngame were written to {f.name}')
 
 
-def single_game(grid_size, agents):
+def single_game(agents):
     print()
-    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS)
+    game = Game(agents=agents, round_type=RoundType.TURNS)
     while True:
         game.update()
         if game.finished():

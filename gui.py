@@ -14,9 +14,8 @@ def main(auto_start, auto_restart, width, height):
     pygame_display = pygame.display.set_mode((width, height))
     pygame.display.set_caption('Nobleo Snake Battle!')
 
-    grid_size = (16, 16)
-    agents = {i: Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots) if i < 2}
-    game = Game(grid_size=grid_size, agents=agents)
+    agents = {i: Agent for i, Agent in enumerate(bots)}
+    game = Game(agents=agents)
     window = Window(pygame_display, game, width, height)
 
     while True:

@@ -25,19 +25,18 @@ class Printer:
 
 
 def main(snake1, snake2, rate):
-    grid_size = (16, 8)
-    agents = [Bot(id=i, grid_size=grid_size) for i, Bot in enumerate(bots)]
+    names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
 
-    name_matches = [levenshtein_ratio(agent.name, snake1) for agent in agents]
+    name_matches = [levenshtein_ratio(name, snake1) for name in names]
     agent1 = np.argmax(name_matches)
 
-    name_matches = [levenshtein_ratio(agent.name, snake2) for agent in agents]
+    name_matches = [levenshtein_ratio(name, snake2) for name in names]
     agent2 = np.argmax(name_matches)
 
     # One agent could be up against itself, so we'll need to give new ids
-    agents = {1: bots[agent1](1, grid_size=grid_size), 2: bots[agent2](2, grid_size=grid_size)}
+    agents = {agent1: bots[agent1], agent2: bots[agent2]}
 
-    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS)
+    game = Game(agents=agents, round_type=RoundType.TURNS)
     printer = Printer()
     printer.print(game)
     while True:

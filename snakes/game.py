@@ -1,11 +1,10 @@
 from copy import deepcopy
 from enum import Enum, auto
 from random import sample
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Type, Dict
 
 import numpy as np
 
-from .bot import Bot
 from .constants import MOVE_VALUE_TO_DIRECTION, Move
 from .snake import Snake
 
@@ -16,13 +15,15 @@ class RoundType(Enum):
 
 
 class Game:
-    def __init__(self, grid_size: Tuple[int, int], agents: Dict[int, Bot],
+    def __init__(self, agents: Dict[int, Type],
+                 grid_size: Tuple[int, int] = (16, 16),
                  round_type: RoundType = RoundType.TURNS,
                  snakes: List[Snake] = None,
                  candies: List[np.array] = None):
         assert isinstance(agents, dict)
+        assert isinstance(grid_size, Tuple)
         self.grid_size = grid_size
-        self.agents = agents
+        self.agents = {i: Agent(id=i, grid_size=grid_size) for i, Agent in agents.items()}
         self.round_type = round_type
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
@@ -30,7 +31,7 @@ class Game:
 
         if snakes is None:
             self.snakes = []
-            self.spawn_snakes(agents)
+            self.spawn_snakes(self.agents)
         if candies is None:
             self.candies = []
             self.spawn_candies()

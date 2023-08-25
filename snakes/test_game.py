@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from .bots import Random, SimpleEater
+from .bots import Random
 from .constants import UP, RIGHT
 from .game import Game, RoundType, Snake
 
@@ -49,7 +49,6 @@ def test_game_snake_dies():
     A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
     """
     grid_size = (3, 3)
-    agents = {0: Random(id=0, grid_size=grid_size), 1: Random(id=1, grid_size=grid_size)}
     """
     |  0 1|
     |0 0 1|
@@ -65,7 +64,8 @@ def test_game_snake_dies():
         [2, 1],
         [2, 2],
     ]))]
-    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.SIMULTANEOUS, snakes=snakes, candies=[])
+    game = Game(grid_size=grid_size, agents={0: Random, 1: Random}, round_type=RoundType.SIMULTANEOUS, snakes=snakes,
+                candies=[])
     assert not game.finished()
     game.update()
     assert not game.finished()
@@ -77,7 +77,6 @@ def test_game_snake_dies():
 
 def test_game_snake_eats():
     grid_size = (3, 3)
-    agents = {0: SimpleEater(id=0, grid_size=grid_size), 1: SimpleEater(id=1, grid_size=grid_size)}
     """
     |0    |
     |0 *  |
@@ -91,7 +90,8 @@ def test_game_snake_eats():
         [1, 0],
     ]))]
     candies = [np.array([1, 1])]
-    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.SIMULTANEOUS, snakes=snakes, candies=candies)
+    game = Game(grid_size=grid_size, agents={0: Random, 1: Random}, round_type=RoundType.SIMULTANEOUS, snakes=snakes,
+                candies=candies)
     assert not game.finished()
     game.update()
     assert not game.finished()
