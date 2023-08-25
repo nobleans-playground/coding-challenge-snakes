@@ -2,6 +2,7 @@ import random
 
 import numpy as np
 
+from .bot import Bot
 from .bots import Random
 from .constants import UP, RIGHT
 from .game import Game, RoundType, Snake
@@ -97,3 +98,81 @@ def test_game_snake_eats():
     assert not game.finished()
     assert (len(game.snakes[0]) == 3)
     assert (len(game.snakes[1]) == 2)
+
+
+def test_game_snake_throws():
+    class BotThatThrows(Bot):
+        @property
+        def name(self):
+            return 'Random'
+
+        @property
+        def contributor(self):
+            return 'Nobleo'
+
+        def determine_next_move(self, snakes, candies):
+            raise NotImplementedError()
+
+    """
+    A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
+    """
+    grid_size = (3, 3)
+    """
+    |    1|
+    |0   1|
+    |0    |
+    """
+    snakes = [Snake(id=0, positions=np.array([
+        [0, 0],
+        [0, 1],
+    ])), Snake(id=1, positions=np.array([
+        [2, 2],
+        [2, 1],
+    ]))]
+    game = Game(grid_size=grid_size, agents={0: BotThatThrows, 1: Random}, round_type=RoundType.SIMULTANEOUS,
+                snakes=snakes,
+                candies=[])
+    assert not game.finished()
+    game.update()
+    assert game.finished()
+    assert game.scores[0] == 2  # snake 0 dies, so second place
+    assert game.scores[1] == 1
+
+
+def test_game_snake_returns_invalid_move():
+    class BotThatThrows(Bot):
+        @property
+        def name(self):
+            return 'Random'
+
+        @property
+        def contributor(self):
+            return 'Nobleo'
+
+        def determine_next_move(self, snakes, candies):
+            return 'INVALID_MOVE'
+
+    """
+    A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
+    """
+    grid_size = (3, 3)
+    """
+    |    1|
+    |0   1|
+    |0    |
+    """
+    snakes = [Snake(id=0, positions=np.array([
+        [0, 0],
+        [0, 1],
+    ])), Snake(id=1, positions=np.array([
+        [2, 2],
+        [2, 1],
+    ]))]
+    game = Game(grid_size=grid_size, agents={0: BotThatThrows, 1: Random}, round_type=RoundType.SIMULTANEOUS,
+                snakes=snakes,
+                candies=[])
+    assert not game.finished()
+    game.update()
+    assert game.finished()
+    assert game.scores[0] == 2  # snake 0 dies, so second place
+    assert game.scores[1] == 1

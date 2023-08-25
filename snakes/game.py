@@ -1,6 +1,7 @@
 from copy import deepcopy
 from enum import Enum, auto
 from random import sample
+from traceback import print_exception
 from typing import List, Tuple, Type, Dict
 
 import numpy as np
@@ -69,27 +70,32 @@ class Game:
 
             moves: List[Tuple[Snake, Move]] = []
             for snake in self.snakes:
-                move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
-                                                                       candies=deepcopy(self.candies))
-                if not isinstance(move_value, Move):
-                    raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
-                moves.append((snake, MOVE_VALUE_TO_DIRECTION[move_value]))
+                try:
+                    move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                                           candies=deepcopy(self.candies))
+                except Exception as e:
+                    move_value = e
+                moves.append((snake, move_value))
 
             self._do_moves(moves)
 
         elif self.round_type == RoundType.TURNS:
 
             for snake in self.snakes:
-                move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
-                                                                       candies=deepcopy(self.candies))
-                if not isinstance(move_value, Move):
-                    raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
-                self._do_moves([(snake, MOVE_VALUE_TO_DIRECTION[move_value])])
+                try:
+                    move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                                           candies=deepcopy(self.candies))
+                except Exception as e:
+                    move_value = e
+                self._do_moves([(snake, move_value)])
 
-    def _do_moves(self, moves: List[Tuple[Snake, np.array]]):
+    def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
         remove_candies = set()
-        for snake, move in moves:
+        for snake, move_value in moves:
+            if not isinstance(move_value, Move):
+                continue  # skip bots that did an invalid move
+            move = MOVE_VALUE_TO_DIRECTION[move_value]
             for i, candy in enumerate(self.candies):
                 if np.array_equal(snake[0] + move, candy):
                     remove_candies.add(i)
@@ -111,7 +117,15 @@ class Game:
 
         # figure out which snakes died
         dead = []
-        for snake in (m[0] for m in moves):  # we only need to check the snakes that have moved
+        for snake, move_value in moves:  # we only need to check the snakes that have moved
+            if not isinstance(move_value, Move):
+                if isinstance(move_value, Exception):
+                    print(f'agent {snake.id} did not return an instance of Move, it returned an exception:')
+                    print_exception(type(move_value), move_value, move_value.__traceback__)
+                else:
+                    print(f'agent {snake.id} did not return an instance of Move, it returned a {move_value!r}')
+                dead.append(snake)
+                continue
             if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
                 print(f'snake {snake.id} went out-of-bounds')
                 dead.append(snake)
