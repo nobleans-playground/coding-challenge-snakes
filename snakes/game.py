@@ -47,11 +47,12 @@ class Game:
 
     def spawn_snakes(self, agents):
         starting_indices = sample(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
+        starting_length = 2  # should be > 1 to prevent snakes from going backwards
         for i, index in zip(agents.keys(), starting_indices):
             x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
             assert 0 <= y < self.grid_size[1]
-            self.snakes.append(Snake(agents[i].id, np.array([(x, y)])))
+            self.snakes.append(Snake(agents[i].id, np.tile([(x, y)], (starting_length, 1))))
 
     def spawn_candies(self):
         indices = self.grid_size[0] * self.grid_size[1]
@@ -85,7 +86,7 @@ class Game:
                     raise TypeError(f'agent {snake.id} did not return a Move, it returned a {move_value}')
                 self._do_moves([(snake, MOVE_VALUE_TO_DIRECTION[move_value])])
 
-    def _do_moves(self, moves):
+    def _do_moves(self, moves: List[Tuple[Snake, np.array]]):
         # first, move the snakes and record which candies have been eaten
         remove_candies = set()
         for snake, move in moves:
@@ -110,7 +111,7 @@ class Game:
 
         # figure out which snakes died
         dead = []
-        for snake in self.snakes:
+        for snake in (m[0] for m in moves):  # we only need to check the snakes that have moved
             if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
                 print(f'snake {snake.id} went out-of-bounds')
                 dead.append(snake)
