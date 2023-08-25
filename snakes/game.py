@@ -100,7 +100,7 @@ class Game:
         # respawn new candies
         occupied_indices = {x * self.grid_size[1] + y for x, y in self.candies}
         free_indices = set(range(self.grid_size[0] * self.grid_size[1])) - occupied_indices
-        candy_indices = sample(free_indices, k=len(remove_candies))
+        candy_indices = sample(sorted(free_indices), k=len(remove_candies))
         for index in candy_indices:
             x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
