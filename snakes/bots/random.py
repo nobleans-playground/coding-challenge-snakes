@@ -27,6 +27,10 @@ class Random(Bot):
     def name(self):
         return 'Random'
 
+    @property
+    def contributor(self):
+        return 'Nobleo'
+
     def determine_next_move(self, snakes, candies) -> Move:
         snake = next(s for s in snakes if s.id == self.id)
         collision_free = [move for move, direction in MOVE_VALUE_TO_DIRECTION.items()

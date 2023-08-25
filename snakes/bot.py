@@ -30,6 +30,14 @@ class Bot(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def contributor(self):
+        """
+        Your own name
+        """
+        pass
+
     @abstractmethod
     def determine_next_move(self, snakes: List[Snake], candies: List[np.array]) -> Move:
         """
