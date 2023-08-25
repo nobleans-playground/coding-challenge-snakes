@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -12,7 +12,7 @@ class Bot(ABC):
     To implement a Bot, you'll have to inherit from this class and implement all abstract methods
     """
 
-    def __init__(self, id: int, grid_size: tuple[int, int]):
+    def __init__(self, id: int, grid_size: Tuple[int, int]):
         """
         On initialization, this method is called. Please remember your id to find your snake on the field
 

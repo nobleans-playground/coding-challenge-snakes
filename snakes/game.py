@@ -16,7 +16,7 @@ class RoundType(Enum):
 
 
 class Game:
-    def __init__(self, grid_size, agents: Dict[int, Bot],
+    def __init__(self, grid_size: Tuple[int, int], agents: Dict[int, Bot],
                  round_type: RoundType = RoundType.TURNS,
                  snakes: List[Snake] = None,
                  candies: List[np.array] = None):
