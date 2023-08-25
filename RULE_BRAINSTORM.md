@@ -8,6 +8,9 @@ We want to promote getting longer and killing other snakes. Which rule should we
 - time limit for calculating the moves? 0.2 max limit per move on average?
 - aim for max 5 minutes
 - 0.2 second calculation time, 5 steps/second,
+- if you are double the length of your opponent, you can eat the opponent
+- if you are longer than 10, you can start eating the opponent
+- your score is length + 10 bonus if you survived the longest
 
 Other rules brainstormed:
 
