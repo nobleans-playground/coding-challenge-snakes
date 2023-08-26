@@ -1,6 +1,6 @@
 import math
 import pygame
-
+from snakes.game import GameState
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -31,6 +31,7 @@ COLOURS = [
 
 TEAM_A = (230, 25, 75)
 TEAM_B = (60, 180, 75)
+BUTTON = (51,51,51)
 
 class Window:
     def __init__(self, window, game, width, height):
@@ -41,7 +42,6 @@ class Window:
 
         # Some GUI stuff
         pygame.font.init()
-        self.font = pygame.font.SysFont(None, 24)
         self.buttons = []
 
         # The scoreboard is where all the scores will be printed
@@ -55,20 +55,39 @@ class Window:
         self.candy_radius = int(self.tile_size * 0.6 / 2)
 
     class Button:
-        def __init__(self, surface, **kwargs):
+        def __init__(self, parent, **kwargs):
+            self.parent = parent
+            
             def extract(key):
                 return kwargs[key] or RuntimeError(f"No `{key}` given to button")
             self.position = extract("position")
             self.width = extract("width")
             self.height = extract("height")
             self.text = extract("text")
-            self.callback = extract("callback")         
+            self.callback = extract("callback")
 
-            text_object = self.font.render(self.text, True, self.WHITE + (50,))
-            self.scoreboard.blit(text_object, self.position)
+            self.font = pygame.font.SysFont(None, self.height)
+
+            pygame.draw.rect(self.parent.window, BUTTON, (*self.position, self.width, self.height))
+
+            text_object = self.parent.font.render(self.text, True, WHITE)
+            text_size = self.parent.font.size(self.text)
+            self.parent.window.blit(text_object, (
+                self.position[0] + self.width / 2 - text_size[0] / 2,
+                self.position[1] + self.height / 2 - text_size[1] / 2
+            ))
+        
+        def is_at_position(self, position):
+            return position[0] >= self.position[0] and position[0] <= self.position[0] + self.width and \
+                    position[1] >= self.position[1] and position[1] <= self.position[1] + self.height
+
+    def handle_click(self, position):
+        for button in self.buttons:
+            if button.is_at_position(position):
+                button.callback()
 
     def button(self, **kwargs):
-        self.buttons += [self.Button(kwargs)]
+        self.buttons += [self.Button(self, **kwargs)]
 
     def update(self):
         self.window.fill(BLACK)
@@ -97,6 +116,7 @@ class Window:
         left = self.height + border
         right = self.width - border
         top = border
+        bottom = self.height - border
 
         player_emblem_height = 60
 
@@ -119,3 +139,35 @@ class Window:
             self.window.blit(text_object, (right - border - text_size[0], top + border))
 
             top += player_emblem_height + border
+
+        button_height = 30
+        button_width = (self.width - self.height - 5 * border) // 3
+        button_top = bottom - button_height
+        button_left = left
+
+        # Button panel
+        self.button(
+            text="Run",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda : self.game.set_state(GameState.RUNNING)
+        )
+
+        button_left += button_width + 2 * border
+        self.button(
+            text="Step",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda : self.game.set_state(GameState.STEP)
+        )
+
+        button_left += button_width + 2 * border
+        self.button(
+            text="Stop",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda : self.game.set_state(GameState.IDLE)
+        )

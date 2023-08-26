@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import pygame
 
 from snakes.bots import bots
-from snakes.game import Game
+from snakes.game import Game, GameState
 from snakes.window import Window
 
 
@@ -20,11 +20,13 @@ def main(auto_start, auto_restart, width, height):
 
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                window.handle_click(pygame.mouse.get_pos())
+            elif event.type == pygame.QUIT:
                 pygame.quit()
                 return
 
-        if not game.finished():
+        if game.should_update():
             game.update()
         window.update()
 

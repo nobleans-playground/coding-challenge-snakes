@@ -17,6 +17,8 @@ class RoundType(Enum):
 class GameState(Enum):
     RUNNING = auto()
     FINISHED = auto()
+    IDLE = auto()
+    STEP = auto()
 
 class Game:
     def __init__(self, agents: Dict[int, Type],
@@ -94,6 +96,9 @@ class Game:
                     move_value = e
                 self._do_moves([(snake, move_value)])
 
+        if self.state == GameState.STEP:
+            self.state = GameState.IDLE
+
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
         remove_candies = set()
@@ -167,5 +172,11 @@ class Game:
             for snake in self.snakes:
                 self.scores[snake.id] = 1
 
+    def should_update(self):
+        return self.state == GameState.RUNNING or self.state == GameState.STEP
+
     def finished(self):
         return self.state == GameState.FINISHED
+
+    def set_state(self, state : GameState):
+        self.state = state
