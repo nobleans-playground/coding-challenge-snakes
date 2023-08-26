@@ -14,6 +14,9 @@ class RoundType(Enum):
     SIMULTANEOUS = auto()
     TURNS = auto()
 
+class GameState(Enum):
+    RUNNING = auto()
+    FINISHED = auto()
 
 class Game:
     def __init__(self, agents: Dict[int, Type],
@@ -29,6 +32,8 @@ class Game:
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from ..snake.id to score
+
+        self.state = GameState.RUNNING
 
         if snakes is None:
             self.snakes = []
@@ -147,9 +152,12 @@ class Game:
                     print(f'snake {snake.id} collided with snake {other_snake.id}')
                     dead.append(snake)
                     break
+        
+        # for snake in dead:
+            # self.snakes.remove(snake)
+        if len(dead) > 0:
+            self.state = GameState.FINISHED
 
-        for snake in dead:
-            self.snakes.remove(snake)
         rank = len(self.snakes) + 1
         for snake in dead:
             print(f'snake {snake.id} died and got the {rank} place')
@@ -160,4 +168,4 @@ class Game:
                 self.scores[snake.id] = 1
 
     def finished(self):
-        return len(self.snakes) <= 1
+        return self.state == GameState.FINISHED

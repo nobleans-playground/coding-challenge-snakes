@@ -1,7 +1,8 @@
 import math
-
 import pygame
 
+
+BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
@@ -28,11 +29,20 @@ COLOURS = [
     (128, 128, 128),
 ]
 
+TEAM_A = (230, 25, 75)
+TEAM_B = (60, 180, 75)
 
 class Window:
     def __init__(self, window, game, width, height):
         self.game = game
         self.window = window
+        self.width = width
+        self.height = height
+
+        # Some GUI stuff
+        pygame.font.init()
+        self.font = pygame.font.SysFont(None, 24)
+        self.buttons = []
 
         # The scoreboard is where all the scores will be printed
         self.scoreboard = pygame.Surface(self.window.get_size())
@@ -44,9 +54,26 @@ class Window:
         self.body_tile_offset = (self.tile_size - self.body_size) / 2
         self.candy_radius = int(self.tile_size * 0.6 / 2)
 
+    class Button:
+        def __init__(self, surface, **kwargs):
+            def extract(key):
+                return kwargs[key] or RuntimeError(f"No `{key}` given to button")
+            self.position = extract("position")
+            self.width = extract("width")
+            self.height = extract("height")
+            self.text = extract("text")
+            self.callback = extract("callback")         
+
+            text_object = self.font.render(self.text, True, self.WHITE + (50,))
+            self.scoreboard.blit(text_object, self.position)
+
+    def button(self, **kwargs):
+        self.buttons += [self.Button(kwargs)]
+
     def update(self):
-        BLACK = (0, 0, 0)
         self.window.fill(BLACK)
+
+        self.update_information()
 
         # Draw snake
         for snake in self.game.snakes:
@@ -63,3 +90,32 @@ class Window:
                 int((candy[0] + 0.5) * self.tile_size),
                 int((candy[1] + 0.5) * self.tile_size),
             ), self.candy_radius)
+
+    def update_information(self):
+        # Draw the information part
+        border = 5
+        left = self.height + border
+        right = self.width - border
+        top = border
+
+        player_emblem_height = 60
+
+        for index, colour in enumerate([TEAM_A, TEAM_B]):
+            if index >= len(self.game.snakes): continue
+
+            pygame.draw.rect(self.window, colour, (left, top, right - left, player_emblem_height))
+
+            # Draw Name
+            text_to_render = self.game.agents[index].name
+            font = pygame.font.SysFont(None, 32)
+            text_object = font.render(text_to_render, True, WHITE)
+            self.window.blit(text_object, (left + border, top + border))
+
+            # Draw score
+            font = pygame.font.SysFont(None, 68)
+            text_to_render = f"{len(self.game.snakes[index])}"
+            text_size = font.size(text_to_render)
+            text_object = font.render(text_to_render, True, WHITE)
+            self.window.blit(text_object, (right - border - text_size[0], top + border))
+
+            top += player_emblem_height + border
