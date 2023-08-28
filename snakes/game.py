@@ -90,14 +90,20 @@ class Game:
         elif self.round_type == RoundType.TURNS:
 
             snake = next(s for s in self.snakes if s.id == self.turn)
-            print(f'MOVE SNAKE {snake.id}')
             try:
                 move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
                                                                        candies=deepcopy(self.candies))
             except Exception as e:
                 move_value = e
             self._do_moves([(snake, move_value)])
-            self.turn = self.turn + 1 % len(self.agents)
+
+            while True:
+                # increment turn
+                self.turn = (self.turn + 1) % len(self.agents)
+                snake_id = list(self.agents.keys())[self.turn]
+                # skip agents that are dead
+                if len([True for s in self.snakes if s.id == snake_id]):
+                    break
 
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
@@ -176,7 +182,11 @@ class Game:
                 print(f'snake {snake.id} survived and got {bonus} bonus points for a final score of {score}')
                 self.scores[snake.id] = score
 
-    def rank(self):
+    def possible_scores(self):
+        """
+        Return for each agent the score with the lowest possible bonus added
+        :return: Tuple of score, agent_id
+        """
         possible_scores = []  # type: List[Tuple[int, int]]
         for i in self.agents:
             if i in self.scores:
@@ -188,6 +198,10 @@ class Game:
                 score = calculate_final_score(len(snake), lowest_rank)
                 possible_scores.append((score, i))
         possible_scores.sort(reverse=True)
+        return possible_scores
+
+    def rank(self):
+        possible_scores = self.possible_scores()
 
         rank = 1
         ranking = {}
