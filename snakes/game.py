@@ -1,5 +1,6 @@
 from copy import deepcopy
 from enum import Enum, auto
+from math import floor
 from random import sample
 from traceback import print_exception
 from typing import List, Tuple, Type, Dict
@@ -17,8 +18,7 @@ class RoundType(Enum):
 
 def calculate_final_score(length, rank):
     multiplier = 1 / rank
-    bonus = length * multiplier
-    return length + bonus
+    return floor(length * 2 * multiplier)
 
 
 class Game:
@@ -192,7 +192,6 @@ class Game:
             if i in self.scores:
                 possible_scores.append((self.scores[i], i))
             else:
-                print(i, self.snakes)
                 snake = next(s for s in self.snakes if s.id == i)
                 lowest_rank = len(self.snakes)
                 score = calculate_final_score(len(snake), lowest_rank)
