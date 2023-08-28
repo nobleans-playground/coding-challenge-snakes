@@ -78,11 +78,7 @@ class Game:
             moves: List[Tuple[Snake, Move]] = []
 
             for snake in self.snakes:
-                try:
-                    move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
-                                                                           candies=deepcopy(self.candies))
-                except Exception as e:
-                    move_value = e
+                move_value = self._get_agents_move(snake.id)
                 moves.append((snake, move_value))
 
             self._do_moves(moves)
@@ -90,11 +86,7 @@ class Game:
         elif self.round_type == RoundType.TURNS:
 
             snake = next(s for s in self.snakes if s.id == self.turn)
-            try:
-                move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
-                                                                       candies=deepcopy(self.candies))
-            except Exception as e:
-                move_value = e
+            move_value = self._get_agents_move(snake.id)
             self._do_moves([(snake, move_value)])
 
             while True:
@@ -104,6 +96,13 @@ class Game:
                 # skip agents that are dead
                 if len([True for s in self.snakes if s.id == snake_id]):
                     break
+
+    def _get_agents_move(self, snake_id):
+        try:
+            return self.agents[snake_id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                             candies=deepcopy(self.candies))
+        except Exception as e:
+            return e
 
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
