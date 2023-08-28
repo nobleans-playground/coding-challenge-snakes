@@ -72,8 +72,12 @@ def test_game_snake_dies():
     assert not game.finished()
     game.update()
     assert game.finished()
-    assert game.scores[0] == 2  # snake 0 dies, so second place
-    assert game.scores[1] == 1
+
+    # snake 0 dies, so its got second place
+    # however due to the current bonus structure, the longer snake wins
+    ranking = game.rank()
+    assert ranking[0] == 1
+    assert ranking[1] == 2
 
 
 def test_game_snake_eats():
@@ -100,19 +104,20 @@ def test_game_snake_eats():
     assert (len(game.snakes[1]) == 2)
 
 
+class BotThatThrows(Bot):
+    @property
+    def name(self):
+        return 'Random'
+
+    @property
+    def contributor(self):
+        return 'Nobleo'
+
+    def determine_next_move(self, snakes, candies):
+        raise NotImplementedError()
+
+
 def test_game_snake_throws():
-    class BotThatThrows(Bot):
-        @property
-        def name(self):
-            return 'Random'
-
-        @property
-        def contributor(self):
-            return 'Nobleo'
-
-        def determine_next_move(self, snakes, candies):
-            raise NotImplementedError()
-
     """
     A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
     """
@@ -135,8 +140,9 @@ def test_game_snake_throws():
     assert not game.finished()
     game.update()
     assert game.finished()
-    assert game.scores[0] == 2  # snake 0 dies, so second place
-    assert game.scores[1] == 1
+    ranking = game.rank()
+    assert ranking[0] == 2  # snake 0 dies, so second place
+    assert ranking[1] == 1
 
 
 def test_game_snake_returns_invalid_move():
@@ -174,5 +180,24 @@ def test_game_snake_returns_invalid_move():
     assert not game.finished()
     game.update()
     assert game.finished()
-    assert game.scores[0] == 2  # snake 0 dies, so second place
-    assert game.scores[1] == 1
+    ranking = game.rank()
+    assert ranking[0] == 2  # snake 0 dies, so second place
+    assert ranking[1] == 1
+
+
+def test_game_ranking():
+    grid_size = (100, 100)
+    snakes = [Snake(id=i, positions=np.tile([[i, i]], (10, 1))) for i in range(5)]
+    agents = {i: BotThatThrows for i in range(len(snakes))}
+    game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS, snakes=snakes, candies=[])
+
+    while not game.finished():
+        game.update()
+
+    ranking = game.rank()
+    assert ranking[0] == 5
+    assert ranking[1] == 4
+    assert ranking[2] == 3
+    assert ranking[3] == 2
+    assert ranking[4] == 1
+    print(game.scores)

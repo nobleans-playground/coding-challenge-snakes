@@ -15,6 +15,12 @@ class RoundType(Enum):
     TURNS = auto()
 
 
+def calculate_final_score(length, rank):
+    multiplier = 1 / rank
+    bonus = length * multiplier
+    return length + bonus
+
+
 class Game:
     def __init__(self, agents: Dict[int, Type],
                  grid_size: Tuple[int, int] = (16, 16),
@@ -29,7 +35,7 @@ class Game:
         self.turn = 0  # when rount_type == TURN, remember which agent was going to move
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
-        self.scores = {}  # map from ..snake.id to score
+        self.scores = {}  # map from snake.id to score
 
         if snakes is None:
             self.snakes = []
@@ -70,6 +76,7 @@ class Game:
         if self.round_type == RoundType.SIMULTANEOUS:
 
             moves: List[Tuple[Snake, Move]] = []
+
             for snake in self.snakes:
                 try:
                     move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
@@ -151,16 +158,45 @@ class Game:
                     dead.append(snake)
                     break
 
+        rank = len(self.snakes) - len(dead) + 1
+        for snake in dead:
+            score = calculate_final_score(len(snake), rank)
+            bonus = len(snake) - score
+            print(f'snake {snake.id} died in {rank} place got {bonus} bonus points for a final score of {score}')
+            self.scores[snake.id] = score
+
         for snake in dead:
             self.snakes.remove(snake)
-        rank = len(self.snakes) + 1
-        for snake in dead:
-            print(f'snake {snake.id} died and got the {rank} place')
-            self.scores[snake.id] = rank
 
         if len(self.snakes) <= 1:
             for snake in self.snakes:
-                self.scores[snake.id] = 1
+                rank = 1
+                score = calculate_final_score(len(snake), rank)
+                bonus = len(snake) - score
+                print(f'snake {snake.id} survived and got {bonus} bonus points for a final score of {score}')
+                self.scores[snake.id] = score
+
+    def rank(self):
+        possible_scores = []  # type: List[Tuple[int, int]]
+        for i in self.agents:
+            if i in self.scores:
+                possible_scores.append((self.scores[i], i))
+            else:
+                print(i, self.snakes)
+                snake = next(s for s in self.snakes if s.id == i)
+                lowest_rank = len(self.snakes)
+                score = calculate_final_score(len(snake), lowest_rank)
+                possible_scores.append((score, i))
+        possible_scores.sort(reverse=True)
+
+        rank = 1
+        ranking = {}
+        previous_score = possible_scores[0][0]
+        for score, i in possible_scores:
+            if score != previous_score:
+                rank += 1
+            ranking[i] = rank
+        return ranking
 
     def finished(self):
         return len(self.snakes) <= 1
