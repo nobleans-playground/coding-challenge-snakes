@@ -4,8 +4,6 @@ from argparse import ArgumentParser
 
 import pygame
 
-from snakes.bots import bots
-from snakes.game import Game
 from snakes.window import Window
 
 
@@ -14,9 +12,7 @@ def main(auto_start, auto_restart, width, height):
     pygame_display = pygame.display.set_mode((width, height))
     pygame.display.set_caption('Nobleo Snake Battle!')
 
-    agents = {i: Agent for i, Agent in enumerate(bots)}
-    game = Game(agents=agents)
-    window = Window(pygame_display, game, width, height)
+    window = Window(pygame_display, width, height)
 
     while True:
         for event in pygame.event.get():

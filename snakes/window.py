@@ -1,7 +1,12 @@
+from snakes.bots import bots
+from snakes.game import Game
+
 import math
 from enum import Enum, auto
 
 import pygame
+from abc import abstractmethod
+import colorsys
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -44,12 +49,19 @@ class GameState(Enum):
 
 
 class Window:
-    def __init__(self, window, game, width, height):
-        self.game = game
+    def __init__(self, window, width, height):
         self.game_state = GameState.RUNNING
         self.window = window
         self.width = width
         self.height = height
+
+        # These `i`'s do not represent the player number
+        self.all_bots = {i: Agent for i, Agent in enumerate(bots)}
+        
+        # Create the first game with the first two bots
+        # The ID's will always represent the player number
+        # TODO receive through command line
+        self.game = Game(agents=dict((id, self.all_bots[id]) for id in range(2)))
 
         # Some GUI stuff
         pygame.font.init()
@@ -75,8 +87,6 @@ class Window:
             self.width = kwargs.get("width")
             self.height = kwargs.get("height")
             self.background_colour = kwargs.get("background_colour", POPUP)
-            self.draw_concrete = kwargs.get("draw_concrete")
-            self.callback = kwargs.get("callback")
 
             self.buttons = []
 
@@ -93,18 +103,32 @@ class Window:
 
             self.draw_concrete()
 
-    class PlayerSelectionPop(Popup):
+        @abstractmethod
+        def draw_concrete(self):
+            pass
+
+        @abstractmethod
+        def on_exit(self):
+            pass
+
+    class PlayerSelectionPopup(Popup):
         def __init__(self, **kwargs):
-            kwargs["draw_concrete"] = self.draw_concrete_impl
-            kwargs["callback"] = self.callback_impl
             super().__init__(**kwargs)
+            self.player = kwargs.get("player")
 
-        def callback_impl(self, index):
-            print(index)
-            self.result = None  # TODO(HW) DO SOMETHING HERE
+        def on_exit(self, bot_id):
+            # extract types from agent objects
+            agents = {i: type(agent) for i, agent in self.root.game.agents.items()}
+            # Overwrite agent type with selection
+            agents[self.player] = self.root.all_bots[bot_id]
+            # Setup new game with this snake
+            self.root.game = Game(agents)
+
+            # Close the popup
             self.root.popup = None
+            self.root.game_state = GameState.RUNNING
 
-        def draw_concrete_impl(self):
+        def draw_concrete(self):
             border = self.parent.border
             left = self.parent.width // 2 - self.width // 2
             right = left + self.width
@@ -115,18 +139,20 @@ class Window:
             button_top = top + border
             button_width = (self.width - 4 * border) // 2
             button_height = 30
-            for index, snake in enumerate(self.parent.game.snakes):
+            for bot_id, bot in self.root.all_bots.items():
                 self.root.button(
-                    text=self.parent.game.agents[index].name,
+                    text=bot(0,(1,1)).name, # Need an object to get the name
                     position=[button_left, button_top],
                     width=button_width,
                     height=button_height,
                     align="left",
-
-                    callback=lambda: self.callback_impl(index),
                     parent=self,
-                    window=self.parent.window
+                    window=self.parent.window,
+                    
+                    # Need to capture the value explicitly
+                    callback=lambda bot_id=bot_id : self.on_exit(bot_id),                    
                 )
+
                 button_top += button_height + border
 
     class Button:
@@ -177,9 +203,17 @@ class Window:
         self.game_state = state
 
     def handle_click(self, position):
+        # Prioritize popup buttons
         for button in self.popup.buttons if self.popup else self.buttons:
             if button.is_at_position(position):
                 button.callback()
+                return # Only handle one button at a time
+
+    def handle_mouse_hovers(self, buttons):
+        mouse = pygame.mouse.get_pos()
+        for button in buttons:
+            if button.is_at_position(mouse):
+                button.do_hover()
 
     def button(self, **kwargs):
         root = kwargs.get("root", self)
@@ -210,12 +244,6 @@ class Window:
         else:
             self.handle_mouse_hovers(self.buttons)
 
-    def handle_mouse_hovers(self, buttons):
-        mouse = pygame.mouse.get_pos()
-        for button in buttons:
-            if button.is_at_position(mouse):
-                button.do_hover()
-
     def draw_arena(self):
         # Draw snake
         for snake in self.game.snakes:
@@ -235,11 +263,12 @@ class Window:
 
     def start_bot_selection_popup(self, player):
         self.game_state = GameState.IDLE
-        self.popup = self.PlayerSelectionPop(
+        self.popup = self.PlayerSelectionPopup(
             parent=self,
             root=self,
             width=math.floor(self.width * 0.7),
             height=math.floor(self.height * 0.7),
+            player=player,
         )
 
     def update_information(self):
@@ -259,7 +288,7 @@ class Window:
                 width=right - left,
                 height=player_emblem_height,
                 background_colour=colour,
-                callback=lambda: self.start_bot_selection_popup(index)
+                callback=lambda index=index: self.start_bot_selection_popup(index)
             )
 
             # Draw Name
