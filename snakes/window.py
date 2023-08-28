@@ -280,15 +280,15 @@ class Window:
 
         player_emblem_height = 60
 
-        for index, colour in enumerate([TEAM_A, TEAM_B]):
-            if index >= len(self.game.snakes): continue
-
+        for score, index in self.game.possible_scores():
+            # for index, colour in enumerate([TEAM_A, TEAM_B]):
+            # if index >= len(self.game.snakes): continue
             self.button(
                 position=[left, top],
                 width=right - left,
                 height=player_emblem_height,
-                background_colour=colour,
-                callback=lambda index=index: self.start_bot_selection_popup(index)
+                background_colour=[TEAM_A, TEAM_B][index % 2],
+                callback=lambda index: self.start_bot_selection_popup(index)
             )
 
             # Draw Name
@@ -299,7 +299,7 @@ class Window:
 
             # Draw score
             font = pygame.font.SysFont(None, 68)
-            text_to_render = f"{len(self.game.snakes[index])}"
+            text_to_render = f"{score}"
             text_size = font.size(text_to_render)
             text_object = font.render(text_to_render, True, WHITE)
             self.window.blit(text_object, (right - self.border - text_size[0], top + self.border))
