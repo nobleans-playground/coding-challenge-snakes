@@ -288,7 +288,7 @@ class Window:
                 width=right - left,
                 height=player_emblem_height,
                 background_colour=[TEAM_A, TEAM_B][index % 2],
-                callback=lambda index: self.start_bot_selection_popup(index)
+                callback=lambda index=index: self.start_bot_selection_popup(index)
             )
 
             # Draw Name
