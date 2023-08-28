@@ -78,7 +78,7 @@ class Game:
             moves: List[Tuple[Snake, Move]] = []
 
             for snake in self.snakes:
-                move_value = self._get_agents_move(snake.id)
+                move_value = self._get_agents_move(snake)
                 moves.append((snake, move_value))
 
             self._do_moves(moves)
@@ -86,7 +86,7 @@ class Game:
         elif self.round_type == RoundType.TURNS:
 
             snake = next(s for s in self.snakes if s.id == self.turn)
-            move_value = self._get_agents_move(snake.id)
+            move_value = self._get_agents_move(snake)
             self._do_moves([(snake, move_value)])
 
             while True:
@@ -97,9 +97,11 @@ class Game:
                 if len([True for s in self.snakes if s.id == snake_id]):
                     break
 
-    def _get_agents_move(self, snake_id):
+    def _get_agents_move(self, snake):
+        snake = deepcopy(snake)
+        other_snakes = [deepcopy(s) for s in self.snakes if s.id != snake.id]
         try:
-            return self.agents[snake_id].determine_next_move(snakes=deepcopy(self.snakes),
+            return self.agents[snake.id].determine_next_move(snake=snake, other_snakes=other_snakes,
                                                              candies=deepcopy(self.candies))
         except Exception as e:
             return e

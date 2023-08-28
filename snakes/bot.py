@@ -39,11 +39,12 @@ class Bot(ABC):
         pass
 
     @abstractmethod
-    def determine_next_move(self, snakes: List[Snake], candies: List[np.array]) -> Move:
+    def determine_next_move(self, snake: Snake, other_snakes: List[Snake], candies: List[np.array]) -> Move:
         """
         When your snake is about to move, this method is called. Please return a Move
 
-        :param snakes: All snakes on the field, including yours
+        :param snakes: Your own snake
+        :param other_snakes: All other snakes that are alive on the field
         :param candies: All candies on the field
         :return: The move you want to make
         """
