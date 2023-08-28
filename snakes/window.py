@@ -1,6 +1,7 @@
 import math
 import pygame
 from snakes.game import GameState
+import colorsys
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -32,6 +33,7 @@ COLOURS = [
 TEAM_A = (230, 25, 75)
 TEAM_B = (60, 180, 75)
 BUTTON = (51,51,51)
+POPUP = (36, 36, 36)
 
 class Window:
     def __init__(self, window, game, width, height):
@@ -43,6 +45,8 @@ class Window:
         # Some GUI stuff
         pygame.font.init()
         self.buttons = []
+        self.popup = None
+        self.border = 8
 
         # The scoreboard is where all the scores will be printed
         self.scoreboard = pygame.Surface(self.window.get_size())
@@ -53,47 +57,146 @@ class Window:
         self.body_size = math.floor(self.tile_size * 0.9)
         self.body_tile_offset = (self.tile_size - self.body_size) / 2
         self.candy_radius = int(self.tile_size * 0.6 / 2)
+    
+    class Popup:
+        def __init__(self, **kwargs):
+            self.parent = kwargs.get("parent")
+            self.root = kwargs.get("root", self.parent)
+
+            self.width = kwargs.get("width")
+            self.height = kwargs.get("height")
+            self.background_colour = kwargs.get("background_colour", POPUP)
+            self.draw_concrete = kwargs.get("draw_concrete")
+            self.callback = kwargs.get("callback")
+
+            self.buttons = []
+
+        def draw(self):
+            left = self.parent.width / 2 - self.width / 2
+            right = left + self.width
+            top = self.parent.height / 2 - self.height / 2
+            bottom = top + self.height
+
+            pygame.draw.rect(
+                self.parent.window,
+                self.background_colour, 
+                (left, top, self.width, self.height))
+            
+            self.draw_concrete()
+
+    class PlayerSelectionPop(Popup):
+        def __init__(self, **kwargs):
+            kwargs["draw_concrete"] = self.draw_concrete_impl
+            kwargs["callback"] = self.callback_impl
+            super().__init__(**kwargs)
+
+        def callback_impl(self, index):
+            print(index)
+            self.result = None # TODO(HW) DO SOMETHING HERE
+            self.root.popup = None
+
+        def draw_concrete_impl(self):
+            border = self.parent.border
+            left = self.parent.width // 2 - self.width // 2
+            right = left + self.width
+            top = self.parent.height // 2 - self.height // 2
+            bottom = top + self.height
+            
+            button_left = left + border
+            button_top = top + border
+            button_width = (self.width - 4 * border) // 2
+            button_height = 30
+            for index, snake in enumerate(self.parent.game.snakes):
+                self.root.button(
+                    text=self.parent.game.agents[index].name,
+                    position=[button_left, button_top],
+                    width=button_width,
+                    height=button_height,
+                    align="left",
+                    
+                    callback=lambda : self.callback_impl(index),
+                    parent=self,
+                    window=self.parent.window
+                )
+                button_top += button_height + border
 
     class Button:
-        def __init__(self, parent, **kwargs):
-            self.parent = parent
+        def __init__(self, **kwargs):
+            self.parent = kwargs.get("parent")
+            self.root = kwargs.get("root", self.parent)
+            self.position = kwargs.get("position")
+            self.width = kwargs.get("width")
+            self.height = kwargs.get("height")
+            self.text = kwargs.get("text", None)
+            self.callback = kwargs.get("callback")
+            self.background_colour = kwargs.get("background_colour", BUTTON)
+            self.foreground_colour = kwargs.get("foreground_colour", WHITE)
             
-            def extract(key):
-                return kwargs[key] or RuntimeError(f"No `{key}` given to button")
-            self.position = extract("position")
-            self.width = extract("width")
-            self.height = extract("height")
-            self.text = extract("text")
-            self.callback = extract("callback")
+            self.hover_outline = WHITE
+            self.align = kwargs.get("align", "center")
 
+            self.window = self.root.window
             self.font = pygame.font.SysFont(None, self.height)
 
-            pygame.draw.rect(self.parent.window, BUTTON, (*self.position, self.width, self.height))
+            pygame.draw.rect(self.window, self.background_colour, (*self.position, self.width, self.height))
 
-            text_object = self.parent.font.render(self.text, True, WHITE)
-            text_size = self.parent.font.size(self.text)
-            self.parent.window.blit(text_object, (
-                self.position[0] + self.width / 2 - text_size[0] / 2,
-                self.position[1] + self.height / 2 - text_size[1] / 2
-            ))
+            if self.text:
+                text_object = self.font.render(self.text, True, WHITE)
+                text_size = self.font.size(self.text)
+                
+                if self.align == "center":
+                    self.window.blit(text_object, (
+                        self.position[0] + self.width / 2 - text_size[0] / 2,
+                        self.position[1] + self.height / 2 - text_size[1] / 2
+                    ))
+                elif self.align == "left":
+                    self.window.blit(text_object, (
+                        self.position[0] + self.root.border,
+                        self.position[1] + self.height / 2 - text_size[1] / 2
+                    ))
+                else:
+                    RuntimeError("Oops")
         
+        def do_hover(self):
+            pygame.draw.rect(self.window, self.hover_outline, (*self.position, self.width, self.height), width=3)
+
         def is_at_position(self, position):
             return position[0] >= self.position[0] and position[0] <= self.position[0] + self.width and \
                     position[1] >= self.position[1] and position[1] <= self.position[1] + self.height
 
     def handle_click(self, position):
-        for button in self.buttons:
+        for button in self.popup.buttons if self.popup else self.buttons:
             if button.is_at_position(position):
                 button.callback()
 
     def button(self, **kwargs):
-        self.buttons += [self.Button(self, **kwargs)]
+        root = kwargs.get("root", self)
+        kwargs["root"] = root # Ensure it's set
+        parent = kwargs.get("parent", self)
+        kwargs["parent"] = parent # Ensure it's set
+        parent.buttons += [self.Button(**kwargs)]
 
     def update(self):
         self.window.fill(BLACK)
+        self.buttons = [] # This is so inefficient.        
 
         self.update_information()
+        self.draw_arena()
+        
+        if self.popup:
+            self.popup.buttons = [] # This is so inefficient.
+            self.popup.draw()
+            self.handle_mouse_hovers(self.popup.buttons)
+        else:
+            self.handle_mouse_hovers(self.buttons)
 
+    def handle_mouse_hovers(self, buttons):
+        mouse = pygame.mouse.get_pos()
+        for button in buttons:
+            if button.is_at_position(mouse):
+                button.do_hover()
+
+    def draw_arena(self):
         # Draw snake
         for snake in self.game.snakes:
             for position in snake:
@@ -110,38 +213,52 @@ class Window:
                 int((candy[1] + 0.5) * self.tile_size),
             ), self.candy_radius)
 
+    def start_bot_selection_popup(self, player):
+        self.game.set_state(GameState.IDLE)
+        self.popup = self.PlayerSelectionPop(
+            parent = self,
+            root = self,
+            width = math.floor(self.width * 0.7), 
+            height = math.floor(self.height * 0.7),
+        )
+
     def update_information(self):
         # Draw the information part
-        border = 5
-        left = self.height + border
-        right = self.width - border
-        top = border
-        bottom = self.height - border
+        left = self.height + self.border
+        right = self.width - self.border
+        top = self.border
+        bottom = self.height - self.border
 
         player_emblem_height = 60
 
         for index, colour in enumerate([TEAM_A, TEAM_B]):
             if index >= len(self.game.snakes): continue
 
-            pygame.draw.rect(self.window, colour, (left, top, right - left, player_emblem_height))
+            self.button(
+                position=[left, top],
+                width=right-left,
+                height=player_emblem_height,
+                background_colour=colour,
+                callback=lambda : self.start_bot_selection_popup(index)
+            )
 
             # Draw Name
             text_to_render = self.game.agents[index].name
             font = pygame.font.SysFont(None, 32)
             text_object = font.render(text_to_render, True, WHITE)
-            self.window.blit(text_object, (left + border, top + border))
+            self.window.blit(text_object, (left + self.border, top + self.border))
 
             # Draw score
             font = pygame.font.SysFont(None, 68)
             text_to_render = f"{len(self.game.snakes[index])}"
             text_size = font.size(text_to_render)
             text_object = font.render(text_to_render, True, WHITE)
-            self.window.blit(text_object, (right - border - text_size[0], top + border))
+            self.window.blit(text_object, (right - self.border - text_size[0], top + self.border))
 
-            top += player_emblem_height + border
+            top += player_emblem_height + self.border
 
         button_height = 30
-        button_width = (self.width - self.height - 5 * border) // 3
+        button_width = (self.width - self.height - 5 * self.border) // 3
         button_top = bottom - button_height
         button_left = left
 
@@ -154,7 +271,7 @@ class Window:
             callback=lambda : self.game.set_state(GameState.RUNNING)
         )
 
-        button_left += button_width + 2 * border
+        button_left += button_width + 2 * self.border
         self.button(
             text="Step",
             position=[button_left, button_top],
@@ -163,7 +280,7 @@ class Window:
             callback=lambda : self.game.set_state(GameState.STEP)
         )
 
-        button_left += button_width + 2 * border
+        button_left += button_width + 2 * self.border
         self.button(
             text="Stop",
             position=[button_left, button_top],
