@@ -168,7 +168,7 @@ class Game:
         rank = len(self.snakes) - len(dead) + 1
         for snake in dead:
             score = calculate_final_score(len(snake), rank)
-            bonus = len(snake) - score
+            bonus = score - len(snake)
             print(f'snake {snake.id} died in {rank} place got {bonus} bonus points for a final score of {score}')
             self.scores[snake.id] = score
 
@@ -179,7 +179,7 @@ class Game:
             for snake in self.snakes:
                 rank = 1
                 score = calculate_final_score(len(snake), rank)
-                bonus = len(snake) - score
+                bonus = score - len(snake)
                 print(f'snake {snake.id} survived and got {bonus} bonus points for a final score of {score}')
                 self.scores[snake.id] = score
 
