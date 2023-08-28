@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import pygame
 
 from snakes.bots import bots
-from snakes.game import Game, GameState
+from snakes.game import Game
 from snakes.window import Window
 
 

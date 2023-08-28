@@ -14,11 +14,13 @@ class RoundType(Enum):
     SIMULTANEOUS = auto()
     TURNS = auto()
 
+
 class GameState(Enum):
     RUNNING = auto()
     FINISHED = auto()
     IDLE = auto()
     STEP = auto()
+
 
 class Game:
     def __init__(self, agents: Dict[int, Type],
@@ -157,9 +159,9 @@ class Game:
                     print(f'snake {snake.id} collided with snake {other_snake.id}')
                     dead.append(snake)
                     break
-        
+
         # for snake in dead:
-            # self.snakes.remove(snake)
+        # self.snakes.remove(snake)
         if len(dead) > 0:
             self.state = GameState.FINISHED
 
@@ -178,5 +180,5 @@ class Game:
     def finished(self):
         return self.state == GameState.FINISHED
 
-    def set_state(self, state : GameState):
+    def set_state(self, state: GameState):
         self.state = state

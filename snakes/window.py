@@ -1,7 +1,7 @@
 import math
+
 import pygame
 from snakes.game import GameState
-import colorsys
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -32,8 +32,9 @@ COLOURS = [
 
 TEAM_A = (230, 25, 75)
 TEAM_B = (60, 180, 75)
-BUTTON = (51,51,51)
+BUTTON = (51, 51, 51)
 POPUP = (36, 36, 36)
+
 
 class Window:
     def __init__(self, window, game, width, height):
@@ -57,7 +58,7 @@ class Window:
         self.body_size = math.floor(self.tile_size * 0.9)
         self.body_tile_offset = (self.tile_size - self.body_size) / 2
         self.candy_radius = int(self.tile_size * 0.6 / 2)
-    
+
     class Popup:
         def __init__(self, **kwargs):
             self.parent = kwargs.get("parent")
@@ -79,9 +80,9 @@ class Window:
 
             pygame.draw.rect(
                 self.parent.window,
-                self.background_colour, 
+                self.background_colour,
                 (left, top, self.width, self.height))
-            
+
             self.draw_concrete()
 
     class PlayerSelectionPop(Popup):
@@ -92,7 +93,7 @@ class Window:
 
         def callback_impl(self, index):
             print(index)
-            self.result = None # TODO(HW) DO SOMETHING HERE
+            self.result = None  # TODO(HW) DO SOMETHING HERE
             self.root.popup = None
 
         def draw_concrete_impl(self):
@@ -101,7 +102,7 @@ class Window:
             right = left + self.width
             top = self.parent.height // 2 - self.height // 2
             bottom = top + self.height
-            
+
             button_left = left + border
             button_top = top + border
             button_width = (self.width - 4 * border) // 2
@@ -113,8 +114,8 @@ class Window:
                     width=button_width,
                     height=button_height,
                     align="left",
-                    
-                    callback=lambda : self.callback_impl(index),
+
+                    callback=lambda: self.callback_impl(index),
                     parent=self,
                     window=self.parent.window
                 )
@@ -131,7 +132,7 @@ class Window:
             self.callback = kwargs.get("callback")
             self.background_colour = kwargs.get("background_colour", BUTTON)
             self.foreground_colour = kwargs.get("foreground_colour", WHITE)
-            
+
             self.hover_outline = WHITE
             self.align = kwargs.get("align", "center")
 
@@ -143,7 +144,7 @@ class Window:
             if self.text:
                 text_object = self.font.render(self.text, True, WHITE)
                 text_size = self.font.size(self.text)
-                
+
                 if self.align == "center":
                     self.window.blit(text_object, (
                         self.position[0] + self.width / 2 - text_size[0] / 2,
@@ -156,13 +157,13 @@ class Window:
                     ))
                 else:
                     RuntimeError("Oops")
-        
+
         def do_hover(self):
             pygame.draw.rect(self.window, self.hover_outline, (*self.position, self.width, self.height), width=3)
 
         def is_at_position(self, position):
             return position[0] >= self.position[0] and position[0] <= self.position[0] + self.width and \
-                    position[1] >= self.position[1] and position[1] <= self.position[1] + self.height
+                position[1] >= self.position[1] and position[1] <= self.position[1] + self.height
 
     def handle_click(self, position):
         for button in self.popup.buttons if self.popup else self.buttons:
@@ -171,20 +172,20 @@ class Window:
 
     def button(self, **kwargs):
         root = kwargs.get("root", self)
-        kwargs["root"] = root # Ensure it's set
+        kwargs["root"] = root  # Ensure it's set
         parent = kwargs.get("parent", self)
-        kwargs["parent"] = parent # Ensure it's set
+        kwargs["parent"] = parent  # Ensure it's set
         parent.buttons += [self.Button(**kwargs)]
 
     def update(self):
         self.window.fill(BLACK)
-        self.buttons = [] # This is so inefficient.        
+        self.buttons = []  # This is so inefficient.
 
         self.update_information()
         self.draw_arena()
-        
+
         if self.popup:
-            self.popup.buttons = [] # This is so inefficient.
+            self.popup.buttons = []  # This is so inefficient.
             self.popup.draw()
             self.handle_mouse_hovers(self.popup.buttons)
         else:
@@ -216,10 +217,10 @@ class Window:
     def start_bot_selection_popup(self, player):
         self.game.set_state(GameState.IDLE)
         self.popup = self.PlayerSelectionPop(
-            parent = self,
-            root = self,
-            width = math.floor(self.width * 0.7), 
-            height = math.floor(self.height * 0.7),
+            parent=self,
+            root=self,
+            width=math.floor(self.width * 0.7),
+            height=math.floor(self.height * 0.7),
         )
 
     def update_information(self):
@@ -236,10 +237,10 @@ class Window:
 
             self.button(
                 position=[left, top],
-                width=right-left,
+                width=right - left,
                 height=player_emblem_height,
                 background_colour=colour,
-                callback=lambda : self.start_bot_selection_popup(index)
+                callback=lambda: self.start_bot_selection_popup(index)
             )
 
             # Draw Name
@@ -268,7 +269,7 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            callback=lambda : self.game.set_state(GameState.RUNNING)
+            callback=lambda: self.game.set_state(GameState.RUNNING)
         )
 
         button_left += button_width + 2 * self.border
@@ -277,7 +278,7 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            callback=lambda : self.game.set_state(GameState.STEP)
+            callback=lambda: self.game.set_state(GameState.STEP)
         )
 
         button_left += button_width + 2 * self.border
@@ -286,5 +287,5 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            callback=lambda : self.game.set_state(GameState.IDLE)
+            callback=lambda: self.game.set_state(GameState.IDLE)
         )
