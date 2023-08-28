@@ -26,6 +26,7 @@ class Game:
         self.grid_size = grid_size
         self.agents = {i: Agent(id=i, grid_size=grid_size) for i, Agent in agents.items()}
         self.round_type = round_type
+        self.turn = 0  # when rount_type == TURN, remember which agent was going to move
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from ..snake.id to score
@@ -81,13 +82,15 @@ class Game:
 
         elif self.round_type == RoundType.TURNS:
 
-            for snake in self.snakes:
-                try:
-                    move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
-                                                                           candies=deepcopy(self.candies))
-                except Exception as e:
-                    move_value = e
-                self._do_moves([(snake, move_value)])
+            snake = next(s for s in self.snakes if s.id == self.turn)
+            print(f'MOVE SNAKE {snake.id}')
+            try:
+                move_value = self.agents[snake.id].determine_next_move(snakes=deepcopy(self.snakes),
+                                                                       candies=deepcopy(self.candies))
+            except Exception as e:
+                move_value = e
+            self._do_moves([(snake, move_value)])
+            self.turn = self.turn + 1 % len(self.agents)
 
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
