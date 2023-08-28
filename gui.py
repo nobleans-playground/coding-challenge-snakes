@@ -26,8 +26,6 @@ def main(auto_start, auto_restart, width, height):
                 pygame.quit()
                 return
 
-        if game.should_update():
-            game.update()
         window.update()
 
         pygame.display.update()

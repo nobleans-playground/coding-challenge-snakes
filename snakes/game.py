@@ -15,13 +15,6 @@ class RoundType(Enum):
     TURNS = auto()
 
 
-class GameState(Enum):
-    RUNNING = auto()
-    FINISHED = auto()
-    IDLE = auto()
-    STEP = auto()
-
-
 class Game:
     def __init__(self, agents: Dict[int, Type],
                  grid_size: Tuple[int, int] = (16, 16),
@@ -36,8 +29,6 @@ class Game:
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from ..snake.id to score
-
-        self.state = GameState.RUNNING
 
         if snakes is None:
             self.snakes = []
@@ -98,9 +89,6 @@ class Game:
                     move_value = e
                 self._do_moves([(snake, move_value)])
 
-        if self.state == GameState.STEP:
-            self.state = GameState.IDLE
-
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
         remove_candies = set()
@@ -160,11 +148,8 @@ class Game:
                     dead.append(snake)
                     break
 
-        # for snake in dead:
-        # self.snakes.remove(snake)
-        if len(dead) > 0:
-            self.state = GameState.FINISHED
-
+        for snake in dead:
+            self.snakes.remove(snake)
         rank = len(self.snakes) + 1
         for snake in dead:
             print(f'snake {snake.id} died and got the {rank} place')
@@ -174,11 +159,5 @@ class Game:
             for snake in self.snakes:
                 self.scores[snake.id] = 1
 
-    def should_update(self):
-        return self.state == GameState.RUNNING or self.state == GameState.STEP
-
     def finished(self):
-        return self.state == GameState.FINISHED
-
-    def set_state(self, state: GameState):
-        self.state = state
+        return len(self.snakes) <= 1

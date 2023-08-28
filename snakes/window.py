@@ -1,7 +1,7 @@
 import math
+from enum import Enum, auto
 
 import pygame
-from snakes.game import GameState
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -36,9 +36,17 @@ BUTTON = (51, 51, 51)
 POPUP = (36, 36, 36)
 
 
+class GameState(Enum):
+    RUNNING = auto()
+    FINISHED = auto()
+    IDLE = auto()
+    STEP = auto()
+
+
 class Window:
     def __init__(self, window, game, width, height):
         self.game = game
+        self.game_state = GameState.RUNNING
         self.window = window
         self.width = width
         self.height = height
@@ -159,11 +167,14 @@ class Window:
                     RuntimeError("Oops")
 
         def do_hover(self):
-            pygame.draw.rect(self.window, self.hover_outline, (*self.position, self.width, self.height), width=3)
+            pygame.draw.rect(self.window, self.hover_outline, (*self.position, self.width, self.height), 3)
 
         def is_at_position(self, position):
             return position[0] >= self.position[0] and position[0] <= self.position[0] + self.width and \
                 position[1] >= self.position[1] and position[1] <= self.position[1] + self.height
+
+    def set_state(self, state):
+        self.game_state = state
 
     def handle_click(self, position):
         for button in self.popup.buttons if self.popup else self.buttons:
@@ -178,6 +189,14 @@ class Window:
         parent.buttons += [self.Button(**kwargs)]
 
     def update(self):
+        if self.game_state == GameState.RUNNING:
+            self.game.update()
+        elif self.game_state == GameState.STEP:
+            self.game.update()
+            self.game_state = GameState.IDLE
+        if self.game.finished():
+            self.game_state = GameState.FINISHED
+
         self.window.fill(BLACK)
         self.buttons = []  # This is so inefficient.
 
@@ -215,7 +234,7 @@ class Window:
             ), self.candy_radius)
 
     def start_bot_selection_popup(self, player):
-        self.game.set_state(GameState.IDLE)
+        self.game_state = GameState.IDLE
         self.popup = self.PlayerSelectionPop(
             parent=self,
             root=self,
@@ -269,7 +288,7 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            callback=lambda: self.game.set_state(GameState.RUNNING)
+            callback=lambda: self.set_state(GameState.RUNNING)
         )
 
         button_left += button_width + 2 * self.border
@@ -278,7 +297,7 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            callback=lambda: self.game.set_state(GameState.STEP)
+            callback=lambda: self.set_state(GameState.STEP)
         )
 
         button_left += button_width + 2 * self.border
@@ -287,5 +306,5 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            callback=lambda: self.game.set_state(GameState.IDLE)
+            callback=lambda: self.set_state(GameState.IDLE)
         )
