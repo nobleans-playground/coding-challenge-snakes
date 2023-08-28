@@ -64,7 +64,7 @@ class Game:
 
     def spawn_candies(self):
         indices = self.grid_size[0] * self.grid_size[1]
-        percentage = 0.1
+        percentage = 0.01
         candy_indices = sample(range(indices), k=round(percentage * indices))
         for index in candy_indices:
             x, y = divmod(index, self.grid_size[1])
