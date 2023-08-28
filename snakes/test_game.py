@@ -1,5 +1,3 @@
-import random
-
 import numpy as np
 
 from .bot import Bot
@@ -45,7 +43,6 @@ def test_snake_collide():
 
 
 def test_game_snake_dies():
-    random.seed(1)
     """
     A grid where one of the snakes can move only 1 tile, while the other can move multiple times. Snake 1 will win.
     """
@@ -83,18 +80,18 @@ def test_game_snake_dies():
 def test_game_snake_eats():
     grid_size = (3, 3)
     """
-    |0    |
-    |0 *  |
-    |  1 1|
+    |0 1  |
+    |0 1  |
+    |*    |
     """
     snakes = [Snake(id=0, positions=np.array([
         [0, 1],
         [0, 2],
     ])), Snake(id=1, positions=np.array([
-        [2, 0],
-        [1, 0],
+        [1, 1],
+        [1, 2],
     ]))]
-    candies = [np.array([1, 1])]
+    candies = [np.array([0, 0])]
     game = Game(grid_size=grid_size, agents={0: Random, 1: Random}, round_type=RoundType.SIMULTANEOUS, snakes=snakes,
                 candies=candies)
     assert not game.finished()
