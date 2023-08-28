@@ -34,7 +34,7 @@ def main(snake1, snake2, rate):
     agent2 = np.argmax(name_matches)
 
     # One agent could be up against itself, so we'll need to give new ids
-    agents = {agent1: bots[agent1], agent2: bots[agent2]}
+    agents = {0: bots[agent1], 1: bots[agent2]}
 
     game = Game(agents=agents, round_type=RoundType.TURNS)
     printer = Printer()
@@ -48,9 +48,9 @@ def main(snake1, snake2, rate):
         if game.finished():
             break
 
-    print('Name\tFinal position')
-    for id, score in game.scores.items():
-        print(f'{game.agents[id].name}\t{score}')
+    print(f'{"Id":4}{"Name":20} Final position')
+    for id, rank in game.rank().items():
+        print(f'{id:<4}{game.agents[id].name:20} {rank}')
 
 
 def levenshtein_distance(s1: str, s2: str):

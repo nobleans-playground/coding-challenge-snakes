@@ -40,11 +40,12 @@ def single_game(agents):
         if game.finished():
             break
     print()
-    print(f'{"Name":20} Final position')
-    for id, score in game.scores.items():
-        print(f'{game.agents[id].name:20} {score}')
+    print(f'{"Id":4}{"Name":20} Final position')
+    ranking = game.rank()
+    for id, rank in ranking.items():
+        print(f'{id:<4}{game.agents[id].name:20} {rank}')
     print()
-    return game.scores
+    return ranking
 
 
 if __name__ == '__main__':
