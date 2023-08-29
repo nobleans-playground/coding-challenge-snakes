@@ -21,3 +21,6 @@
 [submodule "snakes/bots/jeroen"]
 	path = snakes/bots/jeroen
 	url = git@github.com:nobleans-playground/wolverine.git
+[submodule "snakes/bots/jonothan"]
+	path = snakes/bots/jonothan
+	url = git@github.com:JonathanGevers/coding-challenge-snakes.git
