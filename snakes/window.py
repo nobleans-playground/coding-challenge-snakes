@@ -250,7 +250,7 @@ class Window:
             for position in snake:
                 pygame.draw.rect(self.window, COLOURS[snake.id], (
                     (position[0] * self.tile_size) + self.body_tile_offset,
-                    self.height - ((position[1] * self.tile_size) + self.body_tile_offset),
+                    self.height - ((position[1] * self.tile_size)) - self.tile_size + self.body_tile_offset,
                     self.body_size, self.body_size
                 ))
 
