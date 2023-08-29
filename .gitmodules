@@ -8,3 +8,6 @@
 [submodule "snakes/bots/hein"]
 	path = snakes/bots/hein
 	url = git@github.com:heinwessels/coding-challenge-snakes-hein.git
+[submodule "snakes/bots/felipe"]
+	path = snakes/bots/felipe
+	url = http://git@git.33kbps.com.ar/fdiniello/not_a_template.git
