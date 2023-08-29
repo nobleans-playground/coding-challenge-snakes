@@ -5,7 +5,7 @@
 import numpy as np
 
 from .bot import Bot
-from .bots import Random
+from .bots.random import Random
 from .constants import UP, RIGHT
 from .game import Game, RoundType, Snake
 
