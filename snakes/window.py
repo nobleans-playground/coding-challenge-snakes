@@ -1,12 +1,14 @@
-from snakes.bots import bots
-from snakes.game import Game
+# Copyright 2023 Nobleo Technology B.V.
+#
+# SPDX-License-Identifier: Apache-2.0
 
 import math
+from abc import abstractmethod
 from enum import Enum, auto
 
 import pygame
-from abc import abstractmethod
-import colorsys
+from snakes.bots import bots
+from snakes.game import Game
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)

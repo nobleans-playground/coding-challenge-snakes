@@ -1,3 +1,9 @@
+<!--
+Copyright 2023 Nobleo Technology B.V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 ## Game rule ideas:
 
 We want to promote getting longer and killing other snakes. Which rule should we use to promote this?

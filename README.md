@@ -1,3 +1,9 @@
+<!--
+Copyright 2023 Nobleo Technology B.V.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Coding Challange: Multiplayer Snake [![Python application](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml)
 
 ## Description

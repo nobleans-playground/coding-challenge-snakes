@@ -1,3 +1,7 @@
+# Copyright 2023 Nobleo Technology B.V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 [submodule "snakes/bots/example"]
 	path = snakes/bots/example
 	url = git@github.com:nobleans-playground/coding-challenge-snakes-bot-template.git
