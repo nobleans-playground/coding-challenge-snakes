@@ -89,7 +89,7 @@ class Game:
 
         elif self.round_type == RoundType.TURNS:
 
-            snake = next(s for s in self.snakes if s.id == self.turn)
+            snake = self.snakes[self.turn]
             move_value = self._get_agents_move(snake)
             self._do_moves([(snake, move_value)])
 

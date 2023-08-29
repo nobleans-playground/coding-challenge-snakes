@@ -5,10 +5,18 @@
         "version": "0.2.0",
         "configurations": [
                 {
-                        "name": "Python: Current File",
+                        "name": "GUI",
                         "type": "python",
                         "request": "launch",
                         "program": "gui.py",
+                        "console": "integratedTerminal",
+                        "justMyCode": true
+                },
+                {
+                        "name": "Tournament",
+                        "type": "python",
+                        "request": "launch",
+                        "program": "tournament.py",
                         "console": "integratedTerminal",
                         "justMyCode": true
                 }
