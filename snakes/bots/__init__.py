@@ -4,5 +4,6 @@
 
 from .example.bot import ExampleBot
 from .random import Random
+from .hein.bot import ApologeticApophis
 
-bots = (Random, ExampleBot)
+bots = (Random, ExampleBot, ApologeticApophis)
