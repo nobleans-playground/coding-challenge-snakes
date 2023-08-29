@@ -26,3 +26,6 @@
 	path = snakes/bots/jonothan
 	url = git@github.com:JonathanGevers/coding-challenge-snakes.git
 	branch = main
+[submodule "snakes/bots/lewie"]
+	path = snakes/bots/lewie
+	url = git@github.com:lewie-donckers/coding-challenge-snakes-bot.git

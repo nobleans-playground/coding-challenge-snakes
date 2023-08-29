@@ -9,6 +9,7 @@ from .felipe.bot import TemplateSnake
 from .mahmoud.bot import SneakyBot
 from .jeroen.bot import ExampleBot as JeroenBot
 from .jonothan.bot import bender
+from .lewie.bot import LewieBot
 
 bots = (
     Random,
@@ -17,5 +18,6 @@ bots = (
     TemplateSnake,
     SneakyBot,
     JeroenBot,
-    bender
+    bender,
+    LewieBot
 )
