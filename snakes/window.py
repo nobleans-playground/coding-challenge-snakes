@@ -117,12 +117,8 @@ class Window:
             self.player = kwargs.get("player")
 
         def on_exit(self, bot_id):
-            # extract types from agent objects
-            agents = {i: type(agent) for i, agent in self.root.game.agents.items()}
-            # Overwrite agent type with selection
-            agents[self.player] = self.root.all_bots[bot_id]
-            # Setup new game with this snake
-            self.root.game = Game(agents)
+            # Start new game
+            self.root.restart_game({'agent_id': self.player, 'bot_id': bot_id})
 
             # Close the popup
             self.root.popup = None
@@ -201,6 +197,17 @@ class Window:
 
     def set_state(self, state):
         self.game_state = state
+
+    def restart_game(self, new_agent=None):
+        # extract types from agent objects
+        agents = {i: type(agent) for i, agent in self.game.agents.items()}
+        
+        if new_agent:
+            # Replace one of the snakes
+            agents[new_agent['agent_id']] = self.all_bots[new_agent['bot_id']]
+
+        # Setup new game with this snake
+        self.game = Game(agents)
 
     def handle_click(self, position):
         # Prioritize popup buttons
@@ -306,8 +313,9 @@ class Window:
 
             top += player_emblem_height + self.border
 
+        button_amount = 4
         button_height = 30
-        button_width = (self.width - self.height - 5 * self.border) // 3
+        button_width = (self.width - self.height - (button_amount + 1) * self.border) // button_amount
         button_top = bottom - button_height
         button_left = left
 
@@ -320,7 +328,7 @@ class Window:
             callback=lambda: self.set_state(GameState.RUNNING)
         )
 
-        button_left += button_width + 2 * self.border
+        button_left += button_width + self.border
         self.button(
             text="Step",
             position=[button_left, button_top],
@@ -329,11 +337,20 @@ class Window:
             callback=lambda: self.set_state(GameState.STEP)
         )
 
-        button_left += button_width + 2 * self.border
+        button_left += button_width + self.border
         self.button(
             text="Stop",
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
             callback=lambda: self.set_state(GameState.IDLE)
+        )
+
+        button_left += button_width + self.border
+        self.button(
+            text="Restart",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda: self.restart_game()
         )
