@@ -35,25 +35,6 @@ def determine_next_move(self, snakes: List[Snake], candies: List[np.array]) -> M
 
 How the bot implements this function is up to you.
 You can train an AI, do some path planning or implement a method to trap opponents.
-I've asked ChatGPT which algorithms could be suitable for a multiplayer snake game.
-
-- **Greedy Algorithm**: Bot always moves towards the nearest food.
-- **Avoid Collisions**: Bot focuses on avoiding collisions with itself, walls, and opponents.
-- **Chase and Evade**: Bot alternates between getting closer to opponents and maintaining a safe distance.
-- **Wall Following**: Bot follows the game arena's walls to stay safe and create trapping opportunities.
-- **Random Moves with Avoidance**: Bot makes random moves while avoiding collisions.
-- **Food Proximity**: Bot moves towards the nearest food while avoiding getting too close to opponents.
-- **Longest Path**: Bot chooses moves leading to the longest possible path before collisions.
-- **Stay Central**: Bot aims to stay near the center of the game arena for better maneuverability.
-
-It also came up with some more advanced algorithms.
-
-- **Minimax with Alpha-Beta Pruning**: Decision-making by exploring moves and opponent responses, optimizing with alpha-beta - pruning.
-- **Monte Carlo Tree Search (MCTS)**: Balancing random simulations and tree traversal to find optimal moves.
-- **Reinforcement Learning (RL)**: Learning best strategies through trial and error, maximizing rewards over interactions.
-- **Heuristic-Based Approaches**: Using predefined rules based on game factors to guide decision-making.
-- **Neural Networks**: Training networks to map game states to optimal moves using supervised or reinforcement learning.
-- **Evolutionary Algorithms**: Evolving bot strategies over generations based on performance and mutation.
 
 ## How to submit a bot
 
@@ -82,6 +63,7 @@ You can follow the following steps to create your own bot.
 3. Run `tournament.py` or any of the other executables
 
 ## Bot development
+
 - If you bot has **NOT** being added to the main repository, create a file in the [./snakes/bots](./snakes/bots) folder.
   Don't forget to add it to the bots list in [./snakes/bots/__init__.py](./snakes/bots/__init__.py).
   See [./snakes/bots/random.py](./snakes/bots/random.py) Random for inspiration
