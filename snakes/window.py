@@ -303,8 +303,15 @@ class Window:
             # Draw Name
             text_to_render = self.game.agents[index].name
             font = pygame.font.SysFont(None, 32)
+            text_size = font.size(text_to_render)
             text_object = font.render(text_to_render, True, WHITE)
             self.window.blit(text_object, (left + self.border, top + self.border))
+
+            # Draw contributor
+            text_to_render = self.game.agents[index].contributor
+            font = pygame.font.SysFont(None, 26)
+            text_object = font.render(text_to_render, True, WHITE)
+            self.window.blit(text_object, (left + self.border, top + self.border + text_size[1] + self.border))
 
             # Draw score
             font = pygame.font.SysFont(None, 68)
