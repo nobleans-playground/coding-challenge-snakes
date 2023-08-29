@@ -5,13 +5,15 @@
 from .example.bot import ExampleBot
 from .random import Random
 from .hein.bot import ApologeticApophis
-from .felipe.bot import ExampleBot
+from .felipe.bot import TemplateSnake
 from .mahmoud.bot import SneakyBot
+from .jeroen.bot import ExampleBot as JeroenBot
 
 bots = (
     Random,
     ExampleBot,
     ApologeticApophis,
-    ExampleBot,
-    SneakyBot
+    TemplateSnake,
+    SneakyBot,
+    JeroenBot
 )

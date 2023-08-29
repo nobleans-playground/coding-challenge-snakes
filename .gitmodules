@@ -18,3 +18,6 @@
 	path = snakes/bots/mahmoud
 	url = git@github.com:Mahmoud1922/coding-challenge-snakes-bot.git
 	branch = main
+[submodule "snakes/bots/jeroen"]
+	path = snakes/bots/jeroen
+	url = git@github.com:nobleans-playground/wolverine.git
