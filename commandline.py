@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# Copyright 2023 Nobleo Technology B.V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from argparse import ArgumentParser
 from math import isinf
 from time import sleep

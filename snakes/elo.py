@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# Copyright 2023 Nobleo Technology B.V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from math import isnan
 
 import numpy as np

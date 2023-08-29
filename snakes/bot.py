@@ -1,3 +1,7 @@
+# Copyright 2023 Nobleo Technology B.V.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 from abc import abstractmethod, ABC
 from typing import List, Tuple
 
