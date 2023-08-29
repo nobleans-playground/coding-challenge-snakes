@@ -8,7 +8,7 @@ from .hein.bot import ApologeticApophis
 from .felipe.bot import TemplateSnake
 from .mahmoud.bot import SneakyBot
 from .jeroen.bot import ExampleBot as JeroenBot
-from .jonothan.bot import helloFellowHumanPerson
+from .jonothan.bot import bender
 
 bots = (
     Random,
@@ -17,5 +17,5 @@ bots = (
     TemplateSnake,
     SneakyBot,
     JeroenBot,
-    helloFellowHumanPerson
+    bender
 )
