@@ -64,7 +64,7 @@ class Game:
             x, y = divmod(index, self.grid_size[1])
             assert 0 <= x < self.grid_size[0]
             assert 0 <= y < self.grid_size[1]
-            self.snakes.append(Snake(agents[i].id, np.tile([(x, y)], (starting_length, 1))))
+            self.snakes.append(Snake(i, np.tile([(x, y)], (starting_length, 1))))
 
     def spawn_candies(self):
         indices = self.grid_size[0] * self.grid_size[1]
