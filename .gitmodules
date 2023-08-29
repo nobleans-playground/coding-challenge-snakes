@@ -5,9 +5,16 @@
 [submodule "snakes/bots/example"]
 	path = snakes/bots/example
 	url = git@github.com:nobleans-playground/coding-challenge-snakes-bot-template.git
+	branch = main
 [submodule "snakes/bots/hein"]
 	path = snakes/bots/hein
 	url = git@github.com:heinwessels/coding-challenge-snakes-hein.git
+	branch = main
 [submodule "snakes/bots/felipe"]
 	path = snakes/bots/felipe
 	url = http://git@git.33kbps.com.ar/fdiniello/not_a_template.git
+	branch = main
+[submodule "snakes/bots/mahmoud"]
+	path = snakes/bots/mahmoud
+	url = git@github.com:Mahmoud1922/coding-challenge-snakes-bot.git
+	branch = main
