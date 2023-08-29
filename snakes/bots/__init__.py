@@ -10,6 +10,7 @@ from .mahmoud.bot import SneakyBot
 from .jeroen.bot import ExampleBot as JeroenBot
 from .jonothan.bot import bender
 from .lewie.bot import LewieBot
+from .bram.bot import Slytherin
 
 bots = (
     Random,
@@ -17,7 +18,8 @@ bots = (
     ApologeticApophis,
     TemplateSnake,
     SneakyBot,
-    JeroenBot,
+    # JeroenBot, # Change `tuple` to `Tuple`
     bender,
-    LewieBot
+    LewieBot,
+    Slytherin,
 )

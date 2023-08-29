@@ -29,3 +29,6 @@
 [submodule "snakes/bots/lewie"]
 	path = snakes/bots/lewie
 	url = git@github.com:lewie-donckers/coding-challenge-snakes-bot.git
+[submodule "snakes/bots/bram"]
+	path = snakes/bots/bram
+	url = git@github.com:Vidicon/coding-challenge-slytherin.git
