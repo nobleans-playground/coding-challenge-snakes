@@ -223,11 +223,11 @@ class Window:
         parent.buttons += [self.Button(**kwargs)]
 
     def update(self):
-        if self.game_state == GameState.RUNNING:
-            self.game.update()
-        elif self.game_state == GameState.STEP:
-            self.game.update()
-            self.game_state = GameState.IDLE
+        if self.game_state == GameState.RUNNING or self.game_state == GameState.STEP:
+            if not self.game.finished():
+                self.game.update()
+            if self.game_state == GameState.STEP:
+                self.game_state = GameState.IDLE
         if self.game.finished():
             self.game_state = GameState.FINISHED
 
@@ -250,7 +250,7 @@ class Window:
             for position in snake:
                 pygame.draw.rect(self.window, COLOURS[snake.id], (
                     (position[0] * self.tile_size) + self.body_tile_offset,
-                    (position[1] * self.tile_size) + self.body_tile_offset,
+                    self.height - ((position[1] * self.tile_size) + self.body_tile_offset),
                     self.body_size, self.body_size
                 ))
 
@@ -258,7 +258,7 @@ class Window:
         for candy in self.game.candies:
             pygame.draw.circle(self.window, COLOURS[-1], (
                 int((candy[0] + 0.5) * self.tile_size),
-                int((candy[1] + 0.5) * self.tile_size),
+                self.height - (int((candy[1] + 0.5) * self.tile_size)),
             ), self.candy_radius)
 
     def start_bot_selection_popup(self, player):
