@@ -94,7 +94,8 @@ git submodule update --remote
 - **tournament.py**:
   Battle all bots against eachother in a tournament. It'll write the results to a csv file.
 - **gui.py**:
-  Battle bots against eachother in a graphical user interface. Use the following command to always have your bot as player 1, battling against a random bot: 
+  Battle bots against eachother in a graphical user interface. In VSCode, press `F5` to run in debug mode. Use the following command to always have your bot as player 1, battling against a random bot. 
+
   ```python gui.py --snake1 your-bot-name``` 
 - **elo.py**:
   From the tournament results csv you can calculate your bots elo rating.
