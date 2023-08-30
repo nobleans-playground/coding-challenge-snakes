@@ -91,12 +91,6 @@ class Window:
         self.scoreboard = pygame.Surface(self.window.get_size())
         self.font = pygame.font.SysFont(None, 24)
 
-        # Create some constants (assuming area is square)
-        self.tile_size = math.floor(min(self.window.get_size()) / self.game.grid_size[1])
-        self.body_size = math.floor(self.tile_size * 0.9)
-        self.body_tile_offset = (self.tile_size - self.body_size) / 2
-        self.candy_radius = int(self.tile_size * 0.6 / 2)
-
     class Popup:
         def __init__(self, **kwargs):
             self.parent = kwargs.get("parent")
@@ -270,21 +264,56 @@ class Window:
             self.handle_mouse_hovers(self.buttons)
 
     def draw_arena(self):
+        tile_size = math.floor(min(self.window.get_size()) / self.game.grid_size[1])
+        body_size = math.floor(tile_size * 0.7)
+        body_tile_offset = (tile_size - body_size) / 2
+        candy_radius = int(tile_size * 0.6 / 2)
+        head_radius = int(tile_size * 0.9 / 2)
+        eye_radius = int(tile_size * 0.4 / 2)
+
         # Draw snake
         for snake in self.game.snakes:
-            for position in snake:
-                pygame.draw.rect(self.window, COLOURS[snake.id], (
-                    (position[0] * self.tile_size) + self.body_tile_offset,
-                    self.height - ((position[1] * self.tile_size)) - self.tile_size + self.body_tile_offset,
-                    self.body_size, self.body_size
-                ))
+            for index, position in enumerate(snake):
+                if index == 0:
+                    # Is head
+                    pygame.draw.circle(self.window, COLOURS[snake.id], (
+                        int((position[0] + 0.5) * tile_size),
+                        self.height - (int((position[1] + 0.5) * tile_size)),
+                    ), head_radius)
+
+                    # Draw eyes
+                    eye_offsets = [
+                        np.array([int(0.3 * tile_size), (int(-0.25 * tile_size))]),
+                        np.array([int(0.3 * tile_size), (int(0.25 * tile_size))])
+                    ] # Assuming going right
+                    last_move_direction = position - snake[1]
+                    last_move_angle = math.atan2(last_move_direction[1], last_move_direction[0])
+                    for eye_offset in eye_offsets:
+                        corrected_eye_offset = self.rotate_vector(eye_offset, last_move_angle)
+                        pygame.draw.circle(self.window, WHITE, (
+                            int((position[0] + 0.5) * tile_size) + corrected_eye_offset[0],
+                            self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1],
+                        ), eye_radius)
+                        corrected_eye_offset[np.argmax(np.abs(corrected_eye_offset))] *= 1.3
+                        pygame.draw.circle(self.window, BLACK, (
+                            int((position[0] + 0.5) * tile_size) + corrected_eye_offset[0],
+                            self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1],
+                        ), eye_radius // 2)
+
+                else:
+                    # Is body
+                    pygame.draw.rect(self.window, COLOURS[snake.id], (
+                        (position[0] * tile_size) + body_tile_offset,
+                        self.height - ((position[1] * tile_size)) - tile_size + body_tile_offset,
+                        body_size, body_size
+                    ))
 
         # Draw candies
         for candy in self.game.candies:
             pygame.draw.circle(self.window, COLOURS[-1], (
-                int((candy[0] + 0.5) * self.tile_size),
-                self.height - (int((candy[1] + 0.5) * self.tile_size)),
-            ), self.candy_radius)
+                int((candy[0] + 0.5) * tile_size),
+                self.height - (int((candy[1] + 0.5) * tile_size)),
+            ), candy_radius)
 
     def start_bot_selection_popup(self, player):
         self.game_state = GameState.IDLE
@@ -379,3 +408,8 @@ class Window:
             height=button_height,
             callback=lambda: self.restart_game()
         )
+
+    def rotate_vector(self, vector, angle):
+        x = vector[0] * math.cos(angle) - vector[1] * math.sin(angle)
+        y = vector[0] * math.sin(angle) + vector[1] * math.cos(angle)
+        return np.array([x, y])
