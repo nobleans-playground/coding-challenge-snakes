@@ -11,6 +11,7 @@ from .jeroen.bot import ExampleBot as JeroenBot
 from .jonothan.bot import bender
 from .lewie.bot import LewieBot
 from .bram.bot import Slytherin
+from .daniel.bot import Explorer
 
 bots = (
     Random,
@@ -22,4 +23,5 @@ bots = (
     bender,
     LewieBot,
     Slytherin,
+    Explorer,
 )

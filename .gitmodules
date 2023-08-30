@@ -34,3 +34,7 @@
 	path = snakes/bots/bram
 	url = git@github.com:Vidicon/coding-challenge-slytherin.git
 	branch = main
+[submodule "snakes/bots/daniel"]
+	path = snakes/bots/daniel
+	url = git@github.com:danielpijnenborg/coding-challenge-snake.git
+	branch = main
