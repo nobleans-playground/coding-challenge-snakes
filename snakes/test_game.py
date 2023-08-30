@@ -114,7 +114,7 @@ class BotThatThrows(Bot):
     def contributor(self):
         return 'Nobleo'
 
-    def determine_next_move(self, snakes, candies):
+    def determine_next_move(self, snake, other_snakes, candies):
         raise NotImplementedError()
 
 
@@ -156,7 +156,7 @@ def test_game_snake_returns_invalid_move():
         def contributor(self):
             return 'Nobleo'
 
-        def determine_next_move(self, snakes, candies):
+        def determine_next_move(self, snake, other_snakes, candies):
             return 'INVALID_MOVE'
 
     """
