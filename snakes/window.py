@@ -5,10 +5,13 @@
 import math
 from abc import abstractmethod
 from enum import Enum, auto
+import numpy as np
+from random import choice
 
 import pygame
 from snakes.bots import bots
 from snakes.game import Game
+from commandline import levenshtein_ratio
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -51,7 +54,7 @@ class GameState(Enum):
 
 
 class Window:
-    def __init__(self, window, width, height):
+    def __init__(self, window, width, height, snake1=None, snake2=None):
         self.game_state = GameState.RUNNING
         self.window = window
         self.width = width
@@ -59,11 +62,24 @@ class Window:
 
         # These `i`'s do not represent the player number
         self.all_bots = {i: Agent for i, Agent in enumerate(bots)}
+
+        # Determine which bots will play the game
+        agents = {}
+        names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
+        if snake1:
+            name_matches = [levenshtein_ratio(name, snake1) for name in names]
+            agents[0] = self.all_bots[np.argmax(name_matches)]
+        else:
+            agents[0] = choice(self.all_bots)
+        if snake2: 
+            name_matches = [levenshtein_ratio(name, snake2) for name in names]
+            agents[1] = self.all_bots[np.argmax(name_matches)]
+        else:
+            agents[1] = choice(self.all_bots)
         
         # Create the first game with the first two bots
         # The ID's will always represent the player number
-        # TODO receive through command line
-        self.game = Game(agents=dict((id, self.all_bots[id]) for id in range(2)))
+        self.game = Game(agents=agents)
 
         # Some GUI stuff
         pygame.font.init()

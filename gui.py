@@ -12,12 +12,12 @@ import pygame
 from snakes.window import Window
 
 
-def main(auto_start, auto_restart, width, height):
+def main(auto_start, auto_restart, width, height, snake1, snake2):
     pygame.init()
     pygame_display = pygame.display.set_mode((width, height))
     pygame.display.set_caption('Nobleo Snake Battle!')
 
-    window = Window(pygame_display, width, height)
+    window = Window(pygame_display, width, height, snake1, snake2)
 
     while True:
         for event in pygame.event.get():
@@ -43,6 +43,8 @@ if __name__ == '__main__':
                         help='width of the window')
     parser.add_argument('--height', type=int, default=700,
                         help='height of the window')
+    parser.add_argument('--snake1', '-s1', required=False, help="Name of snake 1")
+    parser.add_argument('--snake2', '-s2', required=False, help="Name of snake 2")
     args = parser.parse_args()
 
     try:
