@@ -36,7 +36,7 @@ class Game:
         self.grid_size = grid_size
         self.agents = {i: Agent(id=i, grid_size=grid_size) for i, Agent in agents.items()}
         self.round_type = round_type
-        self.turn = 0  # when rount_type == TURN, remember which agent was going to move
+        self.turn = 0  # Index of the Agent which turn it is, only used when rount_type == TURN
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from snake.id to score
@@ -89,7 +89,8 @@ class Game:
 
         elif self.round_type == RoundType.TURNS:
 
-            snake = self.snakes[self.turn]
+            agent_id = list(self.agents)[self.turn]
+            snake = next(s for s in self.snakes if s.id == agent_id)
             move_value = self._get_agents_move(snake)
             self._do_moves([(snake, move_value)])
 
