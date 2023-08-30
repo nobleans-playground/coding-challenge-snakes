@@ -18,7 +18,7 @@ bots = (
     ApologeticApophis,
     TemplateSnake,
     SneakyBot,
-    # JeroenBot, # Change `tuple` to `Tuple`
+    JeroenBot,
     bender,
     LewieBot,
     Slytherin,
