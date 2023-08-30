@@ -26,7 +26,7 @@ Your bot will be initialized with an id and the size of the grid.
 The grid is specified by the amount of tiles in x and y.
 
 ```py
-def __init__(self, id: int, grid_size: tuple[int, int]):
+def __init__(self, id: int, grid_size: Tuple[int, int]):
 ```
 
 Each turn your bots `determine_next_move` function will be called.
