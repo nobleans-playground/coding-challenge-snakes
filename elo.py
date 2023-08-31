@@ -13,13 +13,13 @@ from snakes.elo import estimate_elo, expected_score, read_csv
 
 def main(infile):
     df = read_csv(infile)
-    print(df)
-    print()
 
-    print(f'{"Name":20} First places')
+    print(f'{"Name":25} Wins  Rate  Matches')
     firsts = df == 1
     for col in df:
-        print(f'{col:20} {np.count_nonzero(firsts[col])}')
+        wins = np.count_nonzero(firsts[col])
+        matches = np.count_nonzero(np.isfinite(df[col]))
+        print(f'{col:25} {np.count_nonzero(firsts[col]):4} {100 * wins / matches:5.1f}% {matches}')
     print()
 
     elos = estimate_elo(df)
