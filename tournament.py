@@ -30,6 +30,7 @@ def main(games):
                 agents = {a: bots[a], b: bots[b]}
                 results = single_game(agents)
                 writer.writerow(results)
+                f.flush()
 
         f.seek(0)
         df = pandas.read_csv(f)
@@ -38,6 +39,9 @@ def main(games):
 
 
 def single_game(agents):
+    names = [Bot(id=0, grid_size=(1, 1)).name for Bot in agents.values()]
+    print()
+    print('Battle:', ' vs '.join(names))
     print()
     game = Game(agents=agents, round_type=RoundType.TURNS)
     while True:
