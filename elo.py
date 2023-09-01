@@ -13,15 +13,17 @@ from snakes.elo import estimate_elo, expected_score, read_csv
 
 def main(infile):
     df = read_csv(infile)
-    names = [name for name in df.columns if name != 'turns']
+    names = [name for name in df.columns if name != 'turns' and not name.startswith('cpu_')]
     ranking = df[names]
 
-    print(f'{"Name":25} Wins  Rate  Matches')
+    print(f'{"Name":25} Wins  Rate  Matches CPU')
     firsts = ranking == 1
     for col in ranking:
         wins = np.count_nonzero(firsts[col])
         matches = np.count_nonzero(np.isfinite(ranking[col]))
-        print(f'{col:25} {np.count_nonzero(firsts[col]):4} {100 * wins / matches:5.1f}% {matches}')
+        winrate = 100 * wins / matches if matches else float('nan')
+        cpu = df['cpu_' + col].sum()
+        print(f'{col:25} {np.count_nonzero(firsts[col]):4} {winrate:5.1f}% {matches:7} {cpu:.3f}')
     print()
 
     elos = estimate_elo(ranking)

@@ -6,6 +6,7 @@ from copy import deepcopy
 from enum import Enum, auto
 from math import floor
 from random import sample
+from time import time
 from traceback import print_exception
 from typing import List, Tuple, Type, Dict
 
@@ -41,6 +42,7 @@ class Game:
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from snake.id to score
+        self.cpu = {i: 0 for i in agents}  # map from snake.id to score
 
         if snakes is None:
             self.snakes = []
@@ -108,11 +110,15 @@ class Game:
     def _get_agents_move(self, snake):
         snake = deepcopy(snake)
         other_snakes = [deepcopy(s) for s in self.snakes if s.id != snake.id]
+        start = time()
         try:
-            return self.agents[snake.id].determine_next_move(snake=snake, other_snakes=other_snakes,
-                                                             candies=deepcopy(self.candies))
+            move_value = self.agents[snake.id].determine_next_move(snake=snake, other_snakes=other_snakes,
+                                                                   candies=deepcopy(self.candies))
         except Exception as e:
-            return e
+            move_value = e
+        finally:
+            self.cpu[snake.id] += time() - start
+            return move_value
 
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten

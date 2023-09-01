@@ -22,8 +22,8 @@ def main(games):
         writer = csv.writer(f)
         # write bot names
         names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
-        writer.writerow(names + ['turns'])
-        fieldnames = list(range(len(bots))) + ['turns']
+        writer.writerow(names + ['turns'] + ['cpu_' + name for name in names])
+        fieldnames = list(range(len(bots))) + ['turns'] + ['cpu_' + name for name in names]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
 
         for _ in range(games):
@@ -58,6 +58,7 @@ def single_game(agents):
 
     row = ranking
     row['turns'] = game.turns
+    row.update({'cpu_' + game.agents[i].name: cpu for i, cpu in game.cpu.items()})
     return row
 
 
