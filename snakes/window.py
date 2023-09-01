@@ -6,7 +6,7 @@ import math
 from abc import abstractmethod
 from enum import Enum, auto
 import numpy as np
-from random import choice
+from random import random, choice
 
 import pygame
 from snakes.bots import bots
@@ -86,6 +86,7 @@ class Window:
         self.buttons = []
         self.popup = None
         self.border = 8
+        self.cherry_image = pygame.image.load("sprites/cherry.png")
 
         # The scoreboard is where all the scores will be printed
         self.scoreboard = pygame.Surface(self.window.get_size())
@@ -219,6 +220,8 @@ class Window:
             agents[new_agent['agent_id']] = self.all_bots[new_agent['bot_id']]
 
         # Setup new game with this snake
+        what = "sprites/cherry.png" if random() > 0.05 else "snakes/util.py"
+        self.cherry_image = pygame.image.load(what)
         self.game = Game(agents)
 
     def handle_click(self, position):
@@ -309,11 +312,12 @@ class Window:
                     ))
 
         # Draw candies
+        scaled_cherry = pygame.transform.scale(self.cherry_image, (tile_size, tile_size))
         for candy in self.game.candies:
-            pygame.draw.circle(self.window, COLOURS[-1], (
-                int((candy[0] + 0.5) * tile_size),
-                self.height - (int((candy[1] + 0.5) * tile_size)),
-            ), candy_radius)
+            self.window.blit(scaled_cherry, (
+                int((candy[0]) * tile_size),
+                self.height - (int((candy[1] + 1) * tile_size)),
+            ))
 
     def start_bot_selection_popup(self, player):
         self.game_state = GameState.IDLE
