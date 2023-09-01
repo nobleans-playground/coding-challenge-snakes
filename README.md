@@ -6,6 +6,34 @@ SPDX-License-Identifier: Apache-2.0
 
 # Coding Challange: Multiplayer Snake [![Python application](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml)
 
+## Current ranking
+
+|Name                       |Wins|Rate  |Matches
+|--|--|--|--|
+Serpent of the Light        | 84| 93.3% | 90 |
+Apologetic Apophis          | 79| 87.8% | 90 |
+Explorer                    | 77| 85.6% | 90 |
+Bite my shiny metal ass     | 38| 42.2% | 90 |
+Slytherin                   | 35| 38.9% | 90 |
+Sneaky Snake                | 33| 36.7% | 90 |
+Wolverine                   | 33| 36.7% | 90 |
+Not a Template              | 32| 35.6% | 90 |
+Random                      | 27| 30.0% | 90 |
+Greedy Gerard               | 26| 28.9% | 90 |
+
+| Name                | Elo
+|--|--|
+Serpent of the Light | 2252 |
+Apologetic Apophis   | 2161 |
+Bite my shiny metal ass | 1278 |
+Explorer             | 2072 |
+Slytherin            | 1232 |
+Sneaky Snake         | 1230 |
+Wolverine            | 1221 |
+Not a Template       | 1212 |
+Random               | 1169 |
+Greedy Gerard        | 1172 |
+
 ## Description
 
 The goal is to beat all other bots playing snake.
