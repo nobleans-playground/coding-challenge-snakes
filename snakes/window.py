@@ -381,7 +381,7 @@ class Window:
             self.window.blit(text_object, (left + self.border, top + self.border))
 
             # Draw contributor
-            text_to_render = self.game.agents[index].contributor
+            text_to_render = f"{self.game.agents[index].contributor}  | CPU: {round(self.game.cpu[index] / self.game.turns * 1e6,2)} us"
             font = pygame.font.SysFont(None, 26)
             text_object = font.render(text_to_render, True, WHITE)
             self.window.blit(text_object, (left + self.border, top + self.border + text_size[1] + self.border))
