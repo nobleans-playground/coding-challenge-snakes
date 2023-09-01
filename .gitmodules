@@ -38,3 +38,7 @@
 	path = snakes/bots/daniel
 	url = git@github.com:danielpijnenborg/coding-challenge-snake.git
 	branch = main
+[submodule "snakes/bots/rokusottervanger"]
+	path = snakes/bots/rokusottervanger
+	url = git@github.com:rokusottervanger/coding-challenge-snakes-bot-rokus.git
+	branch = main
