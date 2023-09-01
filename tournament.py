@@ -21,15 +21,16 @@ def main(games):
         print(f'writing game results to {f.name}')
         writer = csv.writer(f)
         # write bot names
-        names = (Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots))
-        writer.writerow(names)
-        writer = csv.DictWriter(f, fieldnames=range(len(bots)))
+        names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
+        writer.writerow(names + ['turns'])
+        fieldnames = list(range(len(bots))) + ['turns']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
 
         for _ in range(games):
             for a, b in combinations(range(len(bots)), r=2):
                 agents = {a: bots[a], b: bots[b]}
-                results = single_game(agents)
-                writer.writerow(results)
+                row = single_game(agents)
+                writer.writerow(row)
                 f.flush()
 
         f.seek(0)
@@ -54,7 +55,10 @@ def single_game(agents):
     for id, rank in ranking.items():
         print(f'{id:<4}{game.agents[id].name:20} {rank}')
     print()
-    return ranking
+
+    row = ranking
+    row['turns'] = game.turns
+    return row
 
 
 if __name__ == '__main__':

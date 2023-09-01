@@ -37,6 +37,7 @@ class Game:
         self.agents = {i: Agent(id=i, grid_size=grid_size) for i, Agent in agents.items()}
         self.round_type = round_type
         self.turn = 0  # Index of the Agent which turn it is, only used when rount_type == TURN
+        self.turns = 0  # Amount of turns that have passed
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
         self.scores = {}  # map from snake.id to score
@@ -101,6 +102,8 @@ class Game:
                 # skip agents that are dead
                 if len([True for s in self.snakes if s.id == snake_id]):
                     break
+
+        self.turns += 1
 
     def _get_agents_move(self, snake):
         snake = deepcopy(snake)
