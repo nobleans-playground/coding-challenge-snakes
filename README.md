@@ -25,8 +25,8 @@ Greedy Gerard               | 26| 28.9% | 90 |
 |--|--|
 Serpent of the Light | 2252 |
 Apologetic Apophis   | 2161 |
-Bite my shiny metal ass | 1278 |
 Explorer             | 2072 |
+Bite my shiny metal ass | 1278 |
 Slytherin            | 1232 |
 Sneaky Snake         | 1230 |
 Wolverine            | 1221 |
