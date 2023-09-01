@@ -296,13 +296,13 @@ class Window:
                     for eye_offset in eye_offsets:
                         corrected_eye_offset = self.rotate_vector(eye_offset, last_move_angle)
                         pygame.draw.circle(self.window, WHITE, (
-                            int((position[0] + 0.5) * tile_size) + corrected_eye_offset[0],
-                            self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1],
+                            int((position[0] + 0.5) * tile_size + corrected_eye_offset[0]),
+                            int((self.height - (position[1] + 0.5) * tile_size) - corrected_eye_offset[1]),
                         ), eye_radius)
                         corrected_eye_offset[np.argmax(np.abs(corrected_eye_offset))] *= 1.3
                         pygame.draw.circle(self.window, BLACK, (
-                            int((position[0] + 0.5) * tile_size) + corrected_eye_offset[0],
-                            self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1],
+                            int((position[0] + 0.5) * tile_size + corrected_eye_offset[0]),
+                            int(self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1]),
                         ), eye_radius // 2)
 
                 else:
