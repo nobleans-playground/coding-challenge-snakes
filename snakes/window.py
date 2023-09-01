@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import time
 import math
 from abc import abstractmethod
 from enum import Enum, auto
@@ -52,6 +53,10 @@ class GameState(Enum):
     IDLE = auto()
     STEP = auto()
 
+class GameSpeed(Enum):
+    SLOWER = auto()
+    FASTER = auto()
+
 
 class Window:
     def __init__(self, window, width, height, snake1=None, snake2=None):
@@ -59,6 +64,8 @@ class Window:
         self.window = window
         self.width = width
         self.height = height
+
+        self.speed = GameSpeed.SLOWER
 
         # These `i`'s do not represent the player number
         self.all_bots = {i: Agent for i, Agent in enumerate(bots)}
@@ -210,6 +217,12 @@ class Window:
 
     def set_state(self, state):
         self.game_state = state
+    
+    def set_speed(self, speed=None):
+        if speed is not None:
+            self.speed = speed
+        else:
+            self.speed = GameSpeed.FASTER if self.speed == GameSpeed.SLOWER else GameSpeed.SLOWER
 
     def restart_game(self, new_agent=None):
         # extract types from agent objects
@@ -225,6 +238,9 @@ class Window:
         what = "sprites/cherry.png" if random() > 0.05 else ".vscode/configuration.json"
         self.cherry_image = pygame.image.load(what)
         self.game = Game(agents)
+
+        # Always run the game
+        self.set_state(GameState.RUNNING)
 
     def handle_click(self, position):
         # Prioritize popup buttons
@@ -267,6 +283,12 @@ class Window:
             self.handle_mouse_hovers(self.popup.buttons)
         else:
             self.handle_mouse_hovers(self.buttons)
+    
+    def sleep(self):
+        if self.speed == GameSpeed.SLOWER:
+            time.sleep(0.1)
+        else:
+            time.sleep(0.01)
 
     def draw_arena(self):
         tile_size = math.floor(min(self.window.get_size()) / self.game.grid_size[1])
@@ -434,6 +456,15 @@ class Window:
             height=button_height,
             background_colour = TEAM_B,
             callback=lambda: self.restart_game({'agent_id':1})
+        )
+
+        button_left += button_width + self.border
+        self.button(
+            text="Slower" if self.speed == GameSpeed.FASTER else "Faster",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda s=self.speed: self.set_speed()
         )
 
     def rotate_vector(self, vector, angle):

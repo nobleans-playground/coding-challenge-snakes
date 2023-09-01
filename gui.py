@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import time
 from argparse import ArgumentParser
 
 import pygame
@@ -28,9 +27,8 @@ def main(auto_start, auto_restart, width, height, snake1, snake2):
                 return
 
         window.update()
-
         pygame.display.update()
-        time.sleep(0.1)
+        window.sleep()
 
 
 if __name__ == '__main__':
