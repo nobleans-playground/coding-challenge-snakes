@@ -6,7 +6,7 @@ import math
 from abc import abstractmethod
 from enum import Enum, auto
 import numpy as np
-from random import random, choice
+from random import random, choice, randrange
 
 import pygame
 from snakes.bots import bots
@@ -217,10 +217,12 @@ class Window:
         
         if new_agent:
             # Replace one of the snakes
-            agents[new_agent['agent_id']] = self.all_bots[new_agent['bot_id']]
+            agent_id = new_agent['agent_id']
+            bot_id = new_agent['bot_id'] if 'bot_id' in new_agent else randrange(len(self.all_bots))
+            agents[agent_id] = self.all_bots[bot_id]
 
         # Setup new game with this snake
-        what = "sprites/cherry.png" if random() > 0.05 else "snakes/util.py"
+        what = "sprites/cherry.png" if random() > 0.05 else ".vscode/configuration.json"
         self.cherry_image = pygame.image.load(what)
         self.game = Game(agents)
 
@@ -411,6 +413,27 @@ class Window:
             width=button_width,
             height=button_height,
             callback=lambda: self.restart_game()
+        )
+
+        button_left = left
+        button_top = button_top - self.border - button_height
+        self.button(
+            text="Shuffle",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            background_colour = TEAM_A,
+            callback=lambda: self.restart_game({'agent_id':0})
+        )
+
+        button_left += button_width + self.border
+        self.button(
+            text="Shuffle",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            background_colour = TEAM_B,
+            callback=lambda: self.restart_game({'agent_id':1})
         )
 
     def rotate_vector(self, vector, angle):
