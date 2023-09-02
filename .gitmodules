@@ -42,3 +42,7 @@
 	path = snakes/bots/rokusottervanger
 	url = git@github.com:rokusottervanger/coding-challenge-snakes-bot-rokus.git
 	branch = main
+[submodule "snakes/bots/mukunda"]
+	path = snakes/bots/mukunda
+	url = git@github.com:mbharatheesha/nobleo_snakes.git
+	branch = main

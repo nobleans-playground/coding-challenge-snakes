@@ -13,6 +13,7 @@ from .lewie.bot import LewieBot
 from .bram.bot import Slytherin
 from .daniel.bot import Explorer
 from .rokusottervanger.bot import OtterByte
+from .mukunda.bot import Snakunamatata
 
 bots = (
     Random,
@@ -26,4 +27,5 @@ bots = (
     Slytherin,
     Explorer,
     OtterByte,
+    Snakunamatata,
 )
