@@ -8,31 +8,36 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Current ranking
 
-|Name                       |Wins|Rate  |Matches
-|--|--|--|--|
-Serpent of the Light        | 84| 93.3% | 90 |
-Apologetic Apophis          | 79| 87.8% | 90 |
-Explorer                    | 77| 85.6% | 90 |
-Bite my shiny metal ass     | 38| 42.2% | 90 |
-Slytherin                   | 35| 38.9% | 90 |
-Sneaky Snake                | 33| 36.7% | 90 |
-Wolverine                   | 33| 36.7% | 90 |
-Not a Template              | 32| 35.6% | 90 |
-Random                      | 27| 30.0% | 90 |
-Greedy Gerard               | 26| 28.9% | 90 |
+|Name                      | Wins|  Rate |Matches|CPU|CPU/t
+|--|--|--|--|--|--|
+Snakunamatata              | 977 | 88.8% | 1100 | 54.2 | 0.5
+Explorer                   | 937 | 85.2% | 1100 | 74.6 | 0.1
+Apologetic Apophis         | 927 | 84.3% | 1100 | 50.8 | 0.1
+Serpent of the Light       | 926 | 84.2% | 1100 | 45.2 | 0.1
+Wolverine                  | 410 | 37.3% | 1100 | 47.1 | 0.1
+Sneaky Snake               | 401 | 36.5% | 1100 | 46.9 | 0.1
+OtterByte                  | 398 | 36.2% | 1100 | 48.1 | 0.1
+Bite my shiny metal ass    | 387 | 35.2% | 1100 | 47.8 | 0.1
+Greedy Gerard              | 386 | 35.1% | 1100 | 48.8 | 0.1
+Slytherin                  | 380 | 34.5% | 1100 | 46.8 | 0.1
+Not a Template             | 378 | 34.4% | 1100 | 46.5 | 0.1
+Random                     | 375 | 34.1% | 1100 | 42.1 | 0.1
 
-| Name                | Elo
+
+Name                 | Elo
 |--|--|
-Serpent of the Light | 2252 |
-Apologetic Apophis   | 2161 |
-Explorer             | 2072 |
-Bite my shiny metal ass | 1278 |
-Slytherin            | 1232 |
-Sneaky Snake         | 1230 |
-Wolverine            | 1221 |
-Not a Template       | 1212 |
-Random               | 1169 |
-Greedy Gerard        | 1172 |
+Snakunamatata        | 2039
+Explorer             | 1993
+Apologetic Apophis   | 1967
+Serpent of the Light | 1955
+Wolverine            | 1273
+Sneaky Snake         | 1268
+OtterByte            | 1271
+Bite my shiny metal ass | 1251
+Greedy Gerard        | 1246
+Slytherin            | 1251
+Not a Template       | 1249
+Random               | 1237
 
 ## Description
 
