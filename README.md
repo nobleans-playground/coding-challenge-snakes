@@ -4,7 +4,7 @@ Copyright 2023 Nobleo Technology B.V.
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Coding Challange: Multiplayer Snake [![Python application](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/Rayman/coding-challenge-snakes/actions/workflows/python-app.yml)
+# Coding Challange: Multiplayer Snake [![Python application](https://github.com/nobleans-playground/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/nobleans-playground/coding-challenge-snakes/actions/workflows/python-app.yml)
 
 ## Current ranking
 
@@ -89,7 +89,7 @@ You can follow the following steps to create your own bot.
 
 ## Running the bots on your machine
 
-1. Clone this repository using `git clone --recursive git@github.com:Rayman/coding-challenge-snakes.git`.
+1. Clone this repository using `git clone --recursive git@github.com:nobleans-playground/coding-challenge-snakes.git`.
    The `--recursive` is to pull in all submodule bots.
 2. Install all the dependencies
    - **On linux** `sudo apt install -y python3-more-itertools python3-numpy python3-pandas python3-pygame python3-scipy`
