@@ -66,6 +66,8 @@ class Window:
         self.height = height
 
         self.speed = GameSpeed.SLOWER
+        self.presenting = False
+        self.waiting_from = None
 
         # These `i`'s do not represent the player number
         self.all_bots = {i: Agent for i, Agent in enumerate(bots)}
@@ -138,7 +140,7 @@ class Window:
 
         def on_exit(self, bot_id):
             # Start new game
-            self.root.restart_game({'agent_id': self.player, 'bot_id': bot_id})
+            self.root.restart_game([{'agent_id': self.player, 'bot_id': bot_id}])
 
             # Close the popup
             self.root.popup = None
@@ -223,12 +225,17 @@ class Window:
             self.speed = speed
         else:
             self.speed = GameSpeed.FASTER if self.speed == GameSpeed.SLOWER else GameSpeed.SLOWER
+    
+    def set_presenting(self, should_present=None):
+        if should_present is None:
+            should_present = not self.presenting
+        self.presenting = should_present
 
-    def restart_game(self, new_agent=None):
+    def restart_game(self, new_agents=[]):
         # extract types from agent objects
         agents = {i: type(agent) for i, agent in self.game.agents.items()}
         
-        if new_agent:
+        for new_agent in new_agents:
             # Replace one of the snakes
             agent_id = new_agent['agent_id']
             bot_id = new_agent['bot_id'] if 'bot_id' in new_agent else randrange(len(self.all_bots))
@@ -265,11 +272,21 @@ class Window:
     def update(self):
         if self.game_state == GameState.RUNNING or self.game_state == GameState.STEP:
             if not self.game.finished():
+                self.waiting_from = None
                 self.game.update()
             if self.game_state == GameState.STEP:
                 self.game_state = GameState.IDLE
         if self.game.finished():
             self.game_state = GameState.FINISHED
+
+            if self.presenting and self.waiting_from is None:
+                self.waiting_from = time.time()
+
+            if self.presenting and time.time() - self.waiting_from > 3:
+                # Done waiting, gonna start the next round
+                self.waiting_from = None
+                self.restart_game([{'agent_id':0}, {'agent_id':1}])
+
 
         self.window.fill(BLACK)
         self.buttons = []  # This is so inefficient.
@@ -381,7 +398,8 @@ class Window:
             self.window.blit(text_object, (left + self.border, top + self.border))
 
             # Draw contributor
-            text_to_render = f"{self.game.agents[index].contributor}  | CPU: {round(self.game.cpu[index] / self.game.turns * 1e6,2)} us"
+            cpu_time = round(self.game.cpu[index] / self.game.turns * 1e6,2) if self.game.turns > 0 else 0
+            text_to_render = f"{self.game.agents[index].contributor}  | CPU: {cpu_time} us"
             font = pygame.font.SysFont(None, 26)
             text_object = font.render(text_to_render, True, WHITE)
             self.window.blit(text_object, (left + self.border, top + self.border + text_size[1] + self.border))
@@ -445,7 +463,7 @@ class Window:
             width=button_width,
             height=button_height,
             background_colour = TEAM_A,
-            callback=lambda: self.restart_game({'agent_id':0})
+            callback=lambda: self.restart_game([{'agent_id':0}])
         )
 
         button_left += button_width + self.border
@@ -455,7 +473,7 @@ class Window:
             width=button_width,
             height=button_height,
             background_colour = TEAM_B,
-            callback=lambda: self.restart_game({'agent_id':1})
+            callback=lambda: self.restart_game([{'agent_id':1}])
         )
 
         button_left += button_width + self.border
@@ -465,6 +483,15 @@ class Window:
             width=button_width,
             height=button_height,
             callback=lambda s=self.speed: self.set_speed()
+        )
+
+        button_left += button_width + self.border
+        self.button(
+            text="Stop Show" if self.presenting else "Start Show",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda s=self.speed: self.set_presenting()
         )
 
     def rotate_vector(self, vector, angle):
