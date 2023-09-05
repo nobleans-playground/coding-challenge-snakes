@@ -53,6 +53,29 @@ There are two example bots implemented
 - [Random](./snakes/bots/random.py)
 - [Simple Eater](https://github.com/nobleans-playground/coding-challenge-snakes-bot-template/blob/main/bot.py)
 
+## Rules
+
+1. You are allowed to submit a maximum of two bots.
+2. Your bot must be your own creation.
+This rule is so that you may not blatantly copy someone's bot, change only a few lines, and then submit it as your own.
+*Some* code duplication is of course inevitable and thus allowed, because the logic might be similar between bots.
+3. The code of the game is law.
+The rules of the game are implemented in the code.
+If you want to know the specific rules of the game, please look at the code.
+If the game determines you've won a game, that is the outcome.
+4. Please limit the processing time of your bot.
+Currently, there's a hard limit of `100ms` _average_ time-per-move as measured by [tournament.py](./tournament.py).
+Please talk to one of the organizers if you think this is too short.
+You can also use a profiler to try and make your code faster.
+5. You can only use the Python libraries that are in the [requirements.txt](./requirements.txt) file.
+If you want to use another library, please let one of the organizers know.
+6. Multithreading is not allowed
+7. Targeting a specific other bot is not allowed, although you may target the tactics of a general class of bot.
+This means you are not allowed to use a bots ID to apply a specific strategy.
+This also means is also not allowed to detect your other bot and 'suicide' when encountered.
+8. You are not allowed to read or alter the game's internal state, or the state of the other bot.
+You can only use the information that is given via the interface.
+
 ## How the bot interface works
 
 Your bot will be initialized with an id and the size of the grid.
