@@ -46,3 +46,6 @@
 	path = snakes/bots/mukunda
 	url = git@github.com:mbharatheesha/nobleo_snakes.git
 	branch = main
+[submodule "snakes/bots/ferry"]
+	path = snakes/bots/ferry
+	url = https://github.com/MCFurry/furry_muncher.git
