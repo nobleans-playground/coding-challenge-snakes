@@ -14,6 +14,7 @@ from .bram.bot import Slytherin
 from .daniel.bot import Explorer
 from .rokusottervanger.bot import OtterByte
 from .mukunda.bot import Snakunamatata
+from .ferry.bot import FurryMuncher
 
 bots = (
     Random,
@@ -28,4 +29,5 @@ bots = (
     Explorer,
     OtterByte,
     Snakunamatata,
+    FurryMuncher,
 )
