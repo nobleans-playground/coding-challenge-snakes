@@ -116,9 +116,9 @@ class Game:
                                                                    candies=deepcopy(self.candies))
         except Exception as e:
             move_value = e
-        finally:
-            self.cpu[snake.id] += time() - start
-            return move_value
+
+        self.cpu[snake.id] += time() - start
+        return move_value
 
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
         # first, move the snakes and record which candies have been eaten
