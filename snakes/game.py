@@ -117,8 +117,8 @@ class Game:
                 rank = 1
                 score = calculate_final_score(len(snake), rank)
                 bonus = score - len(snake)
-                print(
-                    f'snake {snake.id} survived {self.turns} turns and got {bonus} bonus points for a final score of {score}')
+                print(f'{self._snake_to_string(snake)} survived {self.turns} turns and got {bonus} bonus points for a '
+                      f'final score of {score}')
                 self.scores[snake.id] = score
 
     def _get_agents_move(self, snake):
@@ -165,14 +165,16 @@ class Game:
         for snake, move_value in moves:  # we only need to check the snakes that have moved
             if not isinstance(move_value, Move):
                 if isinstance(move_value, Exception):
-                    print(f'agent {snake.id} did not return an instance of Move, it returned an exception:')
+                    print(
+                        f'{self._snake_to_string(snake)} did not return an instance of Move, it returned an exception:')
                     print_exception(type(move_value), move_value, move_value.__traceback__)
                 else:
-                    print(f'agent {snake.id} did not return an instance of Move, it returned a {move_value!r}')
+                    print(
+                        f'{self._snake_to_string(snake)} did not return an instance of Move, it returned a {move_value!r}')
                 dead.append(snake)
                 continue
             if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
-                print(f'snake {snake.id} went out-of-bounds')
+                print(f'{self._snake_to_string(snake)} went out-of-bounds')
                 dead.append(snake)
                 continue
 
@@ -185,11 +187,11 @@ class Game:
                             self_collision = True
                             break
                     if self_collision:
-                        print(f'snake {snake.id} collided with itself')
+                        print(f'{self._snake_to_string(snake)} collided with itself')
                         dead.append(snake)
                         break
                 elif other_snake.collides(snake[0]):
-                    print(f'snake {snake.id} collided with snake {other_snake.id}')
+                    print(f'{self._snake_to_string(snake)} collided with snake {other_snake.id}')
                     dead.append(snake)
                     break
 
@@ -197,7 +199,8 @@ class Game:
         for snake in dead:
             score = calculate_final_score(len(snake), rank)
             bonus = score - len(snake)
-            print(f'snake {snake.id} died in {rank} place got {bonus} bonus points for a final score of {score}')
+            print(
+                f'{self._snake_to_string(snake)} died in {rank} place got {bonus} bonus points for a final score of {score}')
             self.scores[snake.id] = score
 
         for snake in dead:
@@ -208,7 +211,8 @@ class Game:
                 rank = 1
                 score = calculate_final_score(len(snake), rank)
                 bonus = score - len(snake)
-                print(f'snake {snake.id} survived and got {bonus} bonus points for a final score of {score}')
+                print(
+                    f'{self._snake_to_string(snake)} survived and got {bonus} bonus points for a final score of {score}')
                 self.scores[snake.id] = score
 
     def possible_scores(self):
@@ -243,3 +247,6 @@ class Game:
     def finished(self):
         # if every snake has a score, the game is finished
         return len(self.scores) == len(self.agents)
+
+    def _snake_to_string(self, snake: Snake) -> str:
+        return f'{self.agents[snake.id].name} ({snake.id})'
