@@ -2,17 +2,18 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import time
 import math
+import time
 from abc import abstractmethod
 from enum import Enum, auto
-import numpy as np
 from random import random, choice, randrange
 
+import numpy as np
 import pygame
-from snakes.bots import bots
-from snakes.game import Game
-from commandline import levenshtein_ratio
+
+from .bots import bots
+from .game import Game
+from .utils import levenshtein_ratio
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
