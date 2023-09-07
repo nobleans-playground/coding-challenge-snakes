@@ -33,20 +33,31 @@ def main(games, benchmark):
             name_matches = [levenshtein_ratio(name, benchmark) for name in names]
             a = np.argmax(name_matches)
 
-        for _ in range(games):
-            if benchmark:
+        n = 1
+        if benchmark:
+            number_of_games = games * (len(bots) - 1)
+            for _ in range(games):
                 for b in range(len(bots)):
-                    if a != b:
-                        agents = {a: bots[a], b: bots[b]}
-                        row = single_game(agents)
-                        writer.writerow(row)
-                        f.flush()
-            else:
+                    if a == b:
+                        continue  # skip games against itself
+                    agents = {a: bots[a], b: bots[b]}
+                    row = single_game(agents)
+                    writer.writerow(row)
+                    f.flush()
+
+                    print(f'Progress: {100 * n / number_of_games:.1f}% [{n} / {number_of_games}]')
+                    n += 1
+        else:
+            number_of_games = games * len(bots) * (len(bots) - 1) // 2
+            for _ in range(games):
                 for a, b in combinations(range(len(bots)), r=2):
                     agents = {a: bots[a], b: bots[b]}
                     row = single_game(agents)
                     writer.writerow(row)
                     f.flush()
+
+                    print(f'Progress: {100 * n / number_of_games:.1f}% [{n} / {number_of_games}]')
+                    n += 1
 
         f.seek(0)
         df = pandas.read_csv(f)
