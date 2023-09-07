@@ -9,13 +9,15 @@ from argparse import ArgumentParser
 from itertools import combinations
 from tempfile import NamedTemporaryFile
 
+import numpy as np
 import pandas
 
 from snakes.bots import bots
 from snakes.game import Game, RoundType
+from snakes.utils import levenshtein_ratio
 
 
-def main(games):
+def main(games, benchmark):
     # write to a temporary file so that we have partial scores in case of a crash
     with NamedTemporaryFile('w+', suffix='.csv', delete=False) as f:
         print(f'writing game results to {f.name}')
@@ -26,12 +28,25 @@ def main(games):
         fieldnames = list(range(len(bots))) + ['turns'] + ['cpu_' + name for name in names]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
 
+        if benchmark:
+            names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
+            name_matches = [levenshtein_ratio(name, benchmark) for name in names]
+            a = np.argmax(name_matches)
+
         for _ in range(games):
-            for a, b in combinations(range(len(bots)), r=2):
-                agents = {a: bots[a], b: bots[b]}
-                row = single_game(agents)
-                writer.writerow(row)
-                f.flush()
+            if benchmark:
+                for b in range(len(bots)):
+                    if a != b:
+                        agents = {a: bots[a], b: bots[b]}
+                        row = single_game(agents)
+                        writer.writerow(row)
+                        f.flush()
+            else:
+                for a, b in combinations(range(len(bots)), r=2):
+                    agents = {a: bots[a], b: bots[b]}
+                    row = single_game(agents)
+                    writer.writerow(row)
+                    f.flush()
 
         f.seek(0)
         df = pandas.read_csv(f)
@@ -65,6 +80,7 @@ def single_game(agents):
 if __name__ == '__main__':
     parser = ArgumentParser(description='Nobleo Snakes')
     parser.add_argument('-g', '--games', default=10, type=int, help="Number of games to play")
+    parser.add_argument('-b', '--benchmark', metavar='SNAKE', help='Benchmark 1 agent against all others')
     args = parser.parse_args()
 
     try:
