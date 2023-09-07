@@ -48,4 +48,5 @@
 	branch = main
 [submodule "snakes/bots/ferry"]
 	path = snakes/bots/ferry
-	url = https://github.com/MCFurry/furry_muncher.git
+	url = git@github.com:MCFurry/furry_muncher.git
+	branch = main
