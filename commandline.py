@@ -14,20 +14,42 @@ from snakes.bots import bots
 from snakes.game import Game, RoundType
 from snakes.utils import levenshtein_ratio
 
+numbers = ['⓪']
+
+
+def fill_numbers():
+    one = '①'.encode()
+    for i in range(20):
+        ba = bytearray(one)
+        ba[2] += i
+        numbers.append(bytes(ba).decode())
+
+
+fill_numbers()
+
+
+def number_to_circled(number: int) -> str:
+    return numbers[number % len(numbers)]
+
 
 class Printer:
     def print(self, game):
         grid = np.empty(game.grid_size, dtype=str)
-        for x in range(game.grid_size[0]):
-            for y in range(game.grid_size[1]):
-                grid[x, y] = ' '
+        grid.fill(' ')
         for snake in game.snakes:
             print(f'name={game.agents[snake.id].name!r} {snake}')
             for pos in snake:
-                grid[pos[0], pos[1]] = str(snake.id)
+                grid[pos[0], pos[1]] = number_to_circled(snake.id)
         for candy in game.candies:
             grid[candy[0], candy[1]] = '*'
-        print(np.flipud(grid.T))
+
+        print(f' {"▁" * 2 * game.grid_size[0]}▁ ')
+        for j in reversed(range(grid.shape[1])):
+            print('▕', end='')
+            for i in range(grid.shape[0]):
+                print(f' {grid[i, j]}', end='')
+            print(' ▏')
+        print(f' {"▔" * 2 * game.grid_size[0]}▔ ')
 
 
 def main(snake1, snake2, rate):
