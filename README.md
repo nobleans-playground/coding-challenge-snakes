@@ -8,36 +8,37 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Current ranking
 
-|Name                      | Wins|  Rate |Matches|CPU|CPU/t
-|--|--|--|--|--|--|
-Snakunamatata              | 977 | 88.8% | 1100 | 54.2 | 0.5
-Explorer                   | 937 | 85.2% | 1100 | 74.6 | 0.1
-Apologetic Apophis         | 927 | 84.3% | 1100 | 50.8 | 0.1
-Serpent of the Light       | 926 | 84.2% | 1100 | 45.2 | 0.1
-Wolverine                  | 410 | 37.3% | 1100 | 47.1 | 0.1
-Sneaky Snake               | 401 | 36.5% | 1100 | 46.9 | 0.1
-OtterByte                  | 398 | 36.2% | 1100 | 48.1 | 0.1
-Bite my shiny metal ass    | 387 | 35.2% | 1100 | 47.8 | 0.1
-Greedy Gerard              | 386 | 35.1% | 1100 | 48.8 | 0.1
-Slytherin                  | 380 | 34.5% | 1100 | 46.8 | 0.1
-Not a Template             | 378 | 34.4% | 1100 | 46.5 | 0.1
-Random                     | 375 | 34.1% | 1100 | 42.1 | 0.1
+| Name                    | Wins | Rate  | Matches | CPU   | CPU/t |
+|-------------------------|------|-------|---------|-------|-------|
+| Snakunamatata           | 1028 | 85.7% | 1200    | 70.5  | 1.0   |
+| Explorer                | 988  | 82.3% | 1200    | 103.1 | 0.3   |
+| Serpent of the Light    | 985  | 82.1% | 1200    | 53.9  | 0.2   |
+| Apologetic Apophis      | 984  | 82.0% | 1200    | 64.0  | 0.2   |
+| FurryMuncher            | 977  | 81.4% | 1200    | 201.9 | 0.7   |
+| Greedy Gerard           | 410  | 34.2% | 1200    | 56.2  | 0.1   |
+| Bite my shiny metal ass | 403  | 33.6% | 1200    | 56.9  | 0.1   |
+| OtterByte               | 396  | 33.0% | 1200    | 56.4  | 0.1   |
+| Random                  | 390  | 32.5% | 1200    | 50.3  | 0.1   |
+| Sneaky Snake            | 389  | 32.4% | 1200    | 55.5  | 0.1   |
+| Not a Template          | 383  | 31.9% | 1200    | 56.0  | 0.1   |
+| Slytherin               | 381  | 31.8% | 1200    | 57.1  | 0.1   |
+| Wolverine               | 365  | 30.4% | 1200    | 59.5  | 0.1   |
 
-
-Name                 | Elo
-|--|--|
-Snakunamatata        | 2039
-Explorer             | 1993
-Apologetic Apophis   | 1967
-Serpent of the Light | 1955
-Wolverine            | 1273
-Sneaky Snake         | 1268
-OtterByte            | 1271
-Bite my shiny metal ass | 1251
-Greedy Gerard        | 1246
-Slytherin            | 1251
-Not a Template       | 1249
-Random               | 1237
+| Name                    | Elo  |
+|-------------------------|------|
+| Snakunamatata           | 2000 |
+| Explorer                | 1967 |
+| Serpent of the Light    | 1947 |
+| Apologetic Apophis      | 1945 |
+| FurryMuncher            | 1935 |
+| Greedy Gerard           | 1226 |
+| Bite my shiny metal ass | 1230 |
+| OtterByte               | 1216 |
+| Random                  | 1219 |
+| Sneaky Snake            | 1212 |
+| Not a Template          | 1206 |
+| Slytherin               | 1204 |
+| Wolverine               | 1192 |
 
 ## Description
 
