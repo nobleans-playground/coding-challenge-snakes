@@ -12,7 +12,7 @@ from typing import List, Tuple, Type, Dict
 
 import numpy as np
 
-from .constants import MOVE_VALUE_TO_DIRECTION, Move
+from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS
 from .snake import Snake
 
 
@@ -31,7 +31,8 @@ class Game:
                  grid_size: Tuple[int, int] = (16, 16),
                  round_type: RoundType = RoundType.TURNS,
                  snakes: List[Snake] = None,
-                 candies: List[np.array] = None):
+                 candies: List[np.array] = None,
+                 max_turns: int = MAX_TURNS):
         assert isinstance(agents, dict)
         assert isinstance(grid_size, Tuple)
         self.grid_size = grid_size
@@ -41,6 +42,7 @@ class Game:
         self.turns = 0  # Amount of turns that have passed
         self.snakes = snakes  # snake.id refers to an agent.id
         self.candies = candies
+        self.max_turns = max_turns
         self.scores = {}  # map from snake.id to score
         self.cpu = {i: 0 for i in agents}  # map from snake.id to score
 
@@ -90,6 +92,8 @@ class Game:
 
             self._do_moves(moves)
 
+            self.turns += 1
+
         elif self.round_type == RoundType.TURNS:
 
             agent_id = list(self.agents)[self.turn]
@@ -99,13 +103,23 @@ class Game:
 
             while True:
                 # increment turn
-                self.turn = (self.turn + 1) % len(self.agents)
+                self.turn += 1
+                if self.turn == len(self.agents):
+                    self.turn = 0
+                    self.turns += 1  # every player has had 1 turn
                 snake_id = list(self.agents.keys())[self.turn]
                 # skip agents that are dead
                 if len([True for s in self.snakes if s.id == snake_id]):
                     break
 
-        self.turns += 1
+        if self.turns >= self.max_turns:
+            for snake in self.snakes:
+                rank = 1
+                score = calculate_final_score(len(snake), rank)
+                bonus = score - len(snake)
+                print(
+                    f'snake {snake.id} survived {self.turns} turns and got {bonus} bonus points for a final score of {score}')
+                self.scores[snake.id] = score
 
     def _get_agents_move(self, snake):
         snake = deepcopy(snake)
@@ -227,4 +241,5 @@ class Game:
         return ranking
 
     def finished(self):
-        return len(self.snakes) <= 1
+        # if every snake has a score, the game is finished
+        return len(self.scores) == len(self.agents)
