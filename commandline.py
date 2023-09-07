@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import random
+import sys
 from argparse import ArgumentParser
 from math import isinf
 from time import sleep
@@ -52,7 +54,7 @@ class Printer:
         print(f' {"▔" * 2 * game.grid_size[0]}▔ ')
 
 
-def main(snake1, snake2, rate):
+def main(snake1, snake2, rate, seed):
     names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
 
     name_matches = [levenshtein_ratio(name, snake1) for name in names]
@@ -63,6 +65,10 @@ def main(snake1, snake2, rate):
 
     # One agent could be up against itself, so we'll need to give new ids
     agents = {0: bots[agent1], 1: bots[agent2]}
+
+    if seed is None:
+        seed = random.randrange(sys.maxsize)
+    random.seed(seed)
 
     game = Game(agents=agents, round_type=RoundType.TURNS)
     printer = Printer()
@@ -76,6 +82,8 @@ def main(snake1, snake2, rate):
         if game.finished():
             break
 
+    print(f'For a replay of this game run the following command:\n./commandline.py {snake1!r} {snake2!r} --seed {seed}')
+    print()
     print(f'{"Id":4}{"Name":20} Final position')
     for id, rank in game.rank().items():
         print(f'{id:<4}{game.agents[id].name:20} {rank}')
@@ -86,6 +94,7 @@ if __name__ == '__main__':
     parser.add_argument('snake1', help="Name of snake 1")
     parser.add_argument('snake2', help="Name of snake 2")
     parser.add_argument('-r', '--rate', default=float('inf'), type=float, help="Playback rate (Hz)")
+    parser.add_argument('-s', '--seed', type=int, help='Random seed')
     args = parser.parse_args()
 
     try:
