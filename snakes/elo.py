@@ -44,7 +44,7 @@ def estimate_elo(df):
         return np.array(residuals)
 
     res = least_squares(fun, x0, verbose=2)
-    return res.x
+    return pd.Series(res.x, index=df.columns)
 
 
 def expected_score(rating_a, rating_b):
