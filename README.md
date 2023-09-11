@@ -8,37 +8,21 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Current ranking
 
-| Name                    | Wins | Rate  | Matches | CPU   | CPU/t |
-|-------------------------|------|-------|---------|-------|-------|
-| Snakunamatata           | 1028 | 85.7% | 1200    | 70.5  | 1.0   |
-| Explorer                | 988  | 82.3% | 1200    | 103.1 | 0.3   |
-| Serpent of the Light    | 985  | 82.1% | 1200    | 53.9  | 0.2   |
-| Apologetic Apophis      | 984  | 82.0% | 1200    | 64.0  | 0.2   |
-| FurryMuncher            | 977  | 81.4% | 1200    | 201.9 | 0.7   |
-| Greedy Gerard           | 410  | 34.2% | 1200    | 56.2  | 0.1   |
-| Bite my shiny metal ass | 403  | 33.6% | 1200    | 56.9  | 0.1   |
-| OtterByte               | 396  | 33.0% | 1200    | 56.4  | 0.1   |
-| Random                  | 390  | 32.5% | 1200    | 50.3  | 0.1   |
-| Sneaky Snake            | 389  | 32.4% | 1200    | 55.5  | 0.1   |
-| Not a Template          | 383  | 31.9% | 1200    | 56.0  | 0.1   |
-| Slytherin               | 381  | 31.8% | 1200    | 57.1  | 0.1   |
-| Wolverine               | 365  | 30.4% | 1200    | 59.5  | 0.1   |
-
-| Name                    | Elo  |
-|-------------------------|------|
-| Snakunamatata           | 2000 |
-| Explorer                | 1967 |
-| Serpent of the Light    | 1947 |
-| Apologetic Apophis      | 1945 |
-| FurryMuncher            | 1935 |
-| Greedy Gerard           | 1226 |
-| Bite my shiny metal ass | 1230 |
-| OtterByte               | 1216 |
-| Random                  | 1219 |
-| Sneaky Snake            | 1212 |
-| Not a Template          | 1206 |
-| Slytherin               | 1204 |
-| Wolverine               | 1192 |
+|                         | Wins | Rate  | CPU   | CPU/t | Matches | Elo    |
+|-------------------------|------|-------|-------|-------|---------|--------|
+| Snakunamatata           | 1107 | 90.0% | 35.3  | 0.4   | 1200    | 2253.5 |
+| Serpent of the Light    | 1089 | 90.0% | 347.7 | 4.9   | 1200    | 2227.5 |
+| Explorer                | 956  | 80.0% | 42.5  | 0.2   | 1200    | 2020.1 |
+| FurryMuncher            | 923  | 80.0% | 182.4 | 0.6   | 1200    | 1934.9 |
+| Apologetic Apophis      | 906  | 80.0% | 57.2  | 0.2   | 1200    | 1906.2 |
+| Slytherin               | 399  | 30.0% | 42.6  | 0.1   | 1200    | 1161.7 |
+| Bite my shiny metal ass | 394  | 30.0% | 41.9  | 0.1   | 1200    | 1153.4 |
+| Greedy Gerard           | 392  | 30.0% | 42.5  | 0.1   | 1200    | 1145.6 |
+| Sneaky Snake            | 391  | 30.0% | 41.8  | 0.1   | 1200    | 1153.9 |
+| Wolverine               | 386  | 30.0% | 42.8  | 0.1   | 1200    | 1142.6 |
+| OtterByte               | 383  | 30.0% | 43.2  | 0.1   | 1200    | 1140.3 |
+| Random                  | 377  | 30.0% | 39.4  | 0.1   | 1200    | 1132.6 |
+| Not a Template          | 361  | 30.0% | 43.4  | 0.1   | 1200    | 1127.7 |
 
 ## Description
 
