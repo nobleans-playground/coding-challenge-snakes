@@ -53,30 +53,48 @@ def expected_score(rating_a, rating_b):
 
 def print_tournament_summary(df):
     names = [name for name in df.columns if name != 'turns' and not name.startswith('cpu_')]
-    ranking = df[names]
+    cpu_names = ['cpu_' + name for name in names]
 
-    print(f'{"Name":25} Wins   Rate Matches   CPU CPU/t')
-    firsts = ranking == 1
-    for col in ranking:
-        wins = np.count_nonzero(firsts[col])
-        matches = np.count_nonzero(np.isfinite(ranking[col]))
-        winrate = 100 * wins / matches if matches else float('nan')
-        cpu = df['cpu_' + col].sum()
-        turns = df['turns'][df[col].notna()].sum()
-        cpu_per_turn = cpu / turns
-        print(f'{col:25} {np.count_nonzero(firsts[col]):4} {winrate:5.1f}% {matches:7}',
-              f'{cpu:5.1f} {cpu_per_turn * 1000:5.1f}')
+    ranking = df[names]  # contains only the individual match rankings
+
+    data = {
+        'Wins': (ranking == 1).sum(),
+        'Matches': ranking.notna().sum(),
+        'CPU': df[cpu_names].sum().rename(dict(zip(cpu_names, names))),
+        'Turns': calculate_turns(df, names)
+    }
+
+    data = pd.DataFrame(data)
+
+    data['Rate'] = data['Wins'] / data['Matches']
+    data['CPU/t'] = 1000 * data['CPU'] / data['Turns']
+
+    # reorder columns
+    data = data[['Wins', 'Rate', 'CPU', 'CPU/t', 'Turns', 'Matches']]
+    data.sort_values('Wins', inplace=True, ascending=False)
+
+    # rounding before display
+    data['Rate'] = data['Rate'].round(1)
+    data['CPU'] = data['CPU'].round(1)
+    data['CPU/t'] = data['CPU/t'].round(1)
+
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format}))
+
+    data['Elo'] = estimate_elo(ranking)
+
     print()
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'Elo': '{:.1f}'.format}))
 
-    elos = estimate_elo(ranking)
 
-    print(f'{"Name":20} Elo')
-    for name, elo in zip(ranking.columns, elos):
-        print(f'{name:20} {elo:.0f}')
-
-    expected_scores = expected_score(elos[:, np.newaxis], elos[np.newaxis, :])
-    print('\nexpected score:\n', np.array_str(expected_scores, precision=2, suppress_small=True))
+def calculate_turns(df, names):
+    turns = {}
+    for col in df[names]:
+        turns[col] = df['turns'][df[col].notna()].sum()
+    return pd.Series(turns)
 
 
 def read_csv(filepath_or_buffer):
-    return pd.read_csv(filepath_or_buffer, dtype=float)
+    df = pd.read_csv(filepath_or_buffer, dtype=float)
+    if 'turns' in df.columns:
+        df = df.astype({'turns': int})
+    return df
