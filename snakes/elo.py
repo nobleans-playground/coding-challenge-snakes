@@ -68,9 +68,10 @@ def print_tournament_summary(df):
 
     data['Rate'] = data['Wins'] / data['Matches']
     data['CPU/t'] = 1000 * data['CPU'] / data['Turns']
+    data['Turns/m'] = data['Turns'] / data['Matches']
 
     # reorder columns
-    data = data[['Wins', 'Rate', 'CPU', 'CPU/t', 'Turns', 'Matches']]
+    data = data[['Wins', 'Rate', 'CPU', 'CPU/t', 'Matches']]
     data.sort_values('Wins', inplace=True, ascending=False)
 
     # rounding before display
@@ -78,7 +79,7 @@ def print_tournament_summary(df):
     data['CPU'] = data['CPU'].round(1)
     data['CPU/t'] = data['CPU/t'].round(1)
 
-    print(data.to_string(formatters={'Rate': '{:,.1%}'.format}))
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'Elo': '{:.1f}'.format}))
 
     data['Elo'] = estimate_elo(ranking)
 
