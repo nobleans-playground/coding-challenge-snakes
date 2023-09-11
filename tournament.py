@@ -13,6 +13,7 @@ import numpy as np
 import pandas
 
 from snakes.bots import bots
+from snakes.elo import print_tournament_summary
 from snakes.game import Game, RoundType
 from snakes.utils import levenshtein_ratio
 
@@ -61,8 +62,9 @@ def main(games, benchmark):
 
         f.seek(0)
         df = pandas.read_csv(f)
-        print(df)
         print(f'\ngame were written to {f.name}')
+        print()
+        print_tournament_summary(df)
 
 
 def single_game(agents):
