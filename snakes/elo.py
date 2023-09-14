@@ -75,16 +75,18 @@ def print_tournament_summary(df):
     data.sort_values('Wins', inplace=True, ascending=False)
 
     # rounding before display
-    data['Rate'] = data['Rate'].round(1)
-    data['CPU'] = data['CPU'].round(1)
-    data['CPU/t'] = data['CPU/t'].round(1)
+    data['Rate'] = data['Rate']
+    data['CPU'] = data['CPU']
+    data['CPU/t'] = data['CPU/t']
 
-    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'Elo': '{:.1f}'.format}))
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.1f}'.format,
+                                     'Elo': '{:.1f}'.format}))
 
     data['Elo'] = estimate_elo(ranking)
 
     print()
-    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'Elo': '{:.1f}'.format}))
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.1f}'.format,
+                                     'Elo': '{:.1f}'.format}))
 
 
 def calculate_turns(df, names):
