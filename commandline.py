@@ -38,12 +38,12 @@ class Printer:
     def print(self, game):
         grid = np.empty(game.grid_size, dtype=str)
         grid.fill(' ')
+        for candy in game.candies:
+            grid[candy[0], candy[1]] = '*'
         for snake in game.snakes:
             print(f'name={game.agents[snake.id].name!r} {snake}')
             for pos in snake:
                 grid[pos[0], pos[1]] = number_to_circled(snake.id)
-        for candy in game.candies:
-            grid[candy[0], candy[1]] = '*'
 
         print(f' {"▁" * 2 * game.grid_size[0]}▁ ')
         for j in reversed(range(grid.shape[1])):
