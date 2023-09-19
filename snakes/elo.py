@@ -52,7 +52,8 @@ def expected_score(rating_a, rating_b):
 
 
 def print_tournament_summary(df):
-    names = [name for name in df.columns if name != 'turns' and not name.startswith('cpu_')]
+    reserved_names = ['turns', 'seed']
+    names = [name for name in df.columns if name not in reserved_names and not name.startswith('cpu_')]
     cpu_names = ['cpu_' + name for name in names]
 
     ranking = df[names]  # contains only the individual match rankings

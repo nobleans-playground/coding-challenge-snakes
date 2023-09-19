@@ -5,8 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import csv
+import random
+import sys
 from argparse import ArgumentParser
 from itertools import combinations
+from multiprocessing import Pool
 from tempfile import NamedTemporaryFile
 
 import numpy as np
@@ -18,15 +21,15 @@ from snakes.game import Game, RoundType
 from snakes.utils import levenshtein_ratio
 
 
-def main(games, benchmark):
+def main(games, benchmark, jobs):
     # write to a temporary file so that we have partial scores in case of a crash
     with NamedTemporaryFile('w+', suffix='.csv', delete=False) as f:
         print(f'writing game results to {f.name}')
         writer = csv.writer(f)
         # write bot names
         names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
-        writer.writerow(names + ['turns'] + ['cpu_' + name for name in names])
-        fieldnames = list(range(len(bots))) + ['turns'] + ['cpu_' + name for name in names]
+        writer.writerow(names + ['turns', 'seed'] + ['cpu_' + name for name in names])
+        fieldnames = list(range(len(bots))) + ['turns', 'seed'] + ['cpu_' + name for name in names]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
 
         if benchmark:
@@ -34,31 +37,33 @@ def main(games, benchmark):
             name_matches = [levenshtein_ratio(name, benchmark) for name in names]
             a = np.argmax(name_matches)
 
-        n = 1
+        # list of matches that need to be played
+        match_list = []  # type: Tuple[int, int, int]  # (a, b, seed)
+
         if benchmark:
-            number_of_games = games * (len(bots) - 1)
+            # number_of_games = games * (len(bots) - 1)
             for _ in range(games):
                 for b in range(len(bots)):
                     if a == b:
                         continue  # skip games against itself
-                    agents = {a: bots[a], b: bots[b]}
-                    row = single_game(agents)
-                    writer.writerow(row)
-                    f.flush()
-
-                    print(f'Progress: {100 * n / number_of_games:.1f}% [{n} / {number_of_games}]')
-                    n += 1
+                    match_list.append((a, b, random.randrange(sys.maxsize)))
         else:
-            number_of_games = games * len(bots) * (len(bots) - 1) // 2
             for _ in range(games):
                 for a, b in combinations(range(len(bots)), r=2):
-                    agents = {a: bots[a], b: bots[b]}
-                    row = single_game(agents)
-                    writer.writerow(row)
-                    f.flush()
+                    match_list.append((a, b, random.randrange(sys.maxsize)))
 
-                    print(f'Progress: {100 * n / number_of_games:.1f}% [{n} / {number_of_games}]')
-                    n += 1
+        if jobs == 1:
+            map_function = map
+        else:
+            pool = Pool()
+            map_function = pool.imap_unordered
+
+        n = 1
+        for row in map_function(single_game, match_list):
+            writer.writerow(row)
+            f.flush()
+            print(f'Progress: {100 * n / len(match_list):.1f}% [{n} / {len(match_list)}]')
+            n += 1
 
         f.seek(0)
         df = pandas.read_csv(f)
@@ -67,7 +72,10 @@ def main(games, benchmark):
         print_tournament_summary(df)
 
 
-def single_game(agents):
+def single_game(match):
+    a, b, seed = match
+    random.seed(seed)
+    agents = {a: bots[a], b: bots[b]}
     names = [Bot(id=0, grid_size=(1, 1)).name for Bot in agents.values()]
     print()
     print('Battle:', ' vs '.join(names))
@@ -86,6 +94,7 @@ def single_game(agents):
 
     row = ranking
     row['turns'] = game.turns
+    row['seed'] = seed
     row.update({'cpu_' + game.agents[i].name: cpu for i, cpu in game.cpu.items()})
     return row
 
@@ -94,6 +103,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Nobleo Snakes')
     parser.add_argument('-g', '--games', default=10, type=int, help="Number of games to play")
     parser.add_argument('-b', '--benchmark', metavar='SNAKE', help='Benchmark 1 agent against all others')
+    parser.add_argument('-j', '--jobs', default=0, type=int)
     args = parser.parse_args()
 
     try:
