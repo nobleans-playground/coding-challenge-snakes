@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from enum import auto, IntEnum
+from enum import auto, IntEnum, Enum
 
 import numpy as np
 
@@ -17,6 +17,7 @@ class Move(IntEnum):
     DOWN = auto()
     LEFT = auto()
     RIGHT = auto()
+    __str__ = Enum.__str__
 
 
 MOVES = (Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT)
