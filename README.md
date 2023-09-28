@@ -38,7 +38,39 @@ There are two example bots implemented
 - [Random](./snakes/bots/random.py)
 - [Simple Eater](https://github.com/nobleans-playground/coding-challenge-snakes-bot-template/blob/main/bot.py)
 
-## Rules
+## How the bot interface works
+
+Your bot will be initialized with an id and the size of the grid.
+The grid is specified by the amount of tiles in x and y.
+
+```py
+def __init__(self, id: int, grid_size: Tuple[int, int]):
+```
+
+Each turn your bots `determine_next_move` function will be called.
+As in input it'll receive the state of the game.
+With this information you should calculate and return which direction it should move in.
+After this function call, the move will be applied and then it's the turn of the other player.
+If you move against a wall or another player, you are dead.
+
+```py
+def determine_next_move(self, snakes: List[Snake], candies: List[np.array]) -> Move:
+```
+
+How the bot implements this function is up to you.
+You can train an AI, do some path planning or implement a method to trap opponents.
+
+## Game rules
+
+1. The exact rules of the game are implemented in [snakes/game.py](./snakes/game.py).
+2. If you go out-of-bounds, collide with another bot or return anything other than a Move, your bot will die.
+3. The amount of points you get is your longest achieved length.
+4. The longest surviving bot will get double the points.
+   This promotes eating candies, otherwise bots will stay short and hide in the corner.
+5. There is a maximum turn limit of 10k turns (see [snakes/constants.py](./snakes/constants.py)).
+   If there is no winner after these amount of turns have passed, the game is ended, both players survived the longest.
+
+## Tournament rules
 
 1. You are allowed to submit a maximum of two bots.
 2. Your bot must be your own creation.
@@ -60,28 +92,6 @@ This means you are not allowed to use a bots ID to apply a specific strategy.
 This also means is also not allowed to detect your other bot and 'suicide' when encountered.
 8. You are not allowed to read or alter the game's internal state, or the state of the other bot.
 You can only use the information that is given via the interface.
-
-## How the bot interface works
-
-Your bot will be initialized with an id and the size of the grid.
-The grid is specified by the amount of tiles in x and y.
-
-```py
-def __init__(self, id: int, grid_size: Tuple[int, int]):
-```
-
-Each turn your bots `determine_next_move` function will be called.
-As in input it'll receive the state of the game.
-With this information you should calculate and return which direction it should move in.
-After this function call, the move will be applied and then its the turn of the other player.
-If you move against a wall or another player, you are dead.
-
-```py
-def determine_next_move(self, snakes: List[Snake], candies: List[np.array]) -> Move:
-```
-
-How the bot implements this function is up to you.
-You can train an AI, do some path planning or implement a method to trap opponents.
 
 ## How to submit a bot
 
