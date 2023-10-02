@@ -34,7 +34,5 @@ class Snake(Sequence):
         return f'id={self.id} positions={self.positions.tolist()}'
 
     def collides(self, pos):
-        for p in self.positions:
-            if np.array_equal(p, pos):
-                return True
-        return False
+        assert pos.shape == (2,)
+        return np.equal(self.positions, pos).all(axis=1).any()
