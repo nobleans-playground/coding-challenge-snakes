@@ -55,7 +55,7 @@ def main(games, benchmark, jobs):
         if jobs == 1:
             map_function = map
         else:
-            pool = Pool()
+            pool = Pool(jobs if jobs else None)
             map_function = pool.imap_unordered
 
         n = 1
