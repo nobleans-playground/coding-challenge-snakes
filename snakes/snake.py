@@ -18,9 +18,8 @@ class Snake(Sequence):
         if grow:
             self.positions = np.concatenate((self.positions[0:1] + move, self.positions))
         else:
-            head = self.positions[0]
-            self.positions = np.roll(self.positions, 1, axis=0)
-            self.positions[0] = head + move
+            self.positions[1:] = self.positions[0:-1]
+            self.positions[0] += move
 
     def __iter__(self):
         return iter(self.positions)
