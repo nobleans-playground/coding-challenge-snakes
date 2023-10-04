@@ -22,10 +22,12 @@ def print_winrate(df):
 
     data = {
         'Wins': (ranking == 1).sum(),
+        'Matches': ranking.notna().sum(),
     }
 
     data = pd.DataFrame(data)
-    data.sort_values('Wins', inplace=True, ascending=False)
+    data['Rate'] = data['Wins'] / data['Matches']
+    data.sort_values('Rate', inplace=True, ascending=False)
 
     winrate = pd.DataFrame(np.full((len(names), len(names)), np.nan), index=data.index, columns=data.index)
     for a in data.index:
@@ -36,7 +38,7 @@ def print_winrate(df):
             won = (matches_participated[a] < matches_participated[b]).sum()
             winrate[a][b] = won / len(matches_participated)
 
-    print(winrate.T)
+    print(winrate.T.to_string(max_rows=np.inf, max_cols=np.inf))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)

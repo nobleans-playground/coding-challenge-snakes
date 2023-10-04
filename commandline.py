@@ -11,8 +11,10 @@ from math import isinf
 from time import sleep
 
 import numpy as np
+import pandas as pd
 
 from snakes.bots import bots
+from snakes.elo import print_tournament_summary
 from snakes.game import Game, RoundType
 from snakes.utils import levenshtein_ratio
 
@@ -84,9 +86,12 @@ def main(snake1, snake2, rate, seed):
 
     print(f'For a replay of this game run the following command:\n./commandline.py {snake1!r} {snake2!r} --seed {seed}')
     print()
-    print(f'{"Id":4}{"Name":20} Final position')
-    for id, rank in game.rank().items():
-        print(f'{id:<4}{game.agents[id].name:20} {rank}')
+    row = {game.agents[id].name: rank for id, rank in game.rank().items()}
+    row['turns'] = game.turns
+    row['seed'] = seed
+    row.update({'cpu_' + game.agents[i].name: cpu for i, cpu in game.cpu.items()})
+    df = pd.DataFrame([row])
+    print_tournament_summary(df, elo=False)
 
 
 if __name__ == '__main__':

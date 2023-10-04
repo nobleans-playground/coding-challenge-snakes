@@ -51,7 +51,7 @@ def expected_score(rating_a, rating_b):
     return 1 / (1 + 10 ** ((rating_b - rating_a) / 400))
 
 
-def print_tournament_summary(df):
+def print_tournament_summary(df, elo=True):
     reserved_names = ['turns', 'seed']
     names = [name for name in df.columns if name not in reserved_names and not name.startswith('cpu_')]
     cpu_names = ['cpu_' + name for name in names]
@@ -72,8 +72,8 @@ def print_tournament_summary(df):
     data['Turns/m'] = data['Turns'] / data['Matches']
 
     # reorder columns
-    data = data[['Wins', 'Rate', 'CPU', 'CPU/t', 'Matches']]
-    data.sort_values('Wins', inplace=True, ascending=False)
+    data = data[['Wins', 'Rate', 'CPU', 'CPU/t', 'Matches', 'Turns/m']]
+    data.sort_values('Rate', inplace=True, ascending=False)
 
     # rounding before display
     data['Rate'] = data['Rate']
@@ -81,13 +81,15 @@ def print_tournament_summary(df):
     data['CPU/t'] = data['CPU/t']
 
     print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.1f}'.format,
-                                     'Elo': '{:.1f}'.format}))
+                                     'Turns/m': '{:.1f}'.format, 'Elo': '{:.1f}'.format}))
 
+    if not elo:
+        return
     data['Elo'] = estimate_elo(ranking)
 
     print()
     print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.1f}'.format,
-                                     'Elo': '{:.1f}'.format}))
+                                     'Turns/m': '{:.1f}'.format, 'Elo': '{:.1f}'.format}))
 
 
 def calculate_turns(df, names):
