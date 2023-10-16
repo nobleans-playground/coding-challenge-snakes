@@ -15,6 +15,7 @@ from .daniel.bot import Explorer
 from .rokusottervanger.bot import OtterByte
 from .mukunda.bot import Snakunamatata
 from .ferry.bot import FurryMuncher
+from .mhoogesteger.bot import CherriesAreForLosers
 
 bots = (
     Random,
@@ -30,4 +31,5 @@ bots = (
     OtterByte,
     Snakunamatata,
     FurryMuncher,
+    CherriesAreForLosers,
 )

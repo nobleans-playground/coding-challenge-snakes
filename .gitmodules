@@ -50,3 +50,7 @@
 	path = snakes/bots/ferry
 	url = git@github.com:MCFurry/furry_muncher.git
 	branch = main
+[submodule "snakes/bots/mhoogesteger"]
+	path = snakes/bots/mhoogesteger
+	url = git@github.com:MHoogesteger/coding-challenge-snake.git
+	branch = master
