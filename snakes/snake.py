@@ -13,6 +13,7 @@ class Snake(Sequence):
         assert positions.shape[1] == 2
         self.id = id
         self.positions = positions
+        self.dead = False
 
     def move(self, move, grow=False):
         if grow:

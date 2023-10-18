@@ -16,6 +16,7 @@ from .game import Game
 from .utils import levenshtein_ratio
 
 BLACK = (0, 0, 0)
+GRAY = (64, 64, 64)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
@@ -317,7 +318,7 @@ class Window:
         eye_radius = int(tile_size * 0.4 / 2)
 
         # Draw snake
-        for snake in self.game.snakes:
+        for snake in (self.game.snakes + self.game.dead_snakes):
             for index, position in enumerate(snake):
                 if index == 0:
                     # Is head
@@ -347,7 +348,8 @@ class Window:
 
                 else:
                     # Is body
-                    pygame.draw.rect(self.window, COLOURS[snake.id], (
+                    colour = COLOURS[snake.id] if not snake.dead else GRAY
+                    pygame.draw.rect(self.window, colour, (
                         (position[0] * tile_size) + body_tile_offset,
                         self.height - ((position[1] * tile_size)) - tile_size + body_tile_offset,
                         body_size, body_size

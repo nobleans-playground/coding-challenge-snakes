@@ -41,6 +41,7 @@ class Game:
         self.turn = 0  # Index of the Agent which turn it is, only used when rount_type == TURN
         self.turns = 0  # Amount of turns that have passed
         self.snakes = snakes  # snake.id refers to an agent.id
+        self.dead_snakes = []
         self.candies = candies
         self.max_turns = max_turns
         self.scores = {}  # map from snake.id to score
@@ -204,6 +205,8 @@ class Game:
             self.scores[snake.id] = score
 
         for snake in dead:
+            snake.dead = True
+            self.dead_snakes.append(snake)
             self.snakes.remove(snake)
 
         if len(self.snakes) <= 1:
