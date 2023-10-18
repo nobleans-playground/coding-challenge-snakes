@@ -319,8 +319,17 @@ class Window:
 
         # Draw snake
         for snake in (self.game.snakes + self.game.dead_snakes):
-            for index, position in enumerate(snake):
+            previous_pos = None
+            body_colour = COLOURS[snake.id] if not snake.dead else GRAY
+            for index, position in reversed(list(enumerate(snake))):
                 if index == 0:
+                    # Neck drawn first so head goes on top, as it should
+                    pygame.draw.line(self.window, body_colour,
+                        (int((position[0] + 0.5) * tile_size), self.height - (int((position[1] + 0.5) * tile_size))), 
+                        (int((previous_pos[0] + 0.5) * tile_size), self.height - (int((previous_pos[1] + 0.5) * tile_size))), 
+                        body_size
+                    )
+                    
                     # Is head
                     pygame.draw.circle(self.window, COLOURS[snake.id], (
                         int((position[0] + 0.5) * tile_size),
@@ -345,15 +354,22 @@ class Window:
                             int((position[0] + 0.5) * tile_size + corrected_eye_offset[0]),
                             int(self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1]),
                         ), eye_radius // 2)
+                    
+                    previous_pos = position
 
                 else:
                     # Is body
-                    colour = COLOURS[snake.id] if not snake.dead else GRAY
-                    pygame.draw.rect(self.window, colour, (
-                        (position[0] * tile_size) + body_tile_offset,
-                        self.height - ((position[1] * tile_size)) - tile_size + body_tile_offset,
-                        body_size, body_size
-                    ))
+                    if previous_pos is not None:
+                        pygame.draw.line(self.window, body_colour,
+                            (int((position[0] + 0.5) * tile_size), self.height - (int((position[1] + 0.5) * tile_size))), 
+                            (int((previous_pos[0] + 0.5) * tile_size), self.height - (int((previous_pos[1] + 0.5) * tile_size))), 
+                            body_size
+                        )
+                    pygame.draw.circle(self.window, body_colour, (
+                        int((position[0] + 0.5) * tile_size),
+                        self.height - (int((position[1] + 0.5) * tile_size)),
+                    ), (body_size // 2) - 1) # Don't ask me why -1
+                    previous_pos = position
 
         # Draw candies
         scaled_cherry = pygame.transform.scale(self.cherry_image, (tile_size, tile_size))
