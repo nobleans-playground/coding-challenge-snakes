@@ -36,7 +36,12 @@ class Game:
         assert isinstance(agents, dict)
         assert isinstance(grid_size, Tuple)
         self.grid_size = grid_size
-        self.agents = {i: Agent(id=i, grid_size=grid_size) for i, Agent in agents.items()}
+        self.agents = {}
+        self.cpu = {i: 0 for i in agents}  # map from snake.id to CPU time
+        for i, Agent in agents.items():
+            start = time()
+            self.agents[i] = Agent(id=i, grid_size=grid_size)
+            self.cpu[i] += time() - start
         self.round_type = round_type
         self.turn = 0  # Index of the Agent which turn it is, only used when rount_type == TURN
         self.turns = 0  # Amount of turns that have passed
@@ -45,7 +50,6 @@ class Game:
         self.candies = candies
         self.max_turns = max_turns
         self.scores = {}  # map from snake.id to score
-        self.cpu = {i: 0 for i in agents}  # map from snake.id to score
 
         if snakes is None:
             self.snakes = []
