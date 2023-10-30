@@ -20,7 +20,7 @@ from .mhoogesteger.bot_pathfinding_wip import ThereIsNoCandy
 # from .brammmieee.bot import RLQuaza
 
 bots = (
-    Random,
+    # Random,
     # ExampleBot,  # Disabled: Template
     ApologeticApophis,
     # TemplateSnake,  # Disabled: Template not modified

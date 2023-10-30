@@ -75,22 +75,11 @@ class Window:
         self.all_bots = {i: Agent for i, Agent in enumerate(bots)}
 
         # Determine which bots will play the game
-        agents = {}
-        names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
-        if snake1:
-            name_matches = [levenshtein_ratio(name, snake1) for name in names]
-            agents[0] = self.all_bots[np.argmax(name_matches)]
-        else:
-            agents[0] = choice(self.all_bots)
-        if snake2: 
-            name_matches = [levenshtein_ratio(name, snake2) for name in names]
-            agents[1] = self.all_bots[np.argmax(name_matches)]
-        else:
-            agents[1] = choice(self.all_bots)
-        
+        agents = {i: Bot for i, Bot in enumerate(bots)}
+
         # Create the first game with the first two bots
         # The ID's will always represent the player number
-        self.game = Game(agents=agents)
+        self.game = Game(grid_size=(32, 32), agents=agents)
 
         # Some GUI stuff
         pygame.font.init()
