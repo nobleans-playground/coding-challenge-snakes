@@ -4,6 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import random
 from argparse import ArgumentParser
 
 import pygame
@@ -11,10 +12,13 @@ import pygame
 from snakes.window import Window
 
 
-def main(auto_start, auto_restart, width, height, snake1, snake2):
+def main(auto_start, auto_restart, width, height, snake1, snake2, seed):
     pygame.init()
     pygame_display = pygame.display.set_mode((width, height))
     pygame.display.set_caption('Nobleo Snake Battle!')
+
+    if seed is not None:
+        random.seed(seed)
 
     window = Window(pygame_display, width, height, snake1, snake2)
 
@@ -43,6 +47,7 @@ if __name__ == '__main__':
                         help='height of the window')
     parser.add_argument('--snake1', '-s1', required=False, help="Name of snake 1")
     parser.add_argument('--snake2', '-s2', required=False, help="Name of snake 2")
+    parser.add_argument('-s', '--seed', type=int, help='Random seed')
     args = parser.parse_args()
 
     try:
