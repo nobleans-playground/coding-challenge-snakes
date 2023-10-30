@@ -28,8 +28,8 @@ def main(games, benchmark, jobs):
         writer = csv.writer(f)
         # write bot names
         names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
-        writer.writerow(names + ['turns', 'seed'] + ['cpu_' + name for name in names])
-        fieldnames = list(range(len(bots))) + ['turns', 'seed'] + ['cpu_' + name for name in names]
+        writer.writerow(names + ['turns', 'seed', 'max_length'] + ['cpu_' + name for name in names])
+        fieldnames = list(range(len(bots))) + ['turns', 'seed', 'max_length'] + ['cpu_' + name for name in names]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
 
         if benchmark:
@@ -81,8 +81,11 @@ def single_game(match):
     print('Battle:', ' vs '.join(names))
     print()
     game = Game(agents=agents, round_type=RoundType.TURNS)
+    max_length = 0
     while True:
         game.update()
+        for snake in game.snakes:
+            max_length = max(max_length, len(snake))
         if game.finished():
             break
     print()
@@ -96,6 +99,7 @@ def single_game(match):
     row['turns'] = game.turns
     row['seed'] = seed
     row.update({'cpu_' + game.agents[i].name: cpu for i, cpu in game.cpu.items()})
+    row['max_length'] = max_length
     return row
 
 
