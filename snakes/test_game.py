@@ -6,7 +6,7 @@ import numpy as np
 
 from .bot import Bot
 from .bots.random import Random
-from .game import Game, RoundType
+from .game import Game, RoundType, serialize, deserialize
 from .snake import Snake
 
 
@@ -166,3 +166,9 @@ def test_game_ranking():
     assert ranking[3] == 2
     assert ranking[4] == 1
     print(game.scores)
+
+
+def test_game_deserialize():
+    data = '16x16c13,1/14,2/0,10t0s0,9rruuurrrdld/6,14drddddrrdlldd'
+    grid_size, candies, turn, snakes = deserialize(data)
+    assert data == serialize(grid_size, candies, turn, snakes)

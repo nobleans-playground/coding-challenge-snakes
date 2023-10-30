@@ -15,7 +15,7 @@ import pandas as pd
 
 from snakes.bots import bots
 from snakes.elo import print_tournament_summary
-from snakes.game import Game, RoundType
+from snakes.game import Game, RoundType, serialize, deserialize
 from snakes.utils import levenshtein_ratio
 
 numbers = ['⓪']
@@ -43,7 +43,6 @@ class Printer:
         for candy in game.candies:
             grid[candy[0], candy[1]] = '*'
         for snake in game.snakes:
-            print(f'name={game.agents[snake.id].name!r} {snake}')
             for pos in snake:
                 grid[pos[0], pos[1]] = number_to_circled(snake.id)
 
@@ -54,9 +53,10 @@ class Printer:
                 print(f' {grid[i, j]}', end='')
             print(' ▏')
         print(f' {"▔" * 2 * game.grid_size[0]}▔ ')
+        print('Game state:', serialize(game.grid_size, game.candies, game.turn, game.snakes))
 
 
-def main(snake1, snake2, rate, seed):
+def main(snake1, snake2, rate, seed, start):
     names = [Bot(id=i, grid_size=(1, 1)).name for i, Bot in enumerate(bots)]
 
     name_matches = [levenshtein_ratio(name, snake1) for name in names]
@@ -73,6 +73,14 @@ def main(snake1, snake2, rate, seed):
     random.seed(seed)
 
     game = Game(agents=agents, round_type=RoundType.TURNS)
+
+    if start:
+        grid_size, candies, turn, snakes = deserialize(start)
+        game.grid_size = grid_size
+        game.candies = candies
+        game.turn = turn
+        game.snakes = snakes
+
     printer = Printer()
     printer.print(game)
     while True:
@@ -100,6 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('snake2', help="Name of snake 2")
     parser.add_argument('-r', '--rate', default=float('inf'), type=float, help="Playback rate (Hz)")
     parser.add_argument('-s', '--seed', type=int, help='Random seed')
+    parser.add_argument('--start', help='Start from game state')
     args = parser.parse_args()
 
     try:

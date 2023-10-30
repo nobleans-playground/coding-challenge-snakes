@@ -1,7 +1,7 @@
 # Copyright 2023 Nobleo Technology B.V.
 #
 # SPDX-License-Identifier: Apache-2.0
-
+import re
 from copy import deepcopy
 from enum import Enum, auto
 from math import floor
@@ -12,7 +12,7 @@ from typing import List, Tuple, Type, Dict
 
 import numpy as np
 
-from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS
+from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS, MOVES
 from .snake import Snake
 
 
@@ -257,3 +257,59 @@ class Game:
 
     def _snake_to_string(self, snake: Snake) -> str:
         return f'{self.agents[snake.id].name} ({snake.id})'
+
+
+def direction_to_move_value(direction):
+    if direction[0] > 0:
+        return Move.RIGHT
+    elif direction[0] < 0:
+        return Move.LEFT
+    else:
+        if direction[1] > 0:
+            return Move.UP
+        else:
+            return Move.DOWN
+
+
+def serialize(grid_size, candies, turn, snakes):
+    data = f'{grid_size[0]}x{grid_size[1]}c'
+    data += '/'.join(f'{candy[0]},{candy[1]}' for candy in candies)
+    data += f't{turn}'
+
+    snakedata = []
+    for snake in snakes:
+        snakestr = f'{snake[0][0]},{snake[0][1]}'
+        for i in range(1, len(snake)):
+            direction = snake[i] - snake[i - 1]
+            move = direction_to_move_value(direction)
+            snakestr += 'udlr'[MOVES.index(move)]
+        snakedata.append(snakestr)
+    data += 's'
+    data += '/'.join(snakedata)
+
+    return data
+
+
+def deserialize(data: str):
+    match = re.fullmatch(r'([^c]*)c([^s]*)t(\d+)s(.*)', data)
+    grid_size = match.group(1)
+    candies = match.group(2)
+    turn = match.group(3)
+    snakesstr = match.group(4)
+
+    grid_size = tuple(int(x) for x in grid_size.split('x'))
+    candies = [tuple(int(x) for x in c.split(',')) for c in candies.split('/')]
+    turn = int(turn)
+
+    snakes = []
+    for id, snake in enumerate(snakesstr.split('/')):
+        m = re.fullmatch('(\d+),(\d+)(\w+)', snake)
+        segment = np.array([int(m.group(1)), int(m.group(2))])
+        segments = [segment]
+        for s in m.group(3):
+            direction = MOVES['udlr'.index(s)]
+            segment = segment + MOVE_VALUE_TO_DIRECTION[direction]
+            segments.append(segment)
+        snakes.append(Snake(id=id, positions=np.array(segments)))
+
+    return grid_size, candies, turn, snakes
