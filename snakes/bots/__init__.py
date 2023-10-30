@@ -16,6 +16,7 @@ from .rokusottervanger.bot import OtterByte
 from .mukunda.bot import Snakunamatata
 from .ferry.bot import FurryMuncher
 from .mhoogesteger.bot import CherriesAreForLosers
+from .mhoogesteger.bot_pathfinding_wip import ThereIsNoCandy
 
 bots = (
     Random,
@@ -32,4 +33,5 @@ bots = (
     Snakunamatata,
     FurryMuncher,
     CherriesAreForLosers,
+    ThereIsNoCandy,
 )
