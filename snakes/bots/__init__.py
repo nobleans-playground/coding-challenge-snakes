@@ -17,21 +17,23 @@ from .mukunda.bot import Snakunamatata
 from .ferry.bot import FurryMuncher
 from .mhoogesteger.bot import CherriesAreForLosers
 from .mhoogesteger.bot_pathfinding_wip import ThereIsNoCandy
+# from .brammmieee.bot import RLQuaza
 
 bots = (
     Random,
-    ExampleBot,
+    # ExampleBot,  # Disabled: Template
     ApologeticApophis,
-    TemplateSnake,
-    SneakyBot,
+    # TemplateSnake,  # Disabled: Template not modified
+    # SneakyBot,  # Disabled: Template not modified
     JeroenBot,
     bender,
     LewieBot,
-    Slytherin,
+    # Slytherin,  # Disabled: Template not modified
     Explorer,
-    OtterByte,
+    # OtterByte,  # Disabled: Template not modified
     Snakunamatata,
     FurryMuncher,
     CherriesAreForLosers,
     ThereIsNoCandy,
+    # RLQuaza,  # Disabled: makes tournament.py freeze
 )
