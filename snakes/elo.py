@@ -80,7 +80,7 @@ def print_tournament_summary(df, elo=True):
     data['CPU'] = data['CPU']
     data['CPU/t'] = data['CPU/t']
 
-    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.1f}'.format,
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.3f}'.format,
                                      'Turns/m': '{:.1f}'.format, 'Elo': '{:.1f}'.format}))
 
     if not elo:
@@ -88,7 +88,7 @@ def print_tournament_summary(df, elo=True):
     data['Elo'] = estimate_elo(ranking)
 
     print()
-    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.1f}'.format,
+    print(data.to_string(formatters={'Rate': '{:,.1%}'.format, 'CPU': '{:.1f}'.format, 'CPU/t': '{:.3f}'.format,
                                      'Turns/m': '{:.1f}'.format, 'Elo': '{:.1f}'.format}))
 
 
