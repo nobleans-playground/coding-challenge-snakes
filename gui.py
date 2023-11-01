@@ -41,9 +41,9 @@ if __name__ == '__main__':
                         help='Auto start the game')
     parser.add_argument('--auto-restart', type=int, default=None,
                         help='Auto restart the game after so many seconds')
-    parser.add_argument('--width', type=int, default=1150,
+    parser.add_argument('--width', type=int, default=1500,
                         help='width of the window')
-    parser.add_argument('--height', type=int, default=700,
+    parser.add_argument('--height', type=int, default=1000,
                         help='height of the window')
     parser.add_argument('--snake1', '-s1', required=False, help="Name of snake 1")
     parser.add_argument('--snake2', '-s2', required=False, help="Name of snake 2")

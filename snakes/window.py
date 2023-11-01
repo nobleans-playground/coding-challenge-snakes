@@ -43,8 +43,6 @@ COLOURS = [
     (128, 128, 128),
 ]
 
-TEAM_A = (230, 25, 75)
-TEAM_B = (60, 180, 75)
 BUTTON = (51, 51, 51)
 POPUP = (36, 36, 36)
 
@@ -215,8 +213,6 @@ class Window:
                     RuntimeError("Oops")
 
         def do_hover(self):
-            if self.root.multiplayer and self.disable_in_mp:
-                return
             pygame.draw.rect(self.window, self.hover_outline, (*self.position, self.width, self.height), 3)
 
         def is_at_position(self, position):
@@ -266,7 +262,7 @@ class Window:
         # Setup new game with this snake
         what = "sprites/cherry.png" if random() > 0.05 else ".vscode/configuration.json"
         self.cherry_image = pygame.image.load(what)
-        self.game = Game(agents)
+        self.game = Game(agents, grid_size=(32, 32) if self.multiplayer else (16, 16))
 
         # Always run the game
         self.set_state(GameState.RUNNING)
@@ -508,7 +504,7 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            background_colour = TEAM_A,
+            background_colour = COLOURS[0],
             callback=lambda: self.restart_game([{'agent_id':0}])
         )
 
@@ -518,7 +514,7 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            background_colour = TEAM_B,
+            background_colour = COLOURS[1],
             callback=lambda: self.restart_game([{'agent_id':1}])
         )
 
