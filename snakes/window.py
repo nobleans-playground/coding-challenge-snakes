@@ -70,6 +70,7 @@ class Window:
         self.speed = GameSpeed.SLOWER
         self.presenting = False
         self.waiting_from = None
+        self.multiplayer = False
 
         # These `i`'s do not represent the player number
         self.all_bots = {i: Agent for i, Agent in enumerate(bots)}
@@ -186,6 +187,7 @@ class Window:
             self.callback = kwargs.get("callback")
             self.background_colour = kwargs.get("background_colour", BUTTON)
             self.foreground_colour = kwargs.get("foreground_colour", WHITE)
+            self.disable_in_mp = kwargs.get("disable_in_mp", False)
 
             self.hover_outline = WHITE
             self.align = kwargs.get("align", "center")
@@ -213,9 +215,13 @@ class Window:
                     RuntimeError("Oops")
 
         def do_hover(self):
+            if self.root.multiplayer and self.disable_in_mp:
+                return
             pygame.draw.rect(self.window, self.hover_outline, (*self.position, self.width, self.height), 3)
 
         def is_at_position(self, position):
+            if self.root.multiplayer and self.disable_in_mp:
+                return False
             return position[0] >= self.position[0] and position[0] <= self.position[0] + self.width and \
                 position[1] >= self.position[1] and position[1] <= self.position[1] + self.height
 
@@ -227,6 +233,14 @@ class Window:
             self.speed = speed
         else:
             self.speed = GameSpeed.FASTER if self.speed == GameSpeed.SLOWER else GameSpeed.SLOWER
+
+    def set_multiplayer(self, multiplayer=None):
+        if multiplayer is None:
+            multiplayer = not self.multiplayer
+        self.multiplayer = multiplayer
+        self.restart_game()
+        if self.multiplayer:
+            self.set_speed(GameSpeed.FASTER)
     
     def set_presenting(self, should_present=None):
         if should_present is None:
@@ -234,14 +248,20 @@ class Window:
         self.presenting = should_present
 
     def restart_game(self, new_agents=[]):
-        # extract types from agent objects
-        agents = {i: type(agent) for i, agent in self.game.agents.items()}
-        
-        for new_agent in new_agents:
-            # Replace one of the snakes
-            agent_id = new_agent['agent_id']
-            bot_id = new_agent['bot_id'] if 'bot_id' in new_agent else randrange(len(self.all_bots))
-            agents[agent_id] = self.all_bots[bot_id]
+
+        if not self.multiplayer:
+
+            # extract types from agent objects
+            agents = {id: type(agent) for i, (id, agent) in enumerate(self.game.agents.items()) if i < 2}
+            
+            for new_agent in new_agents:
+                # Replace one of the snakes
+                agent_id = new_agent['agent_id']
+                bot_id = new_agent['bot_id'] if 'bot_id' in new_agent else randrange(len(self.all_bots))
+                agents[agent_id] = self.all_bots[bot_id]
+
+        else:
+            agents = self.all_bots
 
         # Setup new game with this snake
         what = "sprites/cherry.png" if random() > 0.05 else ".vscode/configuration.json"
@@ -317,8 +337,7 @@ class Window:
         head_radius = int(tile_size * 0.9 / 2)
         eye_radius = int(tile_size * 0.4 / 2)
 
-        # Draw snake
-        for snake in (self.game.snakes + self.game.dead_snakes):
+        def draw_snake(snake):
             previous_pos = None
             body_colour = COLOURS[snake.id] if not snake.dead else GRAY
             for index, position in reversed(list(enumerate(snake))):
@@ -371,6 +390,10 @@ class Window:
                     ), (body_size // 2) - 1) # Don't ask me why -1
                     previous_pos = position
 
+        # Draw snake
+        for snake in self.game.dead_snakes: draw_snake(snake)
+        for snake in self.game.snakes: draw_snake(snake)
+
         # Draw candies
         scaled_cherry = pygame.transform.scale(self.cherry_image, (tile_size, tile_size))
         for candy in self.game.candies:
@@ -380,6 +403,8 @@ class Window:
             ))
 
     def start_bot_selection_popup(self, player):
+        if self.multiplayer:
+            return
         self.game_state = GameState.IDLE
         self.popup = self.PlayerSelectionPopup(
             parent=self,
@@ -396,7 +421,7 @@ class Window:
         top = self.border
         bottom = self.height - self.border
 
-        player_emblem_height = 60
+        player_emblem_height = 60 if not self.multiplayer else 35
 
         for score, index in self.game.possible_scores():
             # for index, colour in enumerate([TEAM_A, TEAM_B]):
@@ -405,7 +430,8 @@ class Window:
                 position=[left, top],
                 width=right - left,
                 height=player_emblem_height,
-                background_colour=[TEAM_A, TEAM_B][index % 2],
+                background_colour=COLOURS[index],
+                disable_in_mp=True,
                 callback=lambda index=index: self.start_bot_selection_popup(index)
             )
 
@@ -415,16 +441,17 @@ class Window:
             text_size = font.size(text_to_render)
             text_object = font.render(text_to_render, True, WHITE)
             self.window.blit(text_object, (left + self.border, top + self.border))
-
-            # Draw contributor
-            cpu_time = round(self.game.cpu[index] / self.game.turns * 1e6,2) if self.game.turns > 0 else 0
-            text_to_render = f"{self.game.agents[index].contributor}  | CPU: {cpu_time} us"
-            font = pygame.font.SysFont(None, 26)
-            text_object = font.render(text_to_render, True, WHITE)
-            self.window.blit(text_object, (left + self.border, top + self.border + text_size[1] + self.border))
+            
+            if not self.multiplayer:
+                # Draw contributor
+                cpu_time = round(self.game.cpu[index] / self.game.turns * 1e6,2) if self.game.turns > 0 else 0
+                text_to_render = f"{self.game.agents[index].contributor}  | CPU: {cpu_time} us"
+                font = pygame.font.SysFont(None, 26)
+                text_object = font.render(text_to_render, True, WHITE)
+                self.window.blit(text_object, (left + self.border, top + self.border + text_size[1] + self.border))
 
             # Draw score
-            font = pygame.font.SysFont(None, 68)
+            font = pygame.font.SysFont(None, 68 if not self.multiplayer else 34)
             text_to_render = f"{score}"
             text_size = font.size(text_to_render)
             text_object = font.render(text_to_render, True, WHITE)
@@ -511,6 +538,16 @@ class Window:
             width=button_width,
             height=button_height,
             callback=lambda s=self.speed: self.set_presenting()
+        )
+
+        button_left = left
+        button_top = button_top - self.border - button_height
+        self.button(
+            text="Stop MP" if self.multiplayer else "Start MP",
+            position=[button_left, button_top],
+            width=button_width,
+            height=button_height,
+            callback=lambda s=self.speed: self.set_multiplayer()
         )
 
     def rotate_vector(self, vector, angle):
