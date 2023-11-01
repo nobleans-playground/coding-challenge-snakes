@@ -4,6 +4,7 @@
 import re
 from copy import deepcopy
 from enum import Enum, auto
+from io import StringIO
 from math import floor
 from random import sample
 from time import time
@@ -24,6 +25,38 @@ class RoundType(Enum):
 def calculate_final_score(length, rank):
     multiplier = 1 / rank
     return floor(length * 2 * multiplier)
+
+
+class GameHistory:
+    def __init__(self, grid_size, snakes, candies):
+        self.grid_size = grid_size
+        self.initial_candies = deepcopy(candies)
+        self.initial_snakes = deepcopy(snakes)
+        self.history = []
+
+    def log_moves(self, moves: Dict[int, Move]):
+        assert isinstance(moves, dict)
+        self.history.append(moves)
+
+    def log_candy_spawn(self, candy: Tuple[int, int]):
+        assert isinstance(candy, tuple)
+        self.history.append(candy)
+
+    def serialize(self):
+        io = StringIO()
+
+        data = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
+        io.write(data)
+
+        for action in self.history:
+            if isinstance(action, dict):
+                for id, move in action.items():
+                    io.write(f'{id}{"udlr"[MOVES.index(move)]}')
+            if isinstance(action, Tuple):
+                x, y = action
+                io.write(f'c{x},{y}')
+            io.write(' ')
+        return io.getvalue()
 
 
 class Game:
@@ -59,6 +92,8 @@ class Game:
             self.spawn_candies()
         assert isinstance(self.snakes, list)
         assert isinstance(self.candies, list)
+
+        self.history = GameHistory(self.grid_size, self.snakes, self.candies)
 
         # check snake.id refers to an agent
         for snake in self.snakes:
@@ -140,6 +175,8 @@ class Game:
         return move_value
 
     def _do_moves(self, moves: List[Tuple[Snake, Move]]):
+        self.history.log_moves({snake.id: move for snake, move in moves})
+
         # first, move the snakes and record which candies have been eaten
         remove_candies = set()
         for snake, move_value in moves:
@@ -164,6 +201,7 @@ class Game:
             assert 0 <= x < self.grid_size[0]
             assert 0 <= y < self.grid_size[1]
             self.candies.append(np.array([x, y]))
+            self.history.log_candy_spawn((x, y))
 
         # figure out which snakes died
         dead = []
