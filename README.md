@@ -6,24 +6,36 @@ SPDX-License-Identifier: Apache-2.0
 
 # Coding Challange: Multiplayer Snake [![Python application](https://github.com/nobleans-playground/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/nobleans-playground/coding-challenge-snakes/actions/workflows/python-app.yml)
 
-## Current ranking
+## Tournament results
 
-|                         | Wins | Rate  | CPU    | CPU/t | Matches | Turns/m | Elo    |
-|-------------------------|------|-------|--------|-------|---------|---------|--------|
-| Cherries are for Losers | 1171 | 90.1% | 6932.2 | 22.2  | 1300    | 240.6   | 2183.7 |
-| Snakunamatata           | 1120 | 86.2% | 94.6   | 0.8   | 1300    | 91.4    | 2089.2 |
-| Serpent of the Light    | 1111 | 85.5% | 634.1  | 7.2   | 1300    | 67.8    | 2078.5 |
-| FurryMuncher            | 977  | 75.2% | 84.7   | 0.4   | 1300    | 164.1   | 1895.0 |
-| Explorer                | 973  | 74.8% | 209.5  | 0.5   | 1300    | 301.4   | 1919.3 |
-| Apologetic Apophis      | 926  | 71.2% | 84.2   | 0.2   | 1300    | 285.6   | 1835.5 |
-| Sneaky Snake            | 398  | 30.6% | 68.6   | 0.2   | 1300    | 315.8   | 1135.2 |
-| Bite my shiny metal ass | 397  | 30.5% | 67.5   | 0.2   | 1300    | 316.7   | 1132.7 |
-| Wolverine               | 396  | 30.5% | 58.3   | 0.1   | 1300    | 551.7   | 1128.2 |
-| OtterByte               | 394  | 30.3% | 68.5   | 0.2   | 1300    | 318.6   | 1136.1 |
-| Random                  | 378  | 29.1% | 126.9  | 0.3   | 1300    | 322.9   | 1119.6 |
-| Greedy Gerard           | 378  | 29.1% | 71.0   | 0.2   | 1300    | 326.5   | 1117.4 |
-| Not a Template          | 378  | 29.1% | 69.9   | 0.2   | 1300    | 324.5   | 1120.0 |
-| Slytherin               | 367  | 28.2% | 67.9   | 0.2   | 1300    | 315.4   | 1109.6 |
+The finals played between Snakunamatata (Mukunda) and  Cherries are for Losers (Rinus).
+The finals were won by Snakunamatata with 3 against 2, congratulations!
+
+### Bonus prices
+
+Longest snake achieved was won by FurryMuncher (Ferry) who achieved a length of 58!
+
+Most wins by lines of code was won by Bite my shiny metal ass!
+1. Bite my shiny metal ass: 8.2 (Jonothan)
+2. Explorer: 5.8 (Daniel)
+3. Apologetic Aphophis: 4.9 (Hein)
+
+King of the hill was won by FurryMuncher!
+
+### Qualification results
+
+|                                   | Wins | Rate  | CPU    | CPU/t  | Matches | Turns/m | Elo    |
+|-----------------------------------|------|-------|--------|--------|---------|---------|--------|
+| There is no Candy! (disqualified) | 876  | 97.3% | 110.6  | 9.881  | 900     | 12.4    | 2252.0 |
+| Snakunamatata                     | 687  | 76.3% | 950.2  | 7.239  | 900     | 145.8   | 1808.4 |
+| Cherries are for Losers           | 615  | 68.3% | 1032.8 | 12.540 | 900     | 91.5    | 1717.0 |
+| Serpent of the Light              | 587  | 65.2% | 582.3  | 6.719  | 900     | 96.3    | 1687.5 |
+| Explorer                          | 437  | 48.6% | 175.9  | 0.484  | 900     | 403.5   | 1526.1 |
+| FurryMuncher                      | 433  | 48.1% | 40.1   | 0.357  | 900     | 124.8   | 1510.8 |
+| Bite my shiny metal ass           | 410  | 45.6% | 38.0   | 0.309  | 900     | 136.5   | 1483.0 |
+| Apologetic Apophis                | 364  | 40.4% | 45.3   | 0.207  | 900     | 243.2   | 1434.5 |
+| Random                            | 72   | 8.0%  | 42.3   | 0.304  | 900     | 154.5   | 819.1  |
+| Wolverine                         | 66   | 7.3%  | 29.5   | 0.071  | 900     | 459.3   | 761.6  |
 
 ## Description
 
