@@ -7,4 +7,5 @@ more_itertools
 numpy
 pandas
 pygame
+PyYAML
 scipy
