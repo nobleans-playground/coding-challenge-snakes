@@ -1,17 +1,20 @@
 # Copyright 2023 Nobleo Technology B.V.
 #
 # SPDX-License-Identifier: Apache-2.0
+from datetime import datetime
+import json
 import re
 from copy import deepcopy
 from enum import Enum, auto
 from io import StringIO
-from math import floor
+from math import floor, inf
 from random import sample
 from time import time
 from traceback import print_exception
 from typing import List, Tuple, Type, Dict
 
 import numpy as np
+import yaml
 
 from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS, MOVES
 from .snake import Snake
@@ -28,8 +31,9 @@ def calculate_final_score(length, rank):
 
 
 class GameHistory:
-    def __init__(self, grid_size, snakes, candies):
+    def __init__(self, grid_size, agents, snakes, candies):
         self.grid_size = grid_size
+        self.agents = deepcopy(agents)
         self.initial_candies = deepcopy(candies)
         self.initial_snakes = deepcopy(snakes)
         self.history = []
@@ -45,9 +49,6 @@ class GameHistory:
     def serialize(self):
         io = StringIO()
 
-        data = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
-        io.write(data)
-
         for action in self.history:
             if isinstance(action, dict):
                 for id, move in action.items():
@@ -56,7 +57,15 @@ class GameHistory:
                 x, y = action
                 io.write(f'c{x},{y}')
             io.write(' ')
-        return io.getvalue()
+
+        data = {id: agent.name for id, agent in self.agents.items()}
+        data['d'] = datetime.now()
+        data['i'] = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
+        data['m'] = io.getvalue()
+        data = yaml.safe_dump(data, default_flow_style=True, width=inf)
+        print(data)
+        # assert '\n' not in data
+        return data
 
 
 class Game:
@@ -93,7 +102,7 @@ class Game:
         assert isinstance(self.snakes, list)
         assert isinstance(self.candies, list)
 
-        self.history = GameHistory(self.grid_size, self.snakes, self.candies)
+        self.history = GameHistory(self.grid_size, self.agents, self.snakes, self.candies)
 
         # check snake.id refers to an agent
         for snake in self.snakes:
