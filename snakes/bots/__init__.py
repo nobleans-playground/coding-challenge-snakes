@@ -18,6 +18,8 @@ from .ferry.bot import FurryMuncher
 from .mhoogesteger.bot import CherriesAreForLosers
 from .mhoogesteger.bot_pathfinding_wip import ThereIsNoCandy
 # from .brammmieee.bot import RLQuaza
+from .rayman.bot import Slifer
+from .niekdt.bot import Snek
 
 bots = (
     Random,
@@ -34,6 +36,8 @@ bots = (
     Snakunamatata,
     FurryMuncher,
     CherriesAreForLosers,
-    ThereIsNoCandy,
+    # ThereIsNoCandy,  # Disabled: rng manipulation
     # RLQuaza,  # Disabled: makes tournament.py freeze
+    Slifer,
+    Snek,  # Disabled: memory increases with each game played
 )

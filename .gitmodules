@@ -57,4 +57,12 @@
 [submodule "snakes/bots/brammmieee"]
 	path = snakes/bots/brammmieee
 	url = git@github.com:brammmieee/SnakeRL.git
-	branch = master
+	branch = main
+[submodule "snakes/bots/rayman"]
+	path = snakes/bots/rayman
+	url = git@github.com:Rayman/coding-challenge-snakes-bot.git
+	branch = main
+[submodule "snakes/bots/niekdt"]
+	path = snakes/bots/niekdt
+	url = git@github.com:niekdt/coding-challenge-snakes-bot.git
+	branch = main
