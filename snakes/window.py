@@ -53,6 +53,7 @@ class GameState(Enum):
     IDLE = auto()
     STEP = auto()
 
+
 class GameSpeed(Enum):
     SLOWER = auto()
     FASTER = auto()
@@ -81,12 +82,12 @@ class Window:
             agents[0] = self.all_bots[np.argmax(name_matches)]
         else:
             agents[0] = choice(self.all_bots)
-        if snake2: 
+        if snake2:
             name_matches = [levenshtein_ratio(name, snake2) for name in names]
             agents[1] = self.all_bots[np.argmax(name_matches)]
         else:
             agents[1] = choice(self.all_bots)
-        
+
         # Create the first game with the first two bots
         # The ID's will always represent the player number
         self.game = Game(agents=agents)
@@ -160,16 +161,16 @@ class Window:
             button_height = 30
             for bot_id, bot in self.root.all_bots.items():
                 self.root.button(
-                    text=bot(0,(1,1)).name, # Need an object to get the name
+                    text=bot(0, (1, 1)).name,  # Need an object to get the name
                     position=[button_left, button_top],
                     width=button_width,
                     height=button_height,
                     align="left",
                     parent=self,
                     window=self.parent.window,
-                    
+
                     # Need to capture the value explicitly
-                    callback=lambda bot_id=bot_id : self.on_exit(bot_id),                    
+                    callback=lambda bot_id=bot_id: self.on_exit(bot_id),
                 )
 
                 button_top += button_height + border
@@ -223,7 +224,7 @@ class Window:
 
     def set_state(self, state):
         self.game_state = state
-    
+
     def set_speed(self, speed=None):
         if speed is not None:
             self.speed = speed
@@ -237,7 +238,7 @@ class Window:
         self.restart_game()
         if self.multiplayer:
             self.set_speed(GameSpeed.FASTER)
-    
+
     def set_presenting(self, should_present=None):
         if should_present is None:
             should_present = not self.presenting
@@ -249,7 +250,7 @@ class Window:
 
             # extract types from agent objects
             agents = {id: type(agent) for i, (id, agent) in enumerate(self.game.agents.items()) if i < 2}
-            
+
             for new_agent in new_agents:
                 # Replace one of the snakes
                 agent_id = new_agent['agent_id']
@@ -272,7 +273,7 @@ class Window:
         for button in self.popup.buttons if self.popup else self.buttons:
             if button.is_at_position(position):
                 button.callback()
-                return # Only handle one button at a time
+                return  # Only handle one button at a time
 
     def handle_mouse_hovers(self, buttons):
         mouse = pygame.mouse.get_pos()
@@ -303,8 +304,7 @@ class Window:
             if self.presenting and time.time() - self.waiting_from > 3:
                 # Done waiting, gonna start the next round
                 self.waiting_from = None
-                self.restart_game([{'agent_id':0}, {'agent_id':1}])
-
+                self.restart_game([{'agent_id': 0}, {'agent_id': 1}])
 
         self.window.fill(BLACK)
         self.buttons = []  # This is so inefficient.
@@ -318,7 +318,7 @@ class Window:
             self.handle_mouse_hovers(self.popup.buttons)
         else:
             self.handle_mouse_hovers(self.buttons)
-    
+
     def sleep(self):
         if self.speed == GameSpeed.SLOWER:
             time.sleep(0.1)
@@ -340,11 +340,13 @@ class Window:
                 if index == 0:
                     # Neck drawn first so head goes on top, as it should
                     pygame.draw.line(self.window, body_colour,
-                        (int((position[0] + 0.5) * tile_size), self.height - (int((position[1] + 0.5) * tile_size))), 
-                        (int((previous_pos[0] + 0.5) * tile_size), self.height - (int((previous_pos[1] + 0.5) * tile_size))), 
-                        body_size
-                    )
-                    
+                                     (int((position[0] + 0.5) * tile_size),
+                                      self.height - (int((position[1] + 0.5) * tile_size))),
+                                     (int((previous_pos[0] + 0.5) * tile_size),
+                                      self.height - (int((previous_pos[1] + 0.5) * tile_size))),
+                                     body_size
+                                     )
+
                     # Is head
                     pygame.draw.circle(self.window, COLOURS[snake.id], (
                         int((position[0] + 0.5) * tile_size),
@@ -355,7 +357,7 @@ class Window:
                     eye_offsets = [
                         np.array([int(0.3 * tile_size), (int(-0.25 * tile_size))]),
                         np.array([int(0.3 * tile_size), (int(0.25 * tile_size))])
-                    ] # Assuming going right
+                    ]  # Assuming going right
                     last_move_direction = position - snake[1]
                     last_move_angle = math.atan2(last_move_direction[1], last_move_direction[0])
                     for eye_offset in eye_offsets:
@@ -369,21 +371,23 @@ class Window:
                             int((position[0] + 0.5) * tile_size + corrected_eye_offset[0]),
                             int(self.height - (int((position[1] + 0.5) * tile_size)) - corrected_eye_offset[1]),
                         ), eye_radius // 2)
-                    
+
                     previous_pos = position
 
                 else:
                     # Is body
                     if previous_pos is not None:
                         pygame.draw.line(self.window, body_colour,
-                            (int((position[0] + 0.5) * tile_size), self.height - (int((position[1] + 0.5) * tile_size))), 
-                            (int((previous_pos[0] + 0.5) * tile_size), self.height - (int((previous_pos[1] + 0.5) * tile_size))), 
-                            body_size
-                        )
+                                         (int((position[0] + 0.5) * tile_size),
+                                          self.height - (int((position[1] + 0.5) * tile_size))),
+                                         (int((previous_pos[0] + 0.5) * tile_size),
+                                          self.height - (int((previous_pos[1] + 0.5) * tile_size))),
+                                         body_size
+                                         )
                     pygame.draw.circle(self.window, body_colour, (
                         int((position[0] + 0.5) * tile_size),
                         self.height - (int((position[1] + 0.5) * tile_size)),
-                    ), (body_size // 2) - 1) # Don't ask me why -1
+                    ), (body_size // 2) - 1)  # Don't ask me why -1
                     previous_pos = position
 
         # Draw snake
@@ -437,10 +441,10 @@ class Window:
             text_size = font.size(text_to_render)
             text_object = font.render(text_to_render, True, WHITE)
             self.window.blit(text_object, (left + self.border, top + self.border))
-            
+
             if not self.multiplayer:
                 # Draw contributor
-                cpu_time = round(self.game.cpu[index] / self.game.turns * 1e6,2) if self.game.turns > 0 else 0
+                cpu_time = round(self.game.cpu[index] / self.game.turns * 1e6, 2) if self.game.turns > 0 else 0
                 text_to_render = f"{self.game.agents[index].contributor}  | CPU: {cpu_time} us"
                 font = pygame.font.SysFont(None, 26)
                 text_object = font.render(text_to_render, True, WHITE)
@@ -504,8 +508,8 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            background_colour = COLOURS[0],
-            callback=lambda: self.restart_game([{'agent_id':0}])
+            background_colour=COLOURS[0],
+            callback=lambda: self.restart_game([{'agent_id': 0}])
         )
 
         button_left += button_width + self.border
@@ -514,8 +518,8 @@ class Window:
             position=[button_left, button_top],
             width=button_width,
             height=button_height,
-            background_colour = COLOURS[1],
-            callback=lambda: self.restart_game([{'agent_id':1}])
+            background_colour=COLOURS[1],
+            callback=lambda: self.restart_game([{'agent_id': 1}])
         )
 
         button_left += button_width + self.border
