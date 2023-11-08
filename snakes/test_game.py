@@ -33,9 +33,9 @@ def test_game_snake_dies():
     game = Game(grid_size=grid_size, agents={0: Random, 1: Random}, round_type=RoundType.SIMULTANEOUS, snakes=snakes,
                 candies=[])
     assert not game.finished()
-    game.update()
+    list(game.update())
     assert not game.finished()
-    game.update()
+    list(game.update())
     assert game.finished()
 
     # snake 0 dies, so its got second place
@@ -63,7 +63,7 @@ def test_game_snake_eats():
     game = Game(grid_size=grid_size, agents={0: Random, 1: Random}, round_type=RoundType.SIMULTANEOUS, snakes=snakes,
                 candies=candies)
     assert not game.finished()
-    game.update()
+    list(game.update())
     assert not game.finished()
     assert (len(game.snakes[0]) == 3)
     assert (len(game.snakes[1]) == 2)
@@ -103,7 +103,7 @@ def test_game_snake_throws():
                 snakes=snakes,
                 candies=[])
     assert not game.finished()
-    game.update()
+    list(game.update())
     assert game.finished()
     ranking = game.rank()
     assert ranking[0] == 2  # snake 0 dies, so second place
@@ -143,7 +143,7 @@ def test_game_snake_returns_invalid_move():
                 snakes=snakes,
                 candies=[])
     assert not game.finished()
-    game.update()
+    list(game.update())
     assert game.finished()
     ranking = game.rank()
     assert ranking[0] == 2  # snake 0 dies, so second place
@@ -157,7 +157,7 @@ def test_game_ranking():
     game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS, snakes=snakes, candies=[])
 
     while not game.finished():
-        game.update()
+        list(game.update())
 
     ranking = game.rank()
     assert ranking[0] == 5

@@ -15,7 +15,7 @@ import pandas as pd
 
 from snakes.bots import bots
 from snakes.elo import print_tournament_summary
-from snakes.game import Game, RoundType, serialize, deserialize
+from snakes.game import Game, RoundType, serialize, deserialize, print_event
 from snakes.utils import levenshtein_ratio
 
 numbers = ['⓪']
@@ -76,15 +76,16 @@ def main(snake1, snake2, rate, seed, start):
 
     if start:
         grid_size, candies, turn, snakes = deserialize(start)
-        game.grid_size = grid_size
-        game.candies = candies
-        game.turn = turn
-        game.snakes = snakes
+        game.state.grid_size = grid_size
+        game.state.candies = candies
+        game.state.turn = turn
+        game.state.snakes = snakes
 
     printer = Printer()
     printer.print(game)
     while True:
-        game.update()
+        for event in game.update():
+            print_event(event, game.agents)
         printer.print(game)
         if not isinf(rate):
             sleep(1 / rate)

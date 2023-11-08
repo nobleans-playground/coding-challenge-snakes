@@ -1,22 +1,20 @@
 # Copyright 2023 Nobleo Technology B.V.
 #
 # SPDX-License-Identifier: Apache-2.0
-from datetime import datetime
-import json
 import re
 from copy import deepcopy
-from datetime import datetime
 from enum import Enum, auto
 from io import StringIO
 from math import floor, inf
 from random import sample
 from time import time
 from traceback import print_exception
-from typing import List, Tuple, Type, Dict
+from typing import List, Tuple, Type, Dict, Iterator
 
 import numpy as np
 import yaml
 
+from .bot import Bot
 from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS, MOVES
 from .snake import Snake
 
@@ -32,9 +30,8 @@ def calculate_final_score(length, rank):
 
 
 class GameHistory:
-    def __init__(self, grid_size, agents, snakes, candies):
+    def __init__(self, grid_size, snakes, candies):
         self.grid_size = grid_size
-        self.agents = deepcopy(agents)
         self.initial_candies = deepcopy(candies)
         self.initial_snakes = deepcopy(snakes)
         self.history = []
@@ -47,7 +44,7 @@ class GameHistory:
         assert isinstance(candy, tuple)
         self.history.append(candy)
 
-    def serialize(self):
+    def serialize(self) -> Dict[str, str]:
         io = StringIO()
 
         for action in self.history:
@@ -59,8 +56,7 @@ class GameHistory:
                 io.write(f'c{x},{y}')
             io.write(' ')
 
-        data = {id: agent.name for id, agent in self.agents.items()}
-        data['d'] = datetime.now()
+        data = {}
         data['i'] = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
         data['m'] = io.getvalue()
         data = yaml.safe_dump(data, default_flow_style=True, width=inf)
@@ -69,57 +65,109 @@ class GameHistory:
         return data
 
 
-class Game:
-    def __init__(self, agents: Dict[int, Type],
+class GameEvent:
+    pass
+
+
+class InvalidMove(GameEvent):
+    def __init__(self, snake: Snake, move_value):
+        self.snake = snake
+        self.move_value = move_value
+
+
+class OutOfBounds(GameEvent):
+    def __init__(self, snake: Snake):
+        self.snake = snake
+
+
+class Collision(GameEvent):
+    def __init__(self, snake: Snake, other_snake: Snake):
+        self.snake = snake
+        self.other_snake = other_snake
+
+
+class Death(GameEvent):
+    def __init__(self, snake: Snake, rank, score):
+        self.snake = snake
+        self.rank = rank
+        self.score = score
+
+
+class Finished(GameEvent):
+    def __init__(self, state):
+        self.state = state
+
+
+def snake_to_str(snake: Snake, agents: Dict[int, Bot]) -> str:
+    assert isinstance(snake, Snake), snake
+    assert isinstance(agents, dict), agents
+    assert isinstance(agents[snake.id], Bot), agents
+    return f'{agents[snake.id].name} ({snake.id})'
+
+
+def print_event(event: GameEvent, agents: Dict[int, Bot]):
+    assert isinstance(event, GameEvent)
+    assert isinstance(agents, dict), agents
+    assert all(isinstance(a, Bot) for a in agents.values()), agents
+
+    if isinstance(event, InvalidMove):
+        if isinstance(event.move_value, Exception):
+            print(f'{snake_to_str(event.snake, agents)} did not return an instance of Move, it returned an exception:')
+            print_exception(type(event.move_value), event.move_value, event.move_value.__traceback__)
+        else:
+            print(
+                f'{snake_to_str(event.snake, agents)} did not return an instance of Move, it returned a {event.move_value!r}')
+    elif isinstance(event, OutOfBounds):
+        print(f'{snake_to_str(event.snake, agents)} went out-of-bounds')
+    elif isinstance(event, Collision):
+        if event.snake == event.other_snake:
+            print(f'{snake_to_str(event.snake, agents)} collided with itself')
+        else:
+            print(f'{snake_to_str(event.snake, agents)} collided with snake {snake_to_str(event.other_snake, agents)}')
+    elif isinstance(event, Death):
+        bonus = event.score - len(event.snake)
+        print(
+            f'{snake_to_str(event.snake, agents)} died in {event.rank} place got {bonus} bonus points for a final score of {event.score}')
+    elif isinstance(event, Finished):
+        for snake in event.state.snakes:
+            score = event.state.scores[snake.id]
+            bonus = score - len(snake)
+            print(
+                f'{snake_to_str(snake, agents)} survived {event.state.turns} turns and got {bonus} bonus points for a '
+                f'final score of {score}')
+    else:
+        assert False, "Unknown event type"
+
+
+class State:
+    def __init__(self,
+                 snakes: List[Snake],
                  grid_size: Tuple[int, int] = (16, 16),
                  round_type: RoundType = RoundType.TURNS,
-                 snakes: List[Snake] = None,
                  candies: List[np.array] = None,
                  max_turns: int = MAX_TURNS):
-        assert isinstance(agents, dict)
+        assert isinstance(snakes, list)
         assert isinstance(grid_size, Tuple)
+        self.snakes = snakes  # snake.id refers to an agent.id
         self.grid_size = grid_size
-        self.agents = {}
-        self.cpu = {i: 0 for i in agents}  # map from snake.id to CPU time
-        for i, Agent in agents.items():
-            start = time()
-            self.agents[i] = Agent(id=i, grid_size=grid_size)
-            self.cpu[i] += time() - start
         self.round_type = round_type
         self.turn = 0  # Index of the Agent which turn it is, only used when rount_type == TURN
         self.turns = 0  # Amount of turns that have passed
-        self.snakes = snakes  # snake.id refers to an agent.id
         self.dead_snakes = []
         self.candies = candies
         self.max_turns = max_turns
         self.scores = {}  # map from snake.id to score
 
-        if snakes is None:
-            self.snakes = []
-            self.spawn_snakes(self.agents)
         if candies is None:
             self.candies = []
             self.spawn_candies()
-        assert isinstance(self.snakes, list)
         assert isinstance(self.candies, list)
 
-        self.history = GameHistory(self.grid_size, self.agents, self.snakes, self.candies)
-
-        # check snake.id refers to an agent
-        for snake in self.snakes:
-            assert snake.id in self.agents
         # check that snake ids are unique
         snake_ids = [snake.id for snake in self.snakes]
         assert len(snake_ids) == len(set(snake_ids))
 
-    def spawn_snakes(self, agents):
-        starting_indices = sample(range(self.grid_size[0] * self.grid_size[1]), k=len(agents))
-        starting_length = 2  # should be > 1 to prevent snakes from going backwards
-        for i, index in zip(agents.keys(), starting_indices):
-            x, y = divmod(index, self.grid_size[1])
-            assert 0 <= x < self.grid_size[0]
-            assert 0 <= y < self.grid_size[1]
-            self.snakes.append(Snake(i, np.tile([(x, y)], (starting_length, 1))))
+        self.history = GameHistory(self.grid_size, self.snakes, self.candies)
 
     def spawn_candies(self):
         indices = self.grid_size[0] * self.grid_size[1]
@@ -131,60 +179,7 @@ class Game:
             assert 0 <= y < self.grid_size[1]
             self.candies.append(np.array([x, y]))
 
-    def update(self):
-        if self.round_type == RoundType.SIMULTANEOUS:
-
-            moves: List[Tuple[Snake, Move]] = []
-
-            for snake in self.snakes:
-                move_value = self._get_agents_move(snake)
-                moves.append((snake, move_value))
-
-            self._do_moves(moves)
-
-            self.turns += 1
-
-        elif self.round_type == RoundType.TURNS:
-
-            agent_id = list(self.agents)[self.turn]
-            snake = next(s for s in self.snakes if s.id == agent_id)
-            move_value = self._get_agents_move(snake)
-            self._do_moves([(snake, move_value)])
-
-            while True:
-                # increment turn
-                self.turn += 1
-                if self.turn == len(self.agents):
-                    self.turn = 0
-                    self.turns += 1  # every player has had 1 turn
-                snake_id = list(self.agents.keys())[self.turn]
-                # skip agents that are dead
-                if len([True for s in self.snakes if s.id == snake_id]):
-                    break
-
-        if self.turns >= self.max_turns:
-            for snake in self.snakes:
-                rank = 1
-                score = calculate_final_score(len(snake), rank)
-                bonus = score - len(snake)
-                print(f'{self._snake_to_string(snake)} survived {self.turns} turns and got {bonus} bonus points for a '
-                      f'final score of {score}')
-                self.scores[snake.id] = score
-
-    def _get_agents_move(self, snake):
-        snake = deepcopy(snake)
-        other_snakes = [deepcopy(s) for s in self.snakes if s.id != snake.id]
-        start = time()
-        try:
-            move_value = self.agents[snake.id].determine_next_move(snake=snake, other_snakes=other_snakes,
-                                                                   candies=deepcopy(self.candies))
-        except Exception as e:
-            move_value = e
-
-        self.cpu[snake.id] += time() - start
-        return move_value
-
-    def _do_moves(self, moves: List[Tuple[Snake, Move]]):
+    def do_moves(self, moves: List[Tuple[Snake, Move]]) -> Iterator[GameEvent]:
         self.history.log_moves({snake.id: move for snake, move in moves})
 
         # first, move the snakes and record which candies have been eaten
@@ -217,17 +212,11 @@ class Game:
         dead = []
         for snake, move_value in moves:  # we only need to check the snakes that have moved
             if not isinstance(move_value, Move):
-                if isinstance(move_value, Exception):
-                    print(
-                        f'{self._snake_to_string(snake)} did not return an instance of Move, it returned an exception:')
-                    print_exception(type(move_value), move_value, move_value.__traceback__)
-                else:
-                    print(
-                        f'{self._snake_to_string(snake)} did not return an instance of Move, it returned a {move_value!r}')
+                yield InvalidMove(snake, move_value)
                 dead.append(snake)
                 continue
             if not (0 <= snake[0][0] < self.grid_size[0] and 0 <= snake[0][1] < self.grid_size[1]):
-                print(f'{self._snake_to_string(snake)} went out-of-bounds')
+                yield OutOfBounds(snake)
                 dead.append(snake)
                 continue
 
@@ -240,20 +229,18 @@ class Game:
                             self_collision = True
                             break
                     if self_collision:
-                        print(f'{self._snake_to_string(snake)} collided with itself')
+                        yield Collision(snake, snake)
                         dead.append(snake)
                         break
                 elif other_snake.collides(snake[0]):
-                    print(f'{self._snake_to_string(snake)} collided with snake {other_snake.id}')
+                    yield Collision(snake, other_snake)
                     dead.append(snake)
                     break
 
         rank = len(self.snakes) - len(dead) + 1
         for snake in dead:
             score = calculate_final_score(len(snake), rank)
-            bonus = score - len(snake)
-            print(
-                f'{self._snake_to_string(snake)} died in {rank} place got {bonus} bonus points for a final score of {score}')
+            yield Death(snake, rank, score)
             self.scores[snake.id] = score
 
         for snake in dead:
@@ -265,10 +252,127 @@ class Game:
             for snake in self.snakes:
                 rank = 1
                 score = calculate_final_score(len(snake), rank)
-                bonus = score - len(snake)
-                print(
-                    f'{self._snake_to_string(snake)} survived and got {bonus} bonus points for a final score of {score}')
                 self.scores[snake.id] = score
+            yield Finished(self)
+
+
+class Game:
+    def __init__(self, agents: Dict[int, Type],
+                 grid_size: Tuple[int, int] = (16, 16),
+                 round_type: RoundType = RoundType.TURNS,
+                 snakes: List[Snake] = None,
+                 candies: List[np.array] = None,
+                 max_turns: int = MAX_TURNS):
+
+        assert isinstance(agents, dict)
+        self.agents = {}
+        self.cpu = {i: 0 for i in agents}  # map from snake.id to CPU time
+        for i, Agent in agents.items():
+            start = time()
+            self.agents[i] = Agent(id=i, grid_size=grid_size)
+            self.cpu[i] += time() - start
+
+        if snakes is None:
+            snakes = self.create_snakes(grid_size, self.agents.keys())
+        self.state = State(grid_size=grid_size, round_type=round_type, snakes=snakes, candies=candies,
+                           max_turns=max_turns)
+
+        # check snake.id refers to an agent
+        for snake in self.snakes:
+            assert snake.id in self.agents
+
+    def create_snakes(self, grid_size: Tuple[int, int], ids: List[int]) -> List[Snake]:
+        snakes = []
+        starting_indices = sample(range(grid_size[0] * grid_size[1]), k=len(ids))
+        starting_length = 2  # should be > 1 to prevent snakes from going backwards
+        for id, index in zip(ids, starting_indices):
+            x, y = divmod(index, grid_size[1])
+            assert 0 <= x < grid_size[0]
+            assert 0 <= y < grid_size[1]
+            snakes.append(Snake(id, np.tile([(x, y)], (starting_length, 1))))
+        return snakes
+
+    @property
+    def grid_size(self):
+        return self.state.grid_size
+
+    @property
+    def snakes(self):
+        return self.state.snakes
+
+    @property
+    def candies(self):
+        return self.state.candies
+
+    @property
+    def turn(self):
+        return self.state.turn
+
+    @property
+    def turns(self):
+        return self.state.turns
+
+    @property
+    def scores(self):
+        return self.state.scores
+
+    @property
+    def dead_snakes(self):
+        return self.state.dead_snakes
+
+    def update(self):
+        if self.state.round_type == RoundType.SIMULTANEOUS:
+
+            moves: List[Tuple[Snake, Move]] = []
+
+            for snake in self.snakes:
+                move_value = self._get_agents_move(snake)
+                moves.append((snake, move_value))
+
+            events = self.state.do_moves(moves)
+
+            self.state.turns += 1
+
+        elif self.state.round_type == RoundType.TURNS:
+
+            agent_id = list(self.agents)[self.turn]
+            snake = next(s for s in self.snakes if s.id == agent_id)
+            move_value = self._get_agents_move(snake)
+            events = self.state.do_moves([(snake, move_value)])
+
+            while True:
+                # increment turn
+                self.state.turn += 1
+                if self.turn == len(self.agents):
+                    self.state.turn = 0
+                    self.state.turns += 1  # every player has had 1 turn
+                snake_id = list(self.agents.keys())[self.turn]
+                # skip agents that are dead
+                if len([True for s in self.snakes if s.id == snake_id]):
+                    break
+
+        yield from events
+
+        # TODO: move this code to State.do_moves()
+        if self.state.turns >= self.state.max_turns:
+            for snake in self.snakes:
+                rank = 1
+                score = calculate_final_score(len(snake), rank)
+                self.state.scores[snake.id] = score
+            yield Finished(self.state)
+
+    def _get_agents_move(self, snake):
+        snake = deepcopy(snake)
+        other_snakes = [deepcopy(s) for s in self.snakes if s.id != snake.id]
+        start = time()
+        try:
+            move_value = self.agents[snake.id].determine_next_move(snake=snake, other_snakes=other_snakes,
+                                                                   candies=deepcopy(self.candies))
+        except Exception as e:
+            move_value = e
+
+        self.cpu[snake.id] += time() - start
+        return move_value
 
     def possible_scores(self):
         """
@@ -300,6 +404,7 @@ class Game:
         return ranking
 
     def finished(self):
+        # TODO: remove this function, instead listen to Finished event
         # if every snake has a score, the game is finished
         return len(self.scores) == len(self.agents)
 

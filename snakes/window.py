@@ -291,7 +291,7 @@ class Window:
         if self.game_state == GameState.RUNNING or self.game_state == GameState.STEP:
             if not self.game.finished():
                 self.waiting_from = None
-                self.game.update()
+                list(self.game.update())
             if self.game_state == GameState.STEP:
                 self.game_state = GameState.IDLE
         if self.game.finished():

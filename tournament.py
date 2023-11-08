@@ -17,7 +17,7 @@ import pandas
 
 from snakes.bots import bots
 from snakes.elo import print_tournament_summary
-from snakes.game import Game, RoundType
+from snakes.game import Game, RoundType, print_event
 from snakes.utils import levenshtein_ratio
 
 
@@ -82,7 +82,8 @@ def single_game(match):
     print()
     game = Game(agents=agents, round_type=RoundType.TURNS)
     while True:
-        game.update()
+        for event in game.update():
+            print_event(event, game.agents)
         if game.finished():
             break
     print()
