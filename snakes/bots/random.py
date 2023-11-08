@@ -16,11 +16,13 @@ def is_on_grid(pos, grid_size):
     return 0 <= pos[0] < grid_size[0] and 0 <= pos[1] < grid_size[1]
 
 
-def collides(head, snakes):
+def collides(pos: np.array, snakes: List[Snake]) -> bool:
+    """
+    Check if a position is occupied by any of the snakes
+    """
     for snake in snakes:
-        for segment in snake:
-            if np.array_equal(head, segment):
-                return True
+        if snake.collides(pos):
+            return True
     return False
 
 
