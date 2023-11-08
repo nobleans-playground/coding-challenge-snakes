@@ -156,8 +156,19 @@ def test_game_ranking():
     agents = {i: BotThatThrows for i in range(len(snakes))}
     game = Game(grid_size=grid_size, agents=agents, round_type=RoundType.TURNS, snakes=snakes, candies=[])
 
+    assert not game.finished()
+    assert game.possible_scores() == [(4, 4), (4, 3), (4, 2), (4, 1), (4, 0)]
+
+    list(game.update())
+    assert not game.finished()
+    # player 0 died, so his score should be the lowest
+    assert game.possible_scores() == [(5, 4), (5, 3), (5, 2), (5, 1), (4, 0)]
+
     while not game.finished():
         list(game.update())
+
+    assert game.possible_scores() == [(20, 4), (10, 3), (6, 2), (5, 1), (4, 0)]
+    assert game.scores == {4: 20, 3: 10, 2: 6, 1: 5, 0: 4}
 
     ranking = game.rank()
     assert ranking[0] == 5
