@@ -15,45 +15,8 @@ import pandas as pd
 
 from snakes.bots import bots
 from snakes.elo import print_tournament_summary
-from snakes.game import Game, RoundType, serialize, deserialize, print_event
-from snakes.utils import levenshtein_ratio
-
-numbers = ['⓪']
-
-
-def fill_numbers():
-    one = '①'.encode()
-    for i in range(20):
-        ba = bytearray(one)
-        ba[2] += i
-        numbers.append(bytes(ba).decode())
-
-
-fill_numbers()
-
-
-def number_to_circled(number: int) -> str:
-    return numbers[number % len(numbers)]
-
-
-class Printer:
-    def print(self, game):
-        grid = np.empty(game.grid_size, dtype=str)
-        grid.fill(' ')
-        for candy in game.candies:
-            grid[candy[0], candy[1]] = '*'
-        for snake in game.snakes:
-            for pos in snake:
-                grid[pos[0], pos[1]] = number_to_circled(snake.id)
-
-        print(f' {"▁" * 2 * game.grid_size[0]}▁ ')
-        for j in reversed(range(grid.shape[1])):
-            print('▕', end='')
-            for i in range(grid.shape[0]):
-                print(f' {grid[i, j]}', end='')
-            print(' ▏')
-        print(f' {"▔" * 2 * game.grid_size[0]}▔ ')
-        print('Game state:', serialize(game.grid_size, game.candies, game.turn, game.snakes))
+from snakes.game import Game, RoundType, deserialize, print_event
+from snakes.utils import levenshtein_ratio, Printer
 
 
 def main(snake1, snake2, rate, seed, start):

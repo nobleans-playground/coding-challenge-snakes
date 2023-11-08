@@ -30,11 +30,11 @@ def calculate_final_score(length, rank):
 
 
 class GameHistory:
-    def __init__(self, grid_size, snakes, candies):
+    def __init__(self, grid_size, snakes, candies, history=None):
         self.grid_size = grid_size
         self.initial_candies = deepcopy(candies)
         self.initial_snakes = deepcopy(snakes)
-        self.history = []
+        self.history = history if history is not None else []  # type: List[dict[int,Move]]
 
     def log_moves(self, moves: Dict[int, Move]):
         assert isinstance(moves, dict)
@@ -63,6 +63,22 @@ class GameHistory:
         print(data)
         # assert '\n' not in data
         return data
+
+    @staticmethod
+    def deserialize(data):
+        grid_size, candies, turn, snakes = deserialize(data['i'])
+        history = []
+        for moves_string in data['m'].split(' '):
+            moves = {}
+            for match in re.finditer(r'(\d+)([udlr])', moves_string):
+                id = match.group(1)
+                move = MOVES['udlr'.index(match.group(2))]
+                moves[id] = move
+            history.append(moves)
+        return GameHistory(grid_size, snakes, candies, history)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(grid_size={self.grid_size}, snakes={self.initial_snakes}, history={self.history})'
 
 
 class GameEvent:
