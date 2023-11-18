@@ -6,6 +6,7 @@ from copy import deepcopy
 from enum import Enum, auto
 from io import StringIO
 from math import floor, inf
+from pprint import pformat
 from random import sample
 from time import time
 from traceback import print_exception
@@ -34,11 +35,18 @@ class GameHistory:
         self.grid_size = grid_size
         self.initial_candies = deepcopy(candies)
         self.initial_snakes = deepcopy(snakes)
-        self.history = history if history is not None else []  # type: List[dict[int,Move]]
+        # History items can be:
+        # - dict from snake index to move
+        # - candy tuple
+        self.history = history if history is not None else []  # type: List[dict[int,Move] | Tuple[int, int]]
 
-    def log_moves(self, moves: Dict[int, Move]):
-        assert isinstance(moves, dict)
-        self.history.append(moves)
+    def log_moves(self, moves: List[Tuple[Snake, Move]]):
+        assert isinstance(moves, List)
+        logged_moves = {}
+        for snake, move in moves:
+            index = next(i for i, s in enumerate(self.initial_snakes) if s.id == snake.id)
+            logged_moves[index] = move
+        self.history.append(logged_moves)
 
     def log_candy_spawn(self, candy: Tuple[int, int]):
         assert isinstance(candy, tuple)
@@ -60,7 +68,6 @@ class GameHistory:
         data['i'] = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
         data['m'] = io.getvalue()
         data = yaml.safe_dump(data, default_flow_style=True, width=inf)
-        print(data)
         # assert '\n' not in data
         return data
 
@@ -78,7 +85,7 @@ class GameHistory:
         return GameHistory(grid_size, snakes, candies, history)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(grid_size={self.grid_size}, snakes={self.initial_snakes}, history={self.history})'
+        return f'{self.__class__.__name__}(grid_size={self.initial_snakes}, snakes={self.initial_snakes}, history={self.history})'
 
 
 class GameEvent:
@@ -205,8 +212,11 @@ class State:
             yield self.snakes[self.turn]
 
     def do_moves(self, moves: List[Tuple[Snake, Move]]) -> Iterator[GameEvent]:
-        assert set(self.players_turn()) == {s for s, _ in moves}
-        self.history.log_moves({snake.id: move for snake, move in moves})
+        if __debug__:
+            should_move = set(self.players_turn())
+            has_moves = set(s for s, _ in moves)
+            assert should_move == has_moves, f'{should_move} == {has_moves}'
+        self.history.log_moves(moves)
 
         # first, move the snakes and record which candies have been eaten
         remove_candies = set()
@@ -300,6 +310,9 @@ class State:
                     score = calculate_final_score(len(snake), rank)
                     self.scores[snake.id] = score
             yield Finished(self)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({pformat(self.__dict__, indent=2)})'
 
 
 class Game:

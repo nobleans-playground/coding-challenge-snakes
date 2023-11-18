@@ -17,12 +17,22 @@ def main(match, compare, seed):
         print('Start replay')
         history = GameHistory.deserialize(doc)
         state = State(history.initial_snakes, history.grid_size, RoundType.TURNS, history.initial_candies)
+        print(state)
 
         printer = Printer()
         printer.print(state)
         print('here!!!')
-        for moves in history.history:
-            for event in state.do_moves(moves.items()):
+        for id_to_move_value in history.history:
+            print(id_to_move_value)
+            print(state.snakes)
+            moves = []
+            for s in state.snakes:
+                try:
+                    move_value = id_to_move_value[s.id]
+                    moves.append(s, move_value)
+                except KeyError:
+                    pass
+            for event in state.do_moves(moves):
                 print_event(event, 'TODO')
         print()
 
