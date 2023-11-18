@@ -23,18 +23,19 @@ def main(match, compare, seed):
         printer.print(state)
         print('here!!!')
         for id_to_move_value in history.history:
-            print(id_to_move_value)
-            print(state.snakes)
+            print(f'id_to_move_value={id_to_move_value}')
+            print(f'snakes={state.snakes}')
             moves = []
             for s in state.snakes:
                 try:
                     move_value = id_to_move_value[s.id]
-                    moves.append(s, move_value)
-                except KeyError:
+                    moves.append((s, move_value))
+                except KeyError as e:
                     pass
+            print(f'moves={moves}')
             for event in state.do_moves(moves):
                 print_event(event, 'TODO')
-        print()
+            printer.print(state)
 
 
 if __name__ == '__main__':

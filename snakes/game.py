@@ -65,20 +65,20 @@ class GameHistory:
             io.write(' ')
 
         data = {}
-        data['i'] = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
-        data['m'] = io.getvalue()
-        data = yaml.safe_dump(data, default_flow_style=True, width=inf)
+        data['initial'] = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
+        data['moves'] = io.getvalue()
+
         # assert '\n' not in data
         return data
 
     @staticmethod
     def deserialize(data):
-        grid_size, candies, turn, snakes = deserialize(data['i'])
+        grid_size, candies, turn, snakes = deserialize(data['initial'])
         history = []
-        for moves_string in data['m'].split(' '):
+        for moves_string in data['moves'].split(' '):
             moves = {}
             for match in re.finditer(r'(\d+)([udlr])', moves_string):
-                id = match.group(1)
+                id = int(match.group(1))
                 move = MOVES['udlr'.index(match.group(2))]
                 moves[id] = move
             history.append(moves)
@@ -438,8 +438,27 @@ class Game:
         # if every snake has a score, the game is finished
         return len(self.scores) == len(self.agents)
 
-    def _snake_to_string(self, snake: Snake) -> str:
-        return f'{self.agents[snake.id].name} ({snake.id})'
+    def save_replay(self) -> str:
+        data = self.state.history.serialize()
+
+        # add the name of the agents
+        agents = [None] * len(self.agents)
+        for id, agent in self.agents.items():
+            index = next(i for i, s in enumerate(self.state.history.initial_snakes) if s.id == id)
+            print(index)
+            print(agent)
+            agents[index] = agent.name
+        data['agents'] = agents
+
+        # add final ranking if needed
+        if self.finished():
+            ranking = [None] * len(self.state.history.initial_snakes)
+            for id, rank in self.rank().items():
+                index = next(i for i, s in enumerate(self.state.history.initial_snakes) if s.id == id)
+                ranking[index] = rank
+        data['rank'] = ranking
+
+        return yaml.safe_dump(data, default_flow_style=True, width=inf)
 
 
 def direction_to_move_value(direction):
