@@ -183,3 +183,9 @@ def test_game_deserialize():
     data = '16x16c13,1/14,2/0,10t0s0,9rruuurrrdld/6,14drddddrrdlldd'
     grid_size, candies, turn, snakes = deserialize(data)
     assert data == serialize(grid_size, candies, turn, snakes)
+
+
+def test_game_deserialize_in_place():
+    data = '16x16c8,2/3,12/15,13t0s4,4p/2,0p'
+    grid_size, candies, turn, snakes = deserialize(data)
+    assert data == serialize(grid_size, candies, turn, snakes)

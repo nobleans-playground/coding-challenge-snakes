@@ -16,7 +16,7 @@ import numpy as np
 import yaml
 
 from .bot import Bot
-from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS, MOVES
+from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS, UP, DOWN, LEFT, RIGHT, MOVES
 from .snake import Snake
 
 
@@ -58,7 +58,7 @@ class GameHistory:
         for action in self.history:
             if isinstance(action, dict):
                 for id, move in action.items():
-                    io.write(f'{id}{"udlr"[MOVES.index(move)]}')
+                    io.write(f'{id}{move_to_str(move)}')
             if isinstance(action, Tuple):
                 x, y = action
                 io.write(f'c{x},{y}')
@@ -79,7 +79,7 @@ class GameHistory:
             moves = {}
             for match in re.finditer(r'(\d+)([udlr])', moves_string):
                 id = int(match.group(1))
-                move = MOVES['udlr'.index(match.group(2))]
+                move = str_to_move(match.group(2))
                 moves[id] = move
             history.append(moves)
         return GameHistory(grid_size, snakes, candies, history)
@@ -445,8 +445,6 @@ class Game:
         agents = [None] * len(self.agents)
         for id, agent in self.agents.items():
             index = next(i for i, s in enumerate(self.state.history.initial_snakes) if s.id == id)
-            print(index)
-            print(agent)
             agents[index] = agent.name
         data['agents'] = agents
 
@@ -461,19 +459,44 @@ class Game:
         return yaml.safe_dump(data, default_flow_style=True, width=inf)
 
 
-def direction_to_move_value(direction):
+def move_to_str(move: Move) -> str:
+    return 'udlr'[MOVES.index(move)]
+
+
+def str_to_move(move: str) -> Move:
+    assert len(move) == 1
+    return MOVES['udlr'.index(move)]
+
+
+def direction_to_str(direction: np.array) -> str:
     if direction[0] > 0:
-        return Move.RIGHT
+        return 'r'
     elif direction[0] < 0:
-        return Move.LEFT
+        return 'l'
     else:
         if direction[1] > 0:
-            return Move.UP
+            return 'u'
+        elif direction[1] < 0:
+            return 'd'
         else:
-            return Move.DOWN
+            return 'p'
 
 
-def serialize(grid_size, candies, turn, snakes):
+def move_str_to_direction(move: str) -> np.array:
+    return (UP, DOWN, LEFT, RIGHT, np.array([0, 0]))['udlrp'.index(move)]
+
+
+def serialize(grid_size, candies, turn, snakes) -> str:
+    """
+    Serialize a game state to string
+
+    The data is formatted with the following notation. x and y are substituted by the specific coordinate. D indicates
+    the direction a segment goes to. A direction can be udlrp (up/down/left/right/in-place)
+    1. Grid size: x,y
+    2. Candies:   cx,y/x,y/x,y
+    3. Turn:      tx
+    3. Snakes:    sx,yMMMMMM/x,yMMMMM/x,yMMMMM
+    """
     data = f'{grid_size[0]}x{grid_size[1]}c'
     data += '/'.join(f'{candy[0]},{candy[1]}' for candy in candies)
     data += f't{turn}'
@@ -483,8 +506,7 @@ def serialize(grid_size, candies, turn, snakes):
         snakestr = f'{snake[0][0]},{snake[0][1]}'
         for i in range(1, len(snake)):
             direction = snake[i] - snake[i - 1]
-            move = direction_to_move_value(direction)
-            snakestr += 'udlr'[MOVES.index(move)]
+            snakestr += direction_to_str(direction)
         snakedata.append(snakestr)
     data += 's'
     data += '/'.join(snakedata)
@@ -509,8 +531,7 @@ def deserialize(data: str):
         segment = np.array([int(m.group(1)), int(m.group(2))])
         segments = [segment]
         for s in m.group(3):
-            direction = MOVES['udlr'.index(s)]
-            segment = segment + MOVE_VALUE_TO_DIRECTION[direction]
+            segment = segment + move_str_to_direction(s)
             segments.append(segment)
         snakes.append(Snake(id=id, positions=np.array(segments)))
 
