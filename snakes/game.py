@@ -76,12 +76,16 @@ class GameHistory:
         grid_size, candies, turn, snakes = deserialize(data['initial'])
         history = []
         for moves_string in data['moves'].split(' '):
-            moves = {}
-            for match in re.finditer(r'(\d+)([udlr])', moves_string):
-                id = int(match.group(1))
-                move = str_to_move(match.group(2))
-                moves[id] = move
-            history.append(moves)
+            if moves_string.startswith('c'):
+                candy = tuple(int(x) for x in moves_string[1:].split(','))
+                history.append(candy)
+            else:
+                moves = {}
+                for match in re.finditer(r'(\d+)([udlr])', moves_string):
+                    id = int(match.group(1))
+                    move = str_to_move(match.group(2))
+                    moves[id] = move
+                history.append(moves)
         return GameHistory(grid_size, snakes, candies, history)
 
     def __repr__(self):
@@ -181,26 +185,17 @@ class State:
         self.max_turns = max_turns
         self.scores = {}  # map from snake.id to score
 
+        self.candies = []  # Initial candy spawns are logged as move, so we don't need to include them to the history
+        self.history = GameHistory(self.grid_size, self.snakes, self.candies)
+
         if candies is None:
             self.candies = []
-            self.spawn_candies()
+            self.respawn_candies()
         assert isinstance(self.candies, list)
 
         # check that snake ids are unique
         snake_ids = [snake.id for snake in self.snakes]
         assert len(snake_ids) == len(set(snake_ids))
-
-        self.history = GameHistory(self.grid_size, self.snakes, self.candies)
-
-    def spawn_candies(self):
-        indices = self.grid_size[0] * self.grid_size[1]
-        percentage = 0.01
-        candy_indices = sample(range(indices), k=round(percentage * indices))
-        for index in candy_indices:
-            x, y = divmod(index, self.grid_size[1])
-            assert 0 <= x < self.grid_size[0]
-            assert 0 <= y < self.grid_size[1]
-            self.candies.append(np.array([x, y]))
 
     def players_turn(self) -> Iterator[Snake]:
         """Return all players that should play a move in the next turn"""
@@ -232,17 +227,6 @@ class State:
             else:
                 snake.move(move)
         self.candies = [i for j, i in enumerate(self.candies) if j not in remove_candies]
-
-        # respawn new candies
-        occupied_indices = {x * self.grid_size[1] + y for x, y in self.candies}
-        free_indices = set(range(self.grid_size[0] * self.grid_size[1])) - occupied_indices
-        candy_indices = sample(sorted(free_indices), k=len(remove_candies))
-        for index in candy_indices:
-            x, y = divmod(index, self.grid_size[1])
-            assert 0 <= x < self.grid_size[0]
-            assert 0 <= y < self.grid_size[1]
-            self.candies.append(np.array([x, y]))
-            self.history.log_candy_spawn((x, y))
 
         # figure out which snakes died
         dead = []
@@ -310,6 +294,23 @@ class State:
                     score = calculate_final_score(len(snake), rank)
                     self.scores[snake.id] = score
             yield Finished(self)
+
+    def respawn_candies(self):
+        # respawn new candies
+        n_indices = self.grid_size[0] * self.grid_size[1]
+        occupied_indices = {x * self.grid_size[1] + y for x, y in self.candies}
+        free_indices = set(range(n_indices)) - occupied_indices
+        percentage = 0.01
+        candy_indices = sample(sorted(free_indices), k=round(percentage * n_indices) - len(self.candies))
+        for index in candy_indices:
+            x, y = divmod(index, self.grid_size[1])
+            assert 0 <= x < self.grid_size[0]
+            assert 0 <= y < self.grid_size[1]
+            self.spawn_candy(x, y)
+
+    def spawn_candy(self, x, y):
+        self.candies.append(np.array([x, y]))
+        self.history.log_candy_spawn((x, y))
 
     def __repr__(self):
         return f'{self.__class__.__name__}({pformat(self.__dict__, indent=2)})'
@@ -389,6 +390,8 @@ class Game:
             moves.append((snake, move_value))
 
         yield from self.state.do_moves(moves)
+
+        self.state.respawn_candies()
 
     def _get_agents_move(self, snake):
         snake = deepcopy(snake)
@@ -522,7 +525,7 @@ def deserialize(data: str):
     snakesstr = match.group(4)
 
     grid_size = tuple(int(x) for x in grid_size.split('x'))
-    candies = [tuple(int(x) for x in c.split(',')) for c in candies.split('/')]
+    candies = [tuple(int(x) for x in c.split(',')) for c in candies.split('/')] if candies else []
     turn = int(turn)
 
     snakes = []
