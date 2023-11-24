@@ -181,11 +181,11 @@ class State:
         self.turn = 0  # Index of the snake which turn it is, only used when rount_type == TURN
         self.turns = 0  # Amount of turns that have passed
         self.dead_snakes = []
-        self.candies = candies
+        self.candies = candies if candies is not None else []
         self.max_turns = max_turns
         self.scores = {}  # map from snake.id to score
 
-        self.candies = []  # Initial candy spawns are logged as move, so we don't need to include them to the history
+        # Initial candy spawns are logged as move, so we don't need to include them to the history
         self.history = GameHistory(self.grid_size, self.snakes, self.candies)
 
         if candies is None:
