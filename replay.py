@@ -17,13 +17,13 @@ def main(match, compare, seed):
     for doc in yaml.safe_load_all(match):
         print('Start replay')
         history = GameHistory.deserialize(doc)
+        agent_names = {i: name for i, name in enumerate(doc['agents'])}
         state = State(history.initial_snakes, history.grid_size, RoundType.TURNS, history.initial_candies)
         print(state)
         print(history)
 
         printer = Printer()
         printer.print(state)
-        print('here!!!')
         for id_to_move_value in history.history:
             if isinstance(id_to_move_value, Tuple):
                 state.spawn_candy(*id_to_move_value)
@@ -36,7 +36,7 @@ def main(match, compare, seed):
                     except KeyError as e:
                         pass
                 for event in state.do_moves(moves):
-                    print_event(event, 'TODO')
+                    print_event(event, agent_names)
                 printer.print(state)
 
 

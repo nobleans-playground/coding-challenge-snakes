@@ -128,14 +128,14 @@ class Finished(GameEvent):
 def snake_to_str(snake: Snake, agents: Dict[int, Bot]) -> str:
     assert isinstance(snake, Snake), snake
     assert isinstance(agents, dict), agents
-    assert isinstance(agents[snake.id], Bot), agents
-    return f'{agents[snake.id].name} ({snake.id})'
+    assert isinstance(agents[snake.id], str), agents
+    return f'{agents[snake.id]} ({snake.id})'
 
 
-def print_event(event: GameEvent, agents: Dict[int, Bot]):
+def print_event(event: GameEvent, agents: Dict[int, str]):
     assert isinstance(event, GameEvent)
     assert isinstance(agents, dict), agents
-    assert all(isinstance(a, Bot) for a in agents.values()), agents
+    assert all(isinstance(a, str) for a in agents.values()), agents
 
     if isinstance(event, InvalidMove):
         if isinstance(event.move_value, Exception):
@@ -506,6 +506,8 @@ def serialize(grid_size, candies, turn, snakes) -> str:
 
     snakedata = []
     for snake in snakes:
+        if snake is None:
+            continue
         snakestr = f'{snake[0][0]},{snake[0][1]}'
         for i in range(1, len(snake)):
             direction = snake[i] - snake[i - 1]

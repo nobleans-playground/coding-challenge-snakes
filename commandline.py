@@ -48,7 +48,8 @@ def main(snake1, snake2, rate, seed, start):
     printer.print(game)
     while True:
         for event in game.update():
-            print_event(event, game.agents)
+            agent_names = {id: agent.name for id, agent in game.agents.items()}
+            print_event(event, agent_names)
         printer.print(game)
         if not isinf(rate):
             sleep(1 / rate)
