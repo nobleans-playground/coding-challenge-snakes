@@ -19,8 +19,6 @@ def main(match, compare, seed):
         history = GameHistory.deserialize(doc)
         agent_names = {i: name for i, name in enumerate(doc['agents'])}
         state = State(history.initial_snakes, history.grid_size, RoundType.TURNS, history.initial_candies)
-        print(state)
-        print(history)
 
         printer = Printer()
         printer.print(state)
