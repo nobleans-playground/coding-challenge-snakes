@@ -5,12 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import csv
+import os.path
 import random
 import sys
 from argparse import ArgumentParser
+from datetime import datetime
 from itertools import combinations
 from multiprocessing import Pool
-from tempfile import NamedTemporaryFile
+from tempfile import gettempdir
 
 import numpy as np
 import pandas
@@ -23,7 +25,8 @@ from snakes.utils import levenshtein_ratio
 
 def main(games, benchmark, jobs):
     # write to a temporary file so that we have partial scores in case of a crash
-    with NamedTemporaryFile('w+', suffix='.csv', delete=False) as f:
+    filename = f'snakes_{datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")}_summary.csv'
+    with open(os.path.join(gettempdir(), filename), 'w+') as f:
         print(f'writing game results to {f.name}')
         writer = csv.writer(f)
         # write bot names
