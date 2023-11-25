@@ -63,6 +63,8 @@ class Printer:
         for candy in game.candies:
             grid[candy[0], candy[1]] = '*'
         for snake in game.snakes:
+            if snake is None:
+                continue
             for pos in snake:
                 grid[pos[0], pos[1]] = number_to_circled(snake.id)
 

@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from argparse import ArgumentParser, FileType
+from typing import Tuple
 
 import yaml
 
@@ -16,15 +17,25 @@ def main(match, compare, seed):
     for doc in yaml.safe_load_all(match):
         print('Start replay')
         history = GameHistory.deserialize(doc)
+        agent_names = {i: name for i, name in enumerate(doc['agents'])}
         state = State(history.initial_snakes, history.grid_size, RoundType.TURNS, history.initial_candies)
 
         printer = Printer()
         printer.print(state)
-        print('here!!!')
-        for moves in history.history:
-            for event in state.do_moves(moves.items()):
-                print_event(event, 'TODO')
-        print()
+        for id_to_move_value in history.history:
+            if isinstance(id_to_move_value, Tuple):
+                state.spawn_candy(*id_to_move_value)
+            else:
+                moves = []
+                for s in state.snakes:
+                    try:
+                        move_value = id_to_move_value[s.id]
+                        moves.append((s, move_value))
+                    except KeyError as e:
+                        pass
+                for event in state.do_moves(moves):
+                    print_event(event, agent_names)
+                printer.print(state)
 
 
 if __name__ == '__main__':
