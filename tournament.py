@@ -83,7 +83,8 @@ def single_game(match):
     game = Game(agents=agents, round_type=RoundType.TURNS)
     while True:
         for event in game.update():
-            print_event(event, game.agents)
+            agent_names = {id: agent.name for id, agent in game.agents.items()}
+            print_event(event, agent_names)
         if game.finished():
             break
     print()
