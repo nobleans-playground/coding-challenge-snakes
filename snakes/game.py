@@ -4,8 +4,7 @@
 import re
 from copy import deepcopy
 from enum import Enum, auto
-from io import StringIO
-from math import floor, inf
+from math import floor
 from pprint import pformat
 from random import sample
 from time import time
@@ -13,7 +12,6 @@ from traceback import print_exception
 from typing import List, Tuple, Type, Dict, Iterator
 
 import numpy as np
-import yaml
 
 from .bot import Bot
 from .constants import MOVE_VALUE_TO_DIRECTION, Move, MAX_TURNS, UP, DOWN, LEFT, RIGHT, MOVES
@@ -53,23 +51,19 @@ class GameHistory:
         self.history.append(candy)
 
     def serialize(self) -> Dict[str, str]:
-        io = StringIO()
-
+        actions = []
         for action in self.history:
             if isinstance(action, dict):
                 for id, move in action.items():
-                    io.write(f'{id}{move_to_str(move)}')
+                    actions.append(f'{id}{move_to_str(move)}')
             if isinstance(action, Tuple):
                 x, y = action
-                io.write(f'c{x},{y}')
-            io.write(' ')
+                actions.append(f'c{x},{y}')
 
-        data = {}
-        data['initial'] = serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes)
-        data['moves'] = io.getvalue()
-
-        # assert '\n' not in data
-        return data
+        return {
+            'initial': serialize(self.grid_size, self.initial_candies, 0, self.initial_snakes),
+            'moves': " ".join(actions)
+        }
 
     @staticmethod
     def deserialize(data):
@@ -459,7 +453,8 @@ class Game:
                 ranking[index] = rank
         data['rank'] = ranking
 
-        return yaml.safe_dump(data, default_flow_style=True, width=inf)
+        return data
+        # return yaml.safe_dump(data, default_flow_style=True, width=inf)
 
 
 def move_to_str(move: Move) -> str:

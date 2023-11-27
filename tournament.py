@@ -11,11 +11,13 @@ import sys
 from argparse import ArgumentParser
 from datetime import datetime
 from itertools import combinations
+from math import inf
 from multiprocessing import Pool
 from tempfile import gettempdir
 
 import numpy as np
 import pandas
+import yaml
 
 from snakes.bots import bots
 from snakes.elo import print_tournament_summary
@@ -25,8 +27,11 @@ from snakes.utils import levenshtein_ratio
 
 def main(games, benchmark, jobs):
     # write to a temporary file so that we have partial scores in case of a crash
-    filename = f'snakes_{datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")}_summary.csv'
-    with open(os.path.join(gettempdir(), filename), 'w+') as f:
+    filename_base = f'snakes_{datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")}'
+    summary_filename = f'{filename_base}_summary.csv'
+    replay_filename = f'{filename_base}_replay.yml'
+    with open(os.path.join(gettempdir(), summary_filename), 'w+') as f, \
+            open(os.path.join(gettempdir(), replay_filename), 'w+') as r:
         print(f'writing game results to {f.name}')
         writer = csv.writer(f)
         # write bot names
@@ -54,6 +59,7 @@ def main(games, benchmark, jobs):
             for _ in range(games):
                 for a, b in combinations(range(len(bots)), r=2):
                     match_list.append((a, b, random.randrange(sys.maxsize)))
+        random.shuffle(match_list)
 
         if jobs == 1:
             map_function = map
@@ -63,6 +69,8 @@ def main(games, benchmark, jobs):
 
         n = 1
         for row in map_function(single_game, match_list):
+            replay = row.pop('replay')
+            yaml.safe_dump(replay, r, default_flow_style=True, width=inf, explicit_start=True)
             writer.writerow(row)
             f.flush()
             print(f'Progress: {100 * n / len(match_list):.1f}% [{n} / {len(match_list)}]')
@@ -100,6 +108,7 @@ def single_game(match):
     row = ranking
     row['turns'] = game.turns
     row['seed'] = seed
+    row['replay'] = game.save_replay()
     row.update({'cpu_' + game.agents[i].name: cpu for i, cpu in game.cpu.items()})
     return row
 
