@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # Coding Challange: Multiplayer Snake [![Python application](https://github.com/nobleans-playground/coding-challenge-snakes/actions/workflows/python-app.yml/badge.svg)](https://github.com/nobleans-playground/coding-challenge-snakes/actions/workflows/python-app.yml)
 
+![Example battle](./doc/battle.gif)
+
 ## Tournament results
 
 The finals played between Snakunamatata (Mukunda) and  Cherries are for Losers (Rinus).
